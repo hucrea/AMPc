@@ -164,7 +164,6 @@ Section -"Prepare"
 	DetailPrint "Última version disponible: $versionAvailableAMPc"
 
 	DetailPrint "Obteniendo valores de integridad."
-    ReadINIStr $urlDownloadReleaseINI "$PLUGINSDIR\update.ini" "AMPc" "release"
     ReadINIStr $urlUpdateINI "$PLUGINSDIR\update.ini" "AMPc" "current"
 
 	StrCmp $urlUpdateINI ${URL_UPDATE_INI} sameUrl distUrl
@@ -178,20 +177,19 @@ Section -"Prepare"
 
 	DetailPrint "Comparando versiones"
 	${VersionCompare} "$versionCurrentAMPc" "$versionAvailableAMPc" $R9
-	DetailPrint "La versión actualmente instalada..."
 
 	${If} $R9 == "0"
-		DetailPrint "es la última versión disponible."
+		DetailPrint "La versión actualmente instalada es la última versión disponible."
 		MessageBox MB_OK|MB_USERICON "Tienes la última versión disponible.$\n$\nVersión local: $versionCurrentAMPc$\n$\nÚltima versión disponible: $versionAvailableAMPc"
 		DetailPrint "Presiona Cancelar para cerrar..."
 		Abort
 	${ElseIf} $R9 == "1"
-		DetailPrint "es más mayor (¿versión en desarrollo?) que la última versión disponible."
+		DetailPrint "La versión actualmente instalada es más mayor (¿versión en desarrollo?) que la última versión disponible."
 		MessageBox MB_OK|MB_USERICON "Estas usando una versión en desarrollo.$\n$\nVersión local: $versionCurrentAMPc$\n$\nÚltima versión disponible: $versionAvailableAMPc"
 		Abort
 	${ElseIf} $R9 == "2"
-		DetailPrint "esta desactualizada."
-		DetailPrint "NUEVA VERSIÓN ENCONTRADA."
+		DetailPrint "La versión actualmente instalada esta desactualizada."
+		DetailPrint "URL de descarga encontrada"
 		DetailPrint "Solicitando al usuario consentimiento para descargar última versión."
    		MessageBox MB_YESNO|MB_USERICON "Hay una actualización disponible.$\n$\n$versionCurrentAMPc < $versionAvailableAMPc$\n$\n¿Descargar la última versión?" IDYES true IDNO false
 		false:
@@ -207,16 +205,9 @@ Section -"Prepare"
 		Abort
 	${EndIf}
 
-	DetailPrint "Comparando URL de descarga"
+	DetailPrint "Estableciendo URL de descarga"
 	StrCpy $urlDownloadRelease "https://github.com/hucrea/AMPc/releases/download/$versionAvailableAMPc/ampc-$versionAvailableAMPc\.exe"
-	StrCmp $urlDownloadRelease $urlDownloadReleaseINI valid invalid
-
-	invalid:
-		DetailPrint "Hay una discrepancia en la URL de descarga, abortando proceso."
-		MessageBox MB_OK|MB_ICONEXCLAMATION "Error inesperado (2021)"
-		DetailPrint "Presiona Cancelar para cerrar..."
-		Abort
-	valid:
+	DetailPrint "URL de descarga establecida: $urlDownloadRelease"
 SectionEnd
 
 Section -"Download"

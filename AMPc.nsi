@@ -40,14 +40,14 @@ NOTAS:
 ;		VERSION_PHP 	=> PHP.
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
-;		VERSION_CACERT 	=> CA-Cert.
+;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
 ;
 !define VERSION_APACHE "2.4.63"
 !define VERSION_MARIADB "11.4.5"
-!define VERSION_PHP "8.3.17"
+!define VERSION_PHP "8.3.19"
 !define VERSION_PMA "5.2.2"
-!define VERSION_ADMINER "5.0.1"
-!define VERSION_CACERT "250225"
+!define VERSION_ADMINER "5.0.5"
+!define VERSION_CACERT "25.02.25"
 ;
 ; PACKAGE - Nombre del paquete a compilar.
 !define PACKAGE "AMPc for Windows"

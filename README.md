@@ -1,6 +1,8 @@
 # AMPc for Windows
 _AMPc for Windows_ es un paquete WAMP para Windows 10 y Windows 11 de 64 bits. Se diferencia del resto de paquetes WAMP al carecer totalmente de panel de control, centrándose exclusivamente en la instalación y actualización del entorno.
 
+Inspirado, pero no basado, en AppServ.
+
 ## Caracteristicas
 Concebido como un proyecto de uso interno, _AMPc for Windows_ está construido sobre NSIS, disponible bajo GNU/GPLv3 o posterior.
 
@@ -20,14 +22,6 @@ Por razones prácticas, si el usuario elije no instalar el componente, Apache HT
 
 ### Actualizaciones regulares
 _AMPc for Windows_ se actualiza regularmente para incluir las últimas versiones del entorno.
-
-## Caracteristicas
-- Asistente de instalación para configuración rápida del entorno local.
-- Verifica que los pre-requisitos de Apache HTTP y PHP se encuentren instalados.
-- Sin panel de control, cada componente se administra nativamente.
-- Paquete actualizado mensualmente para disponer de las últimas versiones de cada componente.
-
-Inspirado, pero no basado, en AppServ.
 
 ## Componentes incluidos
 

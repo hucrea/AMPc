@@ -44,7 +44,7 @@ SetCompressor /SOLID /FINAL lzma
 ;
 !define VER_MAJOR "0"
 !define VER_MENOR "17"
-!define VER_PATCH "99"
+!define VER_PATCH "100"
 !define VER_F_VIP "${AMPC_VERSION}.0"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
@@ -59,7 +59,6 @@ SetCompressor /SOLID /FINAL lzma
 ;		AMPC_PUBLISHER_COUNTRY  => Pais del publicador.
 ;
 !define AMPC_VERSION "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
-;!define AMPC_GUID "{88a59784-300c-b5dc-0069-cd628b05a983}" ; DESARROLLO.
 !define AMPC_GUID "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}" ; PRODUCCION.
 !define AMPC_URL "https://github.com/hucrea/AMPc"
 !define AMPC_PUBLISHER "Hu SpA"
