@@ -52,16 +52,15 @@ ShowInstDetails show
 ; Ruta de instalacion, para almacenar instalable actualizado.
 InstallDir "$APPDATA\Hu SpA"
 ;
-; Establece privilegios de usuario.
-RequestExecutionLevel highest
+; Descripcion del archivo.
 VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
 ###############################################################################
-!include "MUI.nsh"
+;!include "MUI.nsh"
 !include "x64.nsh"
-;!include "MUI2.nsh"
+!include "MUI2.nsh"
 ;!include "nsDialogs.nsh"
 !include "LogicLib.nsh"
 !include "VersionCompare.nsh"
@@ -202,14 +201,14 @@ Section -"Prepare"
 SectionEnd
 
 Section -"Download"
-	DetailPrint "Intentando descargar"
+	DetailPrint "Descargando última versión."
 
 	NScurl::http get "$urlDownloadRelease" "$INSTDIR\ampc_for_windows-latest.exe" /INSIST /CANCEL /RESUME /END
 	Pop $0
 	DetailPrint "Resultado: $0"
 
 	${IfNot} $0 == "OK"
-		DetailPrint "La actualización no se pudo descargar."
+		DetailPrint "La descarga no se pudo completar."
 		MessageBox MB_OK|MB_ICONEXCLAMATION "Ocurrio un error al intentar descargar la última versión. Reintenta más tarde o visita ${URL_UPDATE} para descargar la última versión disponible."
 		DetailPrint "Presiona Cancelar para cerrar."
 		Abort

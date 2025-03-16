@@ -75,9 +75,6 @@ ShowUnInstDetails hide
 ; Habilita instalacion en carpeta raiz.
 AllowRootDirInstall true
 ;
-; Requiere privilegios de Administrador.
-RequestExecutionLevel admin
-;
 ; Detalles del paquete (Archivo EXE > Propiedades > Detalles).
 VIAddVersionKey /LANG=0 "LegalTrademarks" "${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
 VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
@@ -85,8 +82,7 @@ VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
 ###############################################################################
-Var prevInstallAmpc ; Usada para verificar si existe instalacion previa.
-Var currentVersionAmpc ; Usada para almacenar la version actualmente instalada.
+Var prevInstallAMPc ; Usada para verificar si existe instalacion previa.
 Var backSlashInstDir ; Ver Functions.nsh, funcion func_ReplaceSlash.
 Var apacheConfigServerName ; Usada por custom_PageApache y leave_PageApache.
 Var apacheConfigPort ; Usada por custom_PageApache y leave_PageApache.
@@ -185,6 +181,14 @@ Function .onInit
 	; Inicializa instalador.
 	!insertmacro MUI_LANGDLL_DISPLAY
 
+	; Inicializa variables.
+	StrCpy $pathApache "unknow"
+	StrCpy $pathMariadb "unknow"
+	StrCpy $pathPhp "unknow"
+	StrCpy $pathCACERT "unknow"
+	StrCpy $pathPMA "unknow"
+	StrCpy $pathAdminer "unknow"
+
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
 
@@ -192,8 +196,7 @@ Function .onInit
 
 	; No existe instalacion previa.
 	${If} ${Errors}
-		StrCpy $prevInstallAmpc "none"
-		StrCpy $currentVersionAmpc "${AMPC_VERSION}"
+		StrCpy $prevInstallAMPc "none"
 
 		; Establece la ruta de instalacion en la unidad raiz de Windows.
 		StrCpy "$INSTDIR" "$WINDIR" 2
@@ -205,16 +208,7 @@ Function .onInit
 		ReadRegStr $R1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
 		StrCpy "$INSTDIR" "$R1"
 
-		ReadRegStr $R2 ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion"
-		StrCpy $prevInstallAmpc "$R2"
 	${EndIf}
-
-	StrCpy $pathApache "unknow"
-	StrCpy $pathMariadb "unknow"
-	StrCpy $pathPhp "unknow"
-	StrCpy $pathCACERT "unknow"
-	StrCpy $pathPMA "unknow"
-	StrCpy $pathAdminer "unknow"
 FunctionEnd
 
 ###############################################################################
@@ -226,7 +220,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function custom_PageApache
 	; Mostrar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAmpc == "none"
+	${If} $prevInstallAMPc == "none"
 		nsDialogs::Create 1018
 			Pop $0
 
@@ -254,7 +248,7 @@ FunctionEnd
 
 Function leave_PageApache ; Funcion de salida para custom_PageApache.
 	; Ejecutar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAmpc == "none"
+	${If} $prevInstallAMPc == "none"
 		LogText "####################"
 		LogText "# leave_PageApache #"
 		LogText "####################"
@@ -317,7 +311,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function custom_PageMariadb
 	; Mostrar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAmpc == "none"
+	${If} $prevInstallAMPc == "none"
 		nsDialogs::Create 1018
 			LogText "######################"
 			LogText "# custom_PageMariadb #"
@@ -347,7 +341,7 @@ FunctionEnd
 
 Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
 	; Ejecutar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAmpc == "none"
+	${If} $prevInstallAMPc == "none"
 		LogText "#####################"
 		LogText "# leave_PageMariaDB #"
 		LogText "#####################"
@@ -400,7 +394,7 @@ Section -sectionInit
 	LogText "${PACKAGE} ${AMPC_VERSION}"
 	LogText "${COMPILED_STAMP}"
 
-	${If} $prevInstallAmpc == "none"
+	${If} $prevInstallAMPc == "none"
 		; Si es una instalacion nueva, se crea el directorio.
 		; El directorio se crea inmediatamente para asegurar que el LOG tenga donde
 		; almacenarse y, asi, se registre todo el proceso de instalacion.
@@ -573,7 +567,7 @@ Section "Apache HTTP Server (${VERSION_APACHE})" sectionApache
 	SetOutPath "$pathApache\conf"
 		File "config-src\httpd.conf"
 
-	${If} $prevInstallAmpc == "none"
+	${If} $prevInstallAMPc == "none"
 		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 		; configuracion httpd.conf de Apache HTTP.
 		Push '___AMPC_PATH___'
@@ -633,7 +627,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" sectionPhp
 		SetOutPath "$INSTDIR\htdocs"
 			File "www-src\phpinfo.php"
 
-		${If} $prevInstallAmpc == "none"
+		${If} $prevInstallAMPc == "none"
 			; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 			; configuracion php.ini de PHP.
 			Push '___AMPC_PATH___'
@@ -767,6 +761,7 @@ Section Uninstall
 	DetailPrint "Eliminando archivos"
 	Delete "$INSTDIR\${PACKAGE}.url"
 	Delete "$INSTDIR\uninstall-ampc.exe"
+	Delete "$INSTDIR\updater-ampc.exe"
 
 	DetailPrint "Eliminando archivos de Apache HTTP"
 	RMDir /r /REBOOTOK "$INSTDIR\Apache"

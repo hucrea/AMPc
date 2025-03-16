@@ -101,7 +101,10 @@ ManifestSupportedOS Win10
 ;
 ; Codificacion.
 Unicode True
-
+;
+; Requiere privilegios de Administrador.
+RequestExecutionLevel admin
+;
 ; Informacion de Version.
 VIProductVersion "${VER_F_VIP}"
 VIAddVersionKey /LANG=0 "ProductName" "${PACKAGE}"
