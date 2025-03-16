@@ -423,7 +423,7 @@ Section -sectionInit
 
 	${EndIf}
 
-	; El instalador se registra al inicio.
+	; Se registra el desinstalador.
 	WriteUninstaller "$INSTDIR\uninstall-ampc.exe"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${PACKAGE}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayIcon" "$INSTDIR\uninstall-ampc.exe"
@@ -451,6 +451,7 @@ Section -sectionInit
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${AMPC_VERSION}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VER_BUILD}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall" "$INSTDIR"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
 
 	SetOutPath $INSTDIR
 	SetOverwrite ifdiff

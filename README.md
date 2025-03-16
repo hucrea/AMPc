@@ -32,7 +32,7 @@ _AMPc for Windows_ se actualiza regularmente para incluir las últimas versiones
 |---|:-:|---|
 | Apache HTTP Server | ``2.4.63`` | [Apache Lounge](https://www.apachelounge.com/download/) |
 | MariaDB Server | ``11.4.5`` | [MariaDB Community](https://mariadb.com/downloads/) |
-| PHP | ``8.3.17`` | [PHP for Windows](https://windows.php.net/download/) |
+| PHP | ``8.3.19`` | [PHP for Windows](https://windows.php.net/download/) |
 | phpMyAdmin | ``5.2.2`` | [phpMyAdmin](https://www.phpmyadmin.net/) |
-| Adminer | ``4.17.1`` | [Adminer](https://www.adminer.org/) |
+| Adminer | ``5.0.5`` | [Adminer](https://www.adminer.org/) |
 | CA certificate | ``25-Feb-2025`` | [cURL - CA certificates extracted from Mozilla](https://curl.se/docs/caextract.html) |

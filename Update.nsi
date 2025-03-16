@@ -50,10 +50,10 @@ OutFile "update-ampc.exe"
 ShowInstDetails show
 ;
 ; Ruta de instalacion, para almacenar instalable actualizado.
-InstallDir "$EXEDIR"
+InstallDir "$APPDATA\Hu SpA"
 ;
 ; Establece privilegios de usuario.
-RequestExecutionLevel user
+RequestExecutionLevel highest
 VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
 
 ###############################################################################
@@ -67,6 +67,8 @@ VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
 !include "VersionCompare.nsh"
 
 ; Configuracion de la instalacion.
+!define MUI_HEADERIMAGE_BITMAP "media-src\header-install.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-install.bmp"
 !define MUI_ICON "media-src\icon-updater.ico"
 !define MUI_PAGE_HEADER_TEXT "Guardar (ejecutable de) actualización"
 !define MUI_PAGE_HEADER_SUBTEXT "Selecciona una carpeta para guardar la actualización"
@@ -77,9 +79,8 @@ Por defecto, se selecciona el directorio de la instalación actual aunque puede 
 !define MUI_PAGE_HEADER_TEXT "Actualización"
 !define MUI_PAGE_HEADER_SUBTEXT "Espera mientras se ejecutan las tareas de actualización."
 !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_FINISHPAGE_RUN_FUNCTION custom_RunUpdate
+!define MUI_FINISHPAGE_RUN "$INSTDIR\ampc_for_windows-latest.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Actualizar AMPc for Windows"
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_LANGUAGE "Spanish"
@@ -90,7 +91,6 @@ Por defecto, se selecciona el directorio de la instalación actual aunque puede 
 Var versionCurrentAMPc
 Var versionAvailableAMPc
 Var urlDownloadRelease
-Var urlDownloadReleaseINI
 Var urlUpdateINI
 ;Var proceedUpdate
 
@@ -130,15 +130,6 @@ Function .onInit
 		Abort
 
 	${EndIf}
-
-	; Lee la ruta de la instalacion actual y establece $INSTDIR con el valor encontrado.
-	ReadRegStr $R1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
-	StrCpy "$INSTDIR" "$R1"
-FunctionEnd
-
-Function custom_RunUpdate
-	SetOutPath $INSTDIR
-	Exec "$INSTDIR\ampc-latest.exe"
 FunctionEnd
 
 Section -"Prepare"
@@ -206,14 +197,14 @@ Section -"Prepare"
 	${EndIf}
 
 	DetailPrint "Estableciendo URL de descarga"
-	StrCpy $urlDownloadRelease "https://github.com/hucrea/AMPc/releases/download/$versionAvailableAMPc/ampc-$versionAvailableAMPc\.exe"
+	StrCpy $urlDownloadRelease "https://github.com/hucrea/AMPc/releases/download/$versionAvailableAMPc/ampc-$versionAvailableAMPc.exe"
 	DetailPrint "URL de descarga establecida: $urlDownloadRelease"
 SectionEnd
 
 Section -"Download"
 	DetailPrint "Intentando descargar"
 
-	NScurl::http get "$urlDownloadRelease" "$INSTDIR\ampc-latest.exe" /INSIST /CANCEL /RESUME /END
+	NScurl::http get "$urlDownloadRelease" "$INSTDIR\ampc_for_windows-latest.exe" /INSIST /CANCEL /RESUME /END
 	Pop $0
 	DetailPrint "Resultado: $0"
 
