@@ -1,0 +1,4 @@
+/bin-src/*/*
+!/bin-src/*/files.nsh
+*.exe
+*.tmp
