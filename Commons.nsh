@@ -43,8 +43,8 @@ SetCompressor /SOLID /FINAL lzma
 ;		VER_F_VIP => Version apta para VIProductVersion (no cumple SemVer).
 ;
 !define VER_MAJOR "0"
-!define VER_MENOR "17"
-!define VER_PATCH "102"
+!define VER_MENOR "18"
+!define VER_PATCH "0"
 !define VER_F_VIP "${AMPC_VERSION}.0"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
