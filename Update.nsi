@@ -91,6 +91,7 @@ Var versionCurrentAMPc
 Var versionAvailableAMPc
 Var urlDownloadRelease
 Var urlUpdateINI
+Var remoteHashUpdate
 ;Var proceedUpdate
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -144,6 +145,9 @@ Function .onInit
 
 	; Lee la URL declarada en update.ini para update.ini.
 	ReadINIStr $urlUpdateINI "$PLUGINSDIR\update.ini" "AMPc" "current"
+
+	; Lee la firma HASH SHA-256 de la ultima version disponible.
+	ReadINIStr $remoteHashUpdate "$PLUGINSDIR\update.ini" "AMPc" "hsha256"
 
 	; Compara que la URL declarada sea igual a la URL almacenada en el paquete.
 	StrCmp $urlUpdateINI ${URL_UPDATE_INI} isSameUrl notSameUrl
@@ -203,9 +207,41 @@ Section -"Download"
 		MessageBox MB_OK|MB_ICONEXCLAMATION "Ocurrio un error al intentar descargar la última versión. Reintenta más tarde o visita ${URL_UPDATE} para descargar la última versión disponible."
 		DetailPrint "Detalles del error: $0"
 		DetailPrint "Presiona Cancelar para cerrar."
-		Abort
+		Abort ; Aborta el proceso.
 	${EndIf}
 
 	DetailPrint "Última versión ($versionAvailableAMPc) descargada."
-	DetailPrint "Presione Siguiente para finalizar el asistente de actualización."
+SectionEnd
+
+Section -"CheckIntegrity"
+	DetailPrint "Comprobando integridad de la descarga."
+
+	ClearErrors
+	Crypto::HashFile "SHA2" "$INSTDIR\ampc_for_windows-latest.exe"
+	Pop $R0
+
+	${If} ${Errors}
+		DetailPrint "No se pudo obtener el HASH del archivo descargado."
+		DetailPrint "Detalles del error: $R0"
+		MessageBox MB_OK|MB_ICONEXCLAMATION "No se pudo obtener el HASH para el archivo descargado. Proceso abortado."
+		DetailPrint "Presiona Cancelar para cerrar."
+		Abort ; Aborta el proceso.
+	${EndIf}
+
+	StrCmp $R0 $remoteHashUpdate isSameHash notSameHash
+
+	notSameHash:
+		DetailPrint "Los hash no coinciden."
+		DetailPrint "Hash esperado: $remoteHashUpdate"
+		DetailPrint "Hash obtenido: $R0"
+		MessageBox MB_OK|MB_ICONEXCLAMATION "El hash de la descarga no coincide con el valor obtenido desde update.ini$\n$\nVuelve a ejecutar el actualizador y, si el problema persiste, visita la página de soporte."
+		DetailPrint "Presiona Cancelar para cerrar."
+		Abort ; Aborta el proceso.
+
+	isSameHash:
+	DetailPrint "Los hash coinciden."
+	DetailPrint "Hash esperado: $remoteHashUpdate"
+	DetailPrint "Hash obtenido: $R0"
+
+	DetailPrint "Finalizando asistente."
 SectionEnd
