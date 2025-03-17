@@ -110,7 +110,6 @@ Function .onInit
 	${IfNot} ${RunningX64}
 		MessageBox MB_OK|MB_ICONSTOP "Error inesperado (2000)."
 		Abort
-
 	${EndIf}
 
 	; Evita redirecciones de WOW64 en directorios y registros.
@@ -119,101 +118,94 @@ Function .onInit
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
-
-	DetailPrint "Verificando instalación..."
-	EnumRegKey $R0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" 0
+	ReadRegStr $R1 ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion"
 
 	; No existe instalacion previa.
 	${If} ${Errors}
 		MessageBox MB_OK|MB_ICONINFORMATION "No se ha detectado ninguna versión de AMPc for Windows instalada.$\n$\nSi esto un error y necesitas ayuda, o deseas obtener más información, visita$\n$\n${AMPC_URL}"
-		Abort
-
+		Abort ; Aborta el proceso.
 	${EndIf}
+
+	; Almacena numero de version actual encontrado.
+	StrCpy $versionCurrentAMPc "$R1"
+	
+	; Descarga archivo update.ini desde el repositorio.
+	NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini" /INSIST /CANCEL /RESUME /END
+	Pop $0
+
+	; NScurl devuelve OK solo si todo sale bien.
+	${IfNot} $0 == "OK"
+		MessageBox MB_OK|MB_ICONINFORMATION "Error al descargar update.ini desde la URL:$\n$\n${URL_UPDATE_INI}$\n$\nError devuelto: $0"
+		Abort ; Aborta el proceso.
+	${EndIf}
+
+	; Lee la version declarada como última desde update.ini
+	ReadINIStr $versionAvailableAMPc "$PLUGINSDIR\update.ini" "AMPc" "version"
+
+	; Lee la URL declarada en update.ini para update.ini.
+	ReadINIStr $urlUpdateINI "$PLUGINSDIR\update.ini" "AMPc" "current"
+
+	; Compara que la URL declarada sea igual a la URL almacenada en el paquete.
+	StrCmp $urlUpdateINI ${URL_UPDATE_INI} isSameUrl notSameUrl
+
+	notSameUrl: ; No es la misma URL.
+		MessageBox MB_OK|MB_ICONINFORMATION "Error inesperado (2050)"
+		Abort ; Aborta el proceso.
+	isSameUrl:
+
+	; Compara la version local con la version declarada en update.ini.
+	${VersionCompare} "$versionCurrentAMPc" "$versionAvailableAMPc" $R2
+
+	${If} $R2 == "0"
+	; Esta utilizando la ultima version.
+		MessageBox MB_OK|MB_USERICON "Tienes la última versión disponible.$\n$\n$versionCurrentAMPc (actual) = $versionAvailableAMPc (disponible)"
+		Abort ; Aborta el proceso.
+
+	${ElseIf} $R2 == "1"
+	; La version instalada es superior a la ultima version.
+		MessageBox MB_OK|MB_USERICON "Estas usando una versión en desarrollo.$\n$\n$versionCurrentAMPc (actual) > $versionAvailableAMPc (disponible)"
+		Abort ; Aborta el proceso.
+
+	${ElseIf} $R2 == "2"
+	; La version instalada es inferior a la ultima version.
+   		MessageBox MB_YESNO|MB_USERICON "Hay una actualización disponible.$\n$\n$versionCurrentAMPc (actual) < $versionAvailableAMPc (disponible)$\n$\n¿Descargar la última versión?" IDYES true IDNO false
+		; Usuario rechaza la descarga automatica.
+		false:
+			Abort ; Aborta el proceso.
+		true:
+
+	${Else}
+	; No deberias llegar aqui, pero por si las moscas.
+		MessageBox MB_OK|MB_ICONEXCLAMATION "Error inesperado (2001)."
+		Abort ; Aborta el proceso.
+	${EndIf}
+
 FunctionEnd
 
 Section -"Prepare"
-	DetailPrint "Obteniendo versión instalada..."
-	ReadRegStr $R2 ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion"
-	StrCpy $versionCurrentAMPc "$R2"
-	DetailPrint "Versión encontrada: $versionCurrentAMPc"
-
-	DetailPrint "Obteniendo update.ini actualizado"
-	DetailPrint "URL de consulta: ${URL_UPDATE_INI}"
-    NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini" /INSIST /CANCEL /RESUME /END
-	Pop $0
-
-	${IfNot} $0 == "OK"
-		DetailPrint "No se puede obtener update.ini desde el repositorio."
-		MessageBox MB_OK|MB_ICONINFORMATION "No se pudo obtener información sobre la última versión.$\n$\nURL consultada:$\n$\n${URL_UPDATE_INI}"
-		DetailPrint "Presiona Cancelar para cerrar..."
-		Abort
-	${EndIf}
-
-	DetailPrint "update.ini obtenido, leyendo última versión disponible."
-    ReadINIStr $versionAvailableAMPc "$PLUGINSDIR\update.ini" "AMPc" "version"
-	DetailPrint "Última version disponible: $versionAvailableAMPc"
-
-	DetailPrint "Obteniendo valores de integridad."
-    ReadINIStr $urlUpdateINI "$PLUGINSDIR\update.ini" "AMPc" "current"
-
-	StrCmp $urlUpdateINI ${URL_UPDATE_INI} sameUrl distUrl
-
-	distUrl:
-		DetailPrint "La URL del archivo INI no coincide con la esperada."
-		MessageBox MB_OK|MB_ICONINFORMATION "Error inesperado (2050)"
-		DetailPrint "Presiona Cancelar para cerrar..."
-		Abort
-	sameUrl:
-
-	DetailPrint "Comparando versiones"
-	${VersionCompare} "$versionCurrentAMPc" "$versionAvailableAMPc" $R9
-
-	${If} $R9 == "0"
-		DetailPrint "La versión actualmente instalada es la última versión disponible."
-		MessageBox MB_OK|MB_USERICON "Tienes la última versión disponible.$\n$\nVersión local: $versionCurrentAMPc$\n$\nÚltima versión disponible: $versionAvailableAMPc"
-		DetailPrint "Presiona Cancelar para cerrar..."
-		Abort
-	${ElseIf} $R9 == "1"
-		DetailPrint "La versión actualmente instalada es más mayor (¿versión en desarrollo?) que la última versión disponible."
-		MessageBox MB_OK|MB_USERICON "Estas usando una versión en desarrollo.$\n$\nVersión local: $versionCurrentAMPc$\n$\nÚltima versión disponible: $versionAvailableAMPc"
-		Abort
-	${ElseIf} $R9 == "2"
-		DetailPrint "La versión actualmente instalada esta desactualizada."
-		DetailPrint "URL de descarga encontrada"
-		DetailPrint "Solicitando al usuario consentimiento para descargar última versión."
-   		MessageBox MB_YESNO|MB_USERICON "Hay una actualización disponible.$\n$\n$versionCurrentAMPc < $versionAvailableAMPc$\n$\n¿Descargar la última versión?" IDYES true IDNO false
-		false:
-			DetailPrint "Se ha rechazado la descarga de la actualización."
-			DetailPrint "Presiona Cancelar para cerrar..."
-			Abort
-		true:
-	${Else}
-		DetailPrint "escapa de nuestra comprensión."
-		DetailPrint "Error inesperado, abortando el proceso."
-		MessageBox MB_OK|MB_ICONEXCLAMATION "Error inesperado (2001)."
-		DetailPrint "Presiona Cancelar para cerrar..."
-		Abort
-	${EndIf}
-
-	DetailPrint "Estableciendo URL de descarga"
+	DetailPrint "Estableciendo URL de descarga."
+	
+	; La URL de descarga no se puede establecer via constante.
 	StrCpy $urlDownloadRelease "https://github.com/hucrea/AMPc/releases/download/$versionAvailableAMPc/ampc-$versionAvailableAMPc.exe"
-	DetailPrint "URL de descarga establecida: $urlDownloadRelease"
+	DetailPrint "URL de descarga establecida:$\n$\n$urlDownloadRelease"
 SectionEnd
 
 Section -"Download"
-	DetailPrint "Descargando última versión."
+	DetailPrint "Descargando versión $versionAvailableAMPc"
 
+	; Descarga la ultima version disponbile.
 	NScurl::http get "$urlDownloadRelease" "$INSTDIR\ampc_for_windows-latest.exe" /INSIST /CANCEL /RESUME /END
 	Pop $0
-	DetailPrint "Resultado: $0"
 
+	; NScurl devuelve OK solo si todo sale bien.
 	${IfNot} $0 == "OK"
 		DetailPrint "La descarga no se pudo completar."
 		MessageBox MB_OK|MB_ICONEXCLAMATION "Ocurrio un error al intentar descargar la última versión. Reintenta más tarde o visita ${URL_UPDATE} para descargar la última versión disponible."
+		DetailPrint "Detalles del error: $0"
 		DetailPrint "Presiona Cancelar para cerrar."
 		Abort
 	${EndIf}
 
-	DetailPrint "Última versión descargada."
+	DetailPrint "Última versión ($versionAvailableAMPc) descargada."
 	DetailPrint "Presione Siguiente para finalizar el asistente de actualización."
 SectionEnd
