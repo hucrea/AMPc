@@ -133,7 +133,7 @@ Function .onInit
 	StrCpy $versionCurrentAMPc "$R1"
 	
 	; Descarga archivo update.ini desde el repositorio.
-	NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini" /INSIST /CANCEL /RESUME /END
+	NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini"
 	Pop $0
 
 	; NScurl devuelve OK solo si todo sale bien.
