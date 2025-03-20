@@ -55,7 +55,7 @@ InstallDir "$APPDATA\Hu SpA"
 ;
 ; Descripcion del archivo.
 VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
-VIAddVersionKey /LANG=0 "FileVersion" "${AMPC_VERSION}.${AMPC_VERSION}"
+VIAddVersionKey /LANG=0 "FileVersion" "${AMPC_VERSION}.${PACKAGE_REV}"
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
@@ -133,7 +133,7 @@ Function .onInit
 	StrCpy $versionCurrentAMPc "$R1"
 	
 	; Descarga archivo update.ini desde el repositorio.
-	NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini"
+	NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini" /TIMEOUT 10s /END
 	Pop $0
 
 	; NScurl devuelve OK solo si todo sale bien.
@@ -233,17 +233,17 @@ Section -"CheckIntegrity"
 	StrCmp $R0 $remoteHashUpdate isSameHash notSameHash
 
 	notSameHash:
-		DetailPrint "Los hash no coinciden."
 		DetailPrint "Hash esperado: $remoteHashUpdate"
 		DetailPrint "Hash obtenido: $R0"
+		DetailPrint "Resultado: hash NO coincide."
 		MessageBox MB_OK|MB_ICONEXCLAMATION "El hash de la descarga no coincide con el valor obtenido desde update.ini$\n$\nVuelve a ejecutar el actualizador y, si el problema persiste, visita la página de soporte."
 		DetailPrint "Presiona Cancelar para cerrar."
 		Abort ; Aborta el proceso.
 
 	isSameHash:
-	DetailPrint "Los hash coinciden."
 	DetailPrint "Hash esperado: $remoteHashUpdate"
 	DetailPrint "Hash obtenido: $R0"
+	DetailPrint "Resultado: hash coincide."
 
 	DetailPrint "Finalizando asistente."
 SectionEnd
