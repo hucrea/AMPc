@@ -78,6 +78,7 @@ AllowRootDirInstall true
 ; Detalles del paquete (Archivo EXE > Propiedades > Detalles).
 VIAddVersionKey /LANG=0 "LegalTrademarks" "${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
 VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
+VIAddVersionKey /LANG=0 "FileVersion" "${VER_F_VIP}"
 
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
@@ -743,22 +744,30 @@ Section Uninstall
 	DetailPrint "Deteniendo servicio Apache HTTP"
 	nsExec::ExecToStack /OEM 'net stop Apache2.4'
 	Pop $0
+	Pop $1
 	DetailPrint $0
+	DetailPrint $1
 
 	DetailPrint "Eliminando servicio Apache HTTP"
 	nsExec::ExecToStack /OEM 'sc delete Apache2.4'
 	Pop $0
+	Pop $1
 	DetailPrint $0
+	DetailPrint $1
 
 	DetailPrint "Deteniendo servicio MariaDB"
 	nsExec::ExecToStack /OEM 'net stop MariaDB'
 	Pop $0
+	Pop $1
 	DetailPrint $0
+	DetailPrint $1
 
 	DetailPrint "Eliminando servicio MariaDB"
 	nsExec::ExecToStack /OEM 'sc delete MariaDB'
 	Pop $0
+	Pop $1
 	DetailPrint $0
+	DetailPrint $1
 
 	DetailPrint "Eliminando archivos"
 	Delete "$INSTDIR\${PACKAGE}.url"
