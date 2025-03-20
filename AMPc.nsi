@@ -445,11 +445,6 @@ Section -sectionInit
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${AMPC_VERSION}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VER_BUILD}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall" "$INSTDIR"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
-
-	SetOutPath $INSTDIR
-	SetOverwrite ifdiff
-		File 'update-ampc.exe'
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -544,7 +539,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Apache HTTP Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "Apache HTTP Server (${VERSION_APACHE})" sectionApache
+Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 	LogText "######################"
 	LogText "# Apache HTTP Server #"
 	LogText "######################"
@@ -587,7 +582,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; MariaDB Community Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "MariaDB Community Server (${VERSION_MARIADB})" sectionMariadb
+Section "MariaDB Community Server (${VERSION_MARIADB})" section_Mariadb
 	LogText "############################"
 	LogText "# MariaDB Community Server #"
 	LogText "############################"
@@ -607,8 +602,8 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PHP.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" sectionPhp
-	Section "Núcleo" sectionPhpCore
+SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
+	Section "Núcleo" section_PhpCore
 		LogText "#######################"
 		LogText "#         PHP         #"
 		LogText "#######################"
@@ -644,7 +639,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" sectionPhp
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
 	SectionEnd
 
-	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" sectionCACERT
+	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" section_CACERT
 		LogText "##############################"
 		LogText "#         cacert.pem         #"
 		LogText "##############################"
@@ -665,7 +660,7 @@ SectionGroupEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; phpMyAdmin.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "phpMyAdmin (${VERSION_PMA})" sectionPma
+Section "phpMyAdmin (${VERSION_PMA})" section_Pma
 	LogText "######################"
 	LogText "#     phpMyAdmin     #"
 	LogText "######################"
@@ -683,7 +678,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Adminer.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "Adminer (${VERSION_ADMINER})" sectionAdminer
+Section /O "Adminer (${VERSION_ADMINER})" section_Adminer
 	LogText "######################"
 	LogText "#      Adminer       #"
 	LogText "######################"
@@ -699,29 +694,36 @@ Section /O "Adminer (${VERSION_ADMINER})" sectionAdminer
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
 SectionEnd
 
-/*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Accesos directos en Menu Inicio
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "Accesos directos" sectionShortcut
+; Actualizador
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Section /O "Actualizador" section_Update
 	LogText "######################"
-	LogText "#  Accesos Directos  #"
+	LogText "#  Actualizador	  #"
 	LogText "######################"
-	; Esta seccion no hace nada, por ahora.
+
+	DetailPrint "Instalando Actualizador..."
+
+	SetOutPath $INSTDIR
+	SetOverwrite ifdiff
+		File 'update-ampc.exe'
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
+
 	DetailPrint "Presione Siguiente para continuar"
-SectionEnd*/
+SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Describe las secciones declaradas.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-	!insertmacro MUI_DESCRIPTION_TEXT ${sectionApache} "$(i18n_DESCR_APACHE)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${sectionMariadb} "$(i18n_DESCR_MARIADB)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${sectionPhp} "$(i18n_DESCR_PHP)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${sectionPhpCore} "$(i18n_DESCR_PHP)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${sectionCACERT} "cacert.pem"
-	!insertmacro MUI_DESCRIPTION_TEXT ${sectionPma} "$(i18n_DESCR_PMA)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${sectionAdminer} "$(i18n_DESCR_ADMINER)"
-;	!insertmacro MUI_DESCRIPTION_TEXT ${sectionShortcut} "Crea accesos directos para consolas en el Menú Inicio"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Apache} "$(i18n_DESCR_APACHE)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_PhpCore} "$(i18n_DESCR_PHP)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Update} "Permite actualizar AMPc for Windows"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################
