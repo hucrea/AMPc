@@ -48,6 +48,22 @@ SetCompressor /SOLID /FINAL lzma
 !define VER_F_VIP "${AMPC_VERSION}.0"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
+; VERSION_*
+;	Versiones declarada de los componentes incluidos en la compilacion..
+;		VERSION_APACHE 	=> Apache HTTP Server.
+;		VERSION_MARIADB => MariaDB Community Server.
+;		VERSION_PHP 	=> PHP.
+;		VERSION_PMA 	=> phpMyAdmin.
+;		VERSION_ADMINER => Adminer.
+;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
+;
+!define VERSION_APACHE "2.4.63"
+!define VERSION_MARIADB "11.4.5"
+!define VERSION_PHP "8.3.19"
+!define VERSION_PMA "5.2.2"
+!define VERSION_ADMINER "5.0.5"
+!define VERSION_CACERT "25.02.25"
+;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
 ;	cambiadas para evitar problemas tecnicos y legales.

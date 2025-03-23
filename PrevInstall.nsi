@@ -20,7 +20,7 @@ with AMPc for Windows. If not, see <https://www.gnu.org/licenses/>.
 
 -------------------------------------------------------------------------------
 
-AMPc.nsi - Archivo principal del paquete.
+PrevInstall.nsi - Gestiona actualizaciones del paquete.
 
 NOTAS:
 + Algunas constantes estan ubicadas en el archivo Commons.nsi y son
@@ -32,11 +32,9 @@ NOTAS:
 ###############################################################################
 ; CONSTANTES DEL PAQUETE.
 ###############################################################################
+;
 ; PACKAGE - Nombre del paquete a compilar.
 !define PACKAGE "AMPc for Windows"
-;
-; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
-!define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe" ;
 ;
 ; Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
 !include "Commons.nsh"
@@ -44,14 +42,15 @@ NOTAS:
 ###############################################################################
 ; DETALLES DE LA COMPILACION ACTUAL.
 ###############################################################################
+;
 ; Nombre del instalador EXE compilado.
-OutFile "ampc-${VER_BUILD}.exe"
+OutFile "ampc-update-to-${SEMAMPC_VERSION}.exe"
 InstallDir "$PROGRAMFILES\AMPc"
 ;
-; Detalles durante la instalacion.
+; Ruta de instalacion de el Paquete.
 ShowInstDetails hide
 ;
-; Detalles durante la desinstalacion.
+; Permitir mostrar detalles durante instalacion.
 ShowUnInstDetails hide
 ;
 ; Habilita instalacion en carpeta raiz.
