@@ -35,6 +35,9 @@ NOTAS:
 ; PACKAGE - Nombre del paquete a compilar.
 !define PACKAGE "AMPc for Windows"
 ;
+; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
+!define VER_F_VIP "${AMPC_VERSION}.0"
+;
 ; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe" ;
 ;
@@ -60,7 +63,6 @@ AllowRootDirInstall true
 ; Detalles del paquete (Archivo EXE > Propiedades > Detalles).
 VIAddVersionKey /LANG=0 "LegalTrademarks" "${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
 VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
-VIAddVersionKey /LANG=0 "FileVersion" "${VER_F_VIP}"
 
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
@@ -73,12 +75,18 @@ Var mariadbConfigPass ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var mariadbConfigCheck ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var mariadbConfigPort ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
-var pathApache ; Almacena ruta de instalacion para Apache.
-var pathMariadb ; Almacena ruta de instalacion para MariaDB.
-var pathPhp ; Almacena ruta de instalacion para PHP.
-var pathCACERT ; Almacena ruta de instalacion para ca-cert.
-var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
-var pathAdminer ; Almacena ruta de instalacion para Adminer.
+Var pathApache ; Almacena ruta de instalacion para Apache.
+Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
+Var pathPhp ; Almacena ruta de instalacion para PHP.
+Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
+Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
+Var pathAdminer ; Almacena ruta de instalacion para Adminer.
+Var versionApache
+Var versionMariadb
+Var versionPhp
+Var versionCACERT
+Var versionPMA
+Var versionAdminer
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
@@ -164,6 +172,7 @@ Function .onInit
 	; Inicializa instalador.
 	!insertmacro MUI_LANGDLL_DISPLAY
 
+	# INSTALACION PREVIA
 	; Inicializa variables.
 	StrCpy $pathApache "unknow"
 	StrCpy $pathMariadb "unknow"
@@ -171,10 +180,15 @@ Function .onInit
 	StrCpy $pathCACERT "unknow"
 	StrCpy $pathPMA "unknow"
 	StrCpy $pathAdminer "unknow"
+	StrCpy $versionApache "undefined"
+	StrCpy $versionMariadb "undefined"
+	StrCpy $versionPhp "undefined"
+	StrCpy $versionCACERT "undefined"
+	StrCpy $versionPMA "undefined"
+	StrCpy $versionAdminer "undefined"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
-
 	EnumRegKey $R0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" 0
 
 	; No existe instalacion previa.
@@ -187,10 +201,66 @@ Function .onInit
 
 	; Existe instalacion previa.
 	${Else}
+		StrCpy $prevInstallAMPc "yes"
+		
 		; Lee la ruta de la instalacion actual.
+		ClearErrors
 		ReadRegStr $R1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
-		StrCpy "$INSTDIR" "$R1"
 
+		${IfNot} ${Errors}
+			StrCpy "$INSTDIR" "$R1"
+		${EndIf}
+
+		; Lee la ruta de la instalacion actual de cada componente.
+		ClearErrors ; Apache.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathApache"
+		${IfNot} ${Errors}
+			StrCpy "$versionApache" "$0"
+			StrCpy "$pathApache" "$1"
+		${EndIf}
+
+		ClearErrors ; Mariadb.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariaDb"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariaDb"
+		${IfNot} ${Errors}
+			StrCpy "$versionMariadb" "$0"
+			StrCpy "$pathMariadb" "$1"
+		${EndIf}
+
+		ClearErrors ; Php.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp"
+		${IfNot} ${Errors}
+			StrCpy "$versionPhp" "$0"
+			StrCpy "$pathPhp" "$1"
+		${EndIf}
+
+		ClearErrors ; pMA.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA"
+		${IfNot} ${Errors}
+			StrCpy "$versionPMA" "$0"
+			StrCpy "$pathPMA" "$1"
+		${EndIf}
+
+		ClearErrors ; Adminer.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer"
+		${IfNot} ${Errors}
+			StrCpy "$versionAdminer" "$0"
+			StrCpy "$pathAdminer" "$1"
+		${EndIf}
+
+		ClearErrors ; cacert.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT"
+		${IfNot} ${Errors}
+			StrCpy "$versionCACERT" "$0"
+			StrCpy "$pathCACERT" "$1"
+		${EndIf}
+
+		MessageBox MB_OK|MB_ICONQUESTION "Apache: {Version: $versionApache; Path: $pathApache$\n$\nMariadb: {Version: $versionMariadb; Path: $pathMariadb$\n$\nPHP: {Version: $versionPhp; Path: $pathPhp$\n$\nPMA: {Version: $versionPma; Path: $pathPma$\n$\ncacert: {Version: $versionCACERT; Path: $pathCACERT$\n$\nAdminer: {Version: $versionAdminer; Path: $pathAdminer$\n$\n"
 	${EndIf}
 FunctionEnd
 

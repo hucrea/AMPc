@@ -40,12 +40,10 @@ SetCompressor /SOLID /FINAL lzma
 ;		VER_MENOR => Version menor.
 ;		VER_PATCH => Version parche.
 ;		VER_BUILD => Version de la compilacion.
-;		VER_F_VIP => Version apta para VIProductVersion (no cumple SemVer).
 ;
 !define VER_MAJOR "0"
 !define VER_MENOR "18"
-!define VER_PATCH "1"
-!define VER_F_VIP "${AMPC_VERSION}.0"
+!define VER_PATCH "2"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
 ; VERSION_*
@@ -123,7 +121,8 @@ RequestExecutionLevel admin
 ;
 ; Informacion de Version.
 VIProductVersion "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "FileVersion" "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "ProductVersion" "${VER_F_VIP}"
 VIAddVersionKey /LANG=0 "ProductName" "${PACKAGE}"
 VIAddVersionKey /LANG=0 "CompanyName" "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
 VIAddVersionKey /LANG=0 "LegalCopyright" "© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "ProductVersion" "${VER_F_VIP}"

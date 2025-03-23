@@ -32,7 +32,9 @@ NOTAS:
 ;
 ; PACKAGE - Nombre del paquete a compilar.
 !define PACKAGE "Update AMPc for Windows"
-!define PACKAGE_REV "1"
+;
+; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
+!define VER_F_VIP "${AMPC_VERSION}.1"
 ;
 ; URL_CURRENT_INI - URL para consultar ultima version publicada.
 !define URL_UPDATE_INI "https://raw.githubusercontent.com/hucrea/AMPc/main/update.ini"
@@ -55,7 +57,6 @@ InstallDir "$APPDATA\Hu SpA"
 ;
 ; Descripcion del archivo.
 VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
-VIAddVersionKey /LANG=0 "FileVersion" "${AMPC_VERSION}.${PACKAGE_REV}"
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
