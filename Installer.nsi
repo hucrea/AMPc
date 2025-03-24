@@ -20,7 +20,17 @@ with AMPc for Windows. If not, see <https://www.gnu.org/licenses/>.
 
 -------------------------------------------------------------------------------
 
-AMPc.nsi - Archivo principal del paquete.
+Installer.nsi - Archivo principal del instalador.
+
+Para que tanto instalacion como actualización del paquete sean una mejor
+experiencia, el proceso de instalacion actual se debe mejorar. Para consultar
+mas detalles, puede consultar el ticket asociado:
+	https://github.com/hucrea/AMPc/issues/4
+
+Este archivo consituye una revisión completa al archivo AMPc.nsi a fin de
+mejorar la experiencia de instalación y actualización del paquete.
+
+IMPORTANTE: ACTUALMENTE NO COMPILABLE.
 
 NOTAS:
 + Algunas constantes estan ubicadas en el archivo Commons.nsi y son
@@ -28,7 +38,7 @@ NOTAS:
 + Todos los caracteres especiales se han omitido para mayor compatibilidad.
 
 */
-
+!error "No apto para compilar."
 ###############################################################################
 ; CONSTANTES DEL PAQUETE.
 ###############################################################################
@@ -36,9 +46,10 @@ NOTAS:
 !define PACKAGE "AMPc for Windows"
 ;
 ; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
-!define VER_F_VIP "${AMPC_VERSION}.0"
+!define VER_F_VIP "${AMPC_VERSION}.2"
 ;
 ; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
+; https://learn.microsoft.com/es-es/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe" ;
 ;
 ; Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
@@ -48,14 +59,14 @@ NOTAS:
 ; DETALLES DE LA COMPILACION ACTUAL.
 ###############################################################################
 ; Nombre del instalador EXE compilado.
-OutFile "ampc-${VER_BUILD}.exe"
+OutFile "ampc-${VER_F_VIP}.exe"
 InstallDir "$PROGRAMFILES\AMPc"
 ;
 ; Detalles durante la instalacion.
-ShowInstDetails hide
+ShowInstDetails show
 ;
 ; Detalles durante la desinstalacion.
-ShowUnInstDetails hide
+ShowUnInstDetails show
 ;
 ; Habilita instalacion en carpeta raiz.
 AllowRootDirInstall true
@@ -67,14 +78,14 @@ VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
 ###############################################################################
-Var prevInstallAMPc ; Usada para verificar si existe instalacion previa.
 Var backSlashInstDir ; Ver Functions.nsh, funcion func_ReplaceSlash.
+Var prevInstallAMPc ; Usada para verificar si existe instalacion previa.
+Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
 Var apacheConfigServerName ; Usada por custom_PageApache y leave_PageApache.
 Var apacheConfigPort ; Usada por custom_PageApache y leave_PageApache.
 Var mariadbConfigPass ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var mariadbConfigCheck ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var mariadbConfigPort ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
 Var pathApache ; Almacena ruta de instalacion para Apache.
 Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
 Var pathPhp ; Almacena ruta de instalacion para PHP.
@@ -118,18 +129,22 @@ Var versionAdminer
 ; Proceso de instalacion.
 !insertmacro MUI_PAGE_LICENSE "media-src\license.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_COMPONENTS
-!define MUI_FINISHPAGE_NOAUTOCLOSE
-!insertmacro MUI_PAGE_INSTFILES
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW func_DisableBackButton
+Page Custom custom_PageAMPc leave_PageAMPc
 Page Custom custom_PageApache leave_PageApache
 Page Custom custom_PageMariadb leave_PageMariadb
-!define MUI_PAGE_CUSTOMFUNCTION_SHOW func_DisableBackButton
+Page Custom custom_PagePHP leave_PagePHP
+Page Custom custom_PagePMA leave_PagePMA
+Page Custom custom_PageAdminer leave_PageAdminer
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+!insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_FINISH
 
 ; Proceso de desinstalacion.
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 !insertmacro MUI_UNPAGE_CONFIRM
+Page Custom un.custom_PageUninstall leave_PageUninstall
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
@@ -156,8 +171,6 @@ Function .onInit
 	Pop $0
 	Delete "$PLUGINSDIR\splash.bmp"
 
-	SetOutPath $INSTDIR
-
 	; Verifica que arquitectura del sistema anfitrion sea x64.
 	${IfNot} ${RunningX64}
 		MessageBox MB_OK|MB_ICONSTOP "$(i18n_32BITS_NOTSUPPORT).$\n$\n$(i18n_INSTALL_CANNOT)"
@@ -174,18 +187,18 @@ Function .onInit
 
 	# INSTALACION PREVIA
 	; Inicializa variables.
-	StrCpy $pathApache "unknow"
-	StrCpy $pathMariadb "unknow"
-	StrCpy $pathPhp "unknow"
-	StrCpy $pathCACERT "unknow"
-	StrCpy $pathPMA "unknow"
-	StrCpy $pathAdminer "unknow"
-	StrCpy $versionApache "undefined"
-	StrCpy $versionMariadb "undefined"
-	StrCpy $versionPhp "undefined"
-	StrCpy $versionCACERT "undefined"
-	StrCpy $versionPMA "undefined"
-	StrCpy $versionAdminer "undefined"
+	StrCpy $pathApache "false"
+	StrCpy $pathMariadb "false"
+	StrCpy $pathPhp "false"
+	StrCpy $pathCACERT "false"
+	StrCpy $pathPMA "false"
+	StrCpy $pathAdminer "false"
+	StrCpy $versionApache "false"
+	StrCpy $versionMariadb "false"
+	StrCpy $versionPhp "false"
+	StrCpy $versionCACERT "false"
+	StrCpy $versionPMA "false"
+	StrCpy $versionAdminer "false"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
@@ -209,6 +222,57 @@ Function .onInit
 		${IfNot} ${Errors}
 			StrCpy "$INSTDIR" "$R1"
 		${EndIf}
+
+		; Lee la ruta de la instalacion actual de cada componente.
+		ClearErrors ; Apache.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathApache"
+		${IfNot} ${Errors}
+			StrCpy "$versionApache" "$0"
+			StrCpy "$pathApache" "$1"
+		${EndIf}
+
+		ClearErrors ; Mariadb.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariaDb"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariaDb"
+		${IfNot} ${Errors}
+			StrCpy "$versionMariadb" "$0"
+			StrCpy "$pathMariadb" "$1"
+		${EndIf}
+
+		ClearErrors ; Php.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp"
+		${IfNot} ${Errors}
+			StrCpy "$versionPhp" "$0"
+			StrCpy "$pathPhp" "$1"
+		${EndIf}
+
+		ClearErrors ; pMA.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA"
+		${IfNot} ${Errors}
+			StrCpy "$versionPMA" "$0"
+			StrCpy "$pathPMA" "$1"
+		${EndIf}
+
+		ClearErrors ; Adminer.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer"
+		${IfNot} ${Errors}
+			StrCpy "$versionAdminer" "$0"
+			StrCpy "$pathAdminer" "$1"
+		${EndIf}
+
+		ClearErrors ; cacert.
+		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT"
+		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT"
+		${IfNot} ${Errors}
+			StrCpy "$versionCACERT" "$0"
+			StrCpy "$pathCACERT" "$1"
+		${EndIf}
+
+		MessageBox MB_OK|MB_ICONQUESTION "Apache: {Version: $versionApache; Path: $pathApache$\n$\nMariadb: {Version: $versionMariadb; Path: $pathMariadb$\n$\nPHP: {Version: $versionPhp; Path: $pathPhp$\n$\nPMA: {Version: $versionPma; Path: $pathPma$\n$\ncacert: {Version: $versionCACERT; Path: $pathCACERT$\n$\nAdminer: {Version: $versionAdminer; Path: $pathAdminer$\n$\n"
 	${EndIf}
 FunctionEnd
 
@@ -446,24 +510,6 @@ Section -sectionInit
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${AMPC_VERSION}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VER_BUILD}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall" "$INSTDIR"
-SectionEnd
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Actualizador
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "Actualizador" section_Update
-	LogText "######################"
-	LogText "#  Actualizador	  #"
-	LogText "######################"
-
-	DetailPrint "Instalando Actualizador..."
-
-	SetOutPath $INSTDIR
-	SetOverwrite ifdiff
-		File 'bin-src\ampc\update-ampc.exe'
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
-
-	DetailPrint "Presione Siguiente para continuar"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -711,6 +757,24 @@ Section /O "Adminer (${VERSION_ADMINER})" section_Adminer
 	
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer" "${VERSION_ADMINER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
+SectionEnd
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Actualizador
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Section /O "Actualizador" section_Update
+	LogText "######################"
+	LogText "#  Actualizador	  #"
+	LogText "######################"
+
+	DetailPrint "Instalando Actualizador..."
+
+	SetOutPath $INSTDIR
+	SetOverwrite ifdiff
+		File 'update-ampc.exe'
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
+
+	DetailPrint "Presione Siguiente para continuar"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

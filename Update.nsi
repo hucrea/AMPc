@@ -47,7 +47,7 @@ NOTAS:
 ###############################################################################
 ;
 ; Nombre del instalador EXE compilado.
-OutFile "update-ampc.exe"
+OutFile "bin-src\ampc\update-ampc.exe"
 ;
 ; Permitir mostrar detalles durante instalacion.
 ShowInstDetails show
