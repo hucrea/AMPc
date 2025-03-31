@@ -46,7 +46,7 @@ NOTAS:
 !define PACKAGE "AMPc for Windows"
 ;
 ; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
-!define VER_F_VIP "${AMPC_VERSION}.2"
+!define VER_F_VIP "${AMPC_VERSION}.10"
 ;
 ; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
 ; https://learn.microsoft.com/es-es/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version
@@ -78,26 +78,27 @@ VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
 ###############################################################################
-Var backSlashInstDir ; Ver Functions.nsh, funcion func_ReplaceSlash.
-Var prevInstallAMPc ; Usada para verificar si existe instalacion previa.
-Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
-Var apacheConfigServerName ; Usada por custom_PageApache y leave_PageApache.
-Var apacheConfigPort ; Usada por custom_PageApache y leave_PageApache.
-Var mariadbConfigPass ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigCheck ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigPort ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var pathApache ; Almacena ruta de instalacion para Apache.
-Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
-Var pathPhp ; Almacena ruta de instalacion para PHP.
-Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
-Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
-Var pathAdminer ; Almacena ruta de instalacion para Adminer.
-Var versionApache
-Var versionMariadb
-Var versionPhp
-Var versionCACERT
-Var versionPMA
-Var versionAdminer
+Var backSlashInstDir
+Var is_prevInstall
+Var is_VCRedistx64
+Var apache_path
+Var apache_version
+Var apache_configServerName
+Var apache_configDocumentRoot
+Var apache_configPort
+Var mariadb_path
+Var mariadb_version
+Var mariadb_configPass
+Var mariadb_configCheckPass
+Var mariadb_configPort
+Var php_path
+Var php_version
+Var cacert_path
+Var cacert_version
+Var pma_path
+Var pma_version
+Var adminer_path
+Var adminer_version
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
@@ -144,7 +145,7 @@ Page Custom custom_PageAdminer leave_PageAdminer
 ; Proceso de desinstalacion.
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 !insertmacro MUI_UNPAGE_CONFIRM
-Page Custom un.custom_PageUninstall leave_PageUninstall
+;Page Custom un.custom_PageUninstall leave_PageUninstall
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
@@ -187,18 +188,18 @@ Function .onInit
 
 	# INSTALACION PREVIA
 	; Inicializa variables.
-	StrCpy $pathApache "false"
-	StrCpy $pathMariadb "false"
-	StrCpy $pathPhp "false"
-	StrCpy $pathCACERT "false"
-	StrCpy $pathPMA "false"
-	StrCpy $pathAdminer "false"
-	StrCpy $versionApache "false"
-	StrCpy $versionMariadb "false"
-	StrCpy $versionPhp "false"
-	StrCpy $versionCACERT "false"
-	StrCpy $versionPMA "false"
-	StrCpy $versionAdminer "false"
+	StrCpy $apache_version "none"
+	StrCpy $apache_path "unset"
+	StrCpy $mariadb_version "none"
+	StrCpy $mariadb_path "unset"
+	StrCpy $php_version "none"
+	StrCpy $php_path "unset"
+	StrCpy $cacert_version "none"
+	StrCpy $cacert_path "unset"
+	StrCpy $pma_version "none"
+	StrCpy $pma_path "unset"
+	StrCpy $adminer_version "none"
+	StrCpy $adminer_path "unset"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
@@ -206,7 +207,7 @@ Function .onInit
 
 	; No existe instalacion previa.
 	${If} ${Errors}
-		StrCpy $prevInstallAMPc "none"
+		StrCpy $is_prevInstall "none"
 
 		; Establece la ruta de instalacion en la unidad raiz de Windows.
 		StrCpy "$INSTDIR" "$WINDIR" 2
@@ -214,7 +215,7 @@ Function .onInit
 
 	; Existe instalacion previa.
 	${Else}
-		StrCpy $prevInstallAMPc "yes"
+		StrCpy $is_prevInstall "yes"
 		
 		; Lee la ruta de la instalacion actual.
 		ClearErrors
@@ -228,51 +229,50 @@ Function .onInit
 		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache"
 		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathApache"
 		${IfNot} ${Errors}
-			StrCpy "$versionApache" "$0"
-			StrCpy "$pathApache" "$1"
+			StrCpy "$apache_version" "$0"
+			StrCpy "$apache_path" "$1"
 		${EndIf}
 
 		ClearErrors ; Mariadb.
 		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariaDb"
 		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariaDb"
 		${IfNot} ${Errors}
-			StrCpy "$versionMariadb" "$0"
-			StrCpy "$pathMariadb" "$1"
+			StrCpy "$mariadb_version" "$0"
+			StrCpy "$mariadb_path" "$1"
 		${EndIf}
 
 		ClearErrors ; Php.
 		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp"
 		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp"
 		${IfNot} ${Errors}
-			StrCpy "$versionPhp" "$0"
-			StrCpy "$pathPhp" "$1"
+			StrCpy "$php_version" "$0"
+			StrCpy "$php_path" "$1"
 		${EndIf}
 
 		ClearErrors ; pMA.
 		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA"
 		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA"
 		${IfNot} ${Errors}
-			StrCpy "$versionPMA" "$0"
-			StrCpy "$pathPMA" "$1"
+			StrCpy "$pma_version" "$0"
+			StrCpy "$pma_path" "$1"
 		${EndIf}
 
 		ClearErrors ; Adminer.
 		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer"
 		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer"
 		${IfNot} ${Errors}
-			StrCpy "$versionAdminer" "$0"
-			StrCpy "$pathAdminer" "$1"
+			StrCpy "$adminer_version" "$0"
+			StrCpy "$adminer_path" "$1"
 		${EndIf}
 
 		ClearErrors ; cacert.
 		ReadRegStr $0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT"
 		ReadRegStr $1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT"
 		${IfNot} ${Errors}
-			StrCpy "$versionCACERT" "$0"
-			StrCpy "$pathCACERT" "$1"
+			StrCpy "$cacert_version" "$0"
+			StrCpy "$cacert_path" "$1"
 		${EndIf}
 
-		MessageBox MB_OK|MB_ICONQUESTION "Apache: {Version: $versionApache; Path: $pathApache$\n$\nMariadb: {Version: $versionMariadb; Path: $pathMariadb$\n$\nPHP: {Version: $versionPhp; Path: $pathPhp$\n$\nPMA: {Version: $versionPma; Path: $pathPma$\n$\ncacert: {Version: $versionCACERT; Path: $pathCACERT$\n$\nAdminer: {Version: $versionAdminer; Path: $pathAdminer$\n$\n"
 	${EndIf}
 FunctionEnd
 
@@ -285,7 +285,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function custom_PageApache
 	; Mostrar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $is_prevInstall == "none"
 		nsDialogs::Create 1018
 			Pop $0
 
@@ -313,7 +313,7 @@ FunctionEnd
 
 Function leave_PageApache ; Funcion de salida para custom_PageApache.
 	; Ejecutar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $is_prevInstall == "none"
 		LogText "####################"
 		LogText "# leave_PageApache #"
 		LogText "####################"
@@ -376,7 +376,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function custom_PageMariadb
 	; Mostrar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $is_prevInstall == "none"
 		nsDialogs::Create 1018
 			LogText "######################"
 			LogText "# custom_PageMariadb #"
@@ -406,7 +406,7 @@ FunctionEnd
 
 Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
 	; Ejecutar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $is_prevInstall == "none"
 		LogText "#####################"
 		LogText "# leave_PageMariaDB #"
 		LogText "#####################"
@@ -459,7 +459,7 @@ Section -sectionInit
 	LogText "${PACKAGE} ${AMPC_VERSION}"
 	LogText "${COMPILED_STAMP}"
 
-	${If} $prevInstallAMPc == "none"
+	${If} $is_prevInstall == "none"
 		; Si es una instalacion nueva, se crea el directorio.
 		; El directorio se crea inmediatamente para asegurar que el LOG tenga donde
 		; almacenarse y, asi, se registre todo el proceso de instalacion.
@@ -627,7 +627,7 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 	SetOutPath "$pathApache\conf"
 		File "config-src\httpd.conf"
 
-	${If} $prevInstallAMPc == "none"
+	${If} $is_prevInstall == "none"
 		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 		; configuracion httpd.conf de Apache HTTP.
 		Push '___AMPC_PATH___'
@@ -687,7 +687,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 		SetOutPath "$INSTDIR\htdocs"
 			File "www-src\phpinfo.php"
 
-		${If} $prevInstallAMPc == "none"
+		${If} $is_prevInstall == "none"
 			; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 			; configuracion php.ini de PHP.
 			Push '___AMPC_PATH___'

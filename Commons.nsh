@@ -31,8 +31,10 @@ CommonsConstants.nsh - Constantes comunes entre archivos *.NSI del proyecto.
 SetCompressor /SOLID /FINAL lzma
 ;
 ; Establece marcas de tiempo para la compilacion actual.
-!define /date TIME_STAMP "%Y%m%d_%H%M%S" ; Fecha build (AAAAMMDD_HHMMSS).
-!define COMPILED_STAMP "Compiled at ${__TIME__} on ${__DATE__}"
+;   TIME_STAMP      => Marca numerica formato {anno}{mes}{dia}{hora}{min}{seg}
+;   COMPILE_STAMP   => Marca para utilizar en BrandingText.
+!define /date TIME_STAMP    "%Y%m%d%H%M%S"
+!define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}"
 ;
 ; VER_*
 ;	Versionado de AMPc.
@@ -54,13 +56,15 @@ SetCompressor /SOLID /FINAL lzma
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
 ;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
+;       VERSION_LIBCURL => cURL.
 ;
-!define VERSION_APACHE "2.4.63"
+!define VERSION_APACHE  "2.4.63"
 !define VERSION_MARIADB "11.4.5"
-!define VERSION_PHP "8.3.19"
-!define VERSION_PMA "5.2.2"
+!define VERSION_PHP     "8.3.19"
+!define VERSION_PMA     "5.2.2"
 !define VERSION_ADMINER "5.0.5"
-!define VERSION_CACERT "25.02.25"
+!define VERSION_CACERT  "25.02.25"
+;!define VERSION_CURL    "8.6.0"
 ;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
@@ -72,20 +76,20 @@ SetCompressor /SOLID /FINAL lzma
 ;		AMPC_PUBLISHER_URL	    => Direccion web del publicador
 ;		AMPC_PUBLISHER_COUNTRY  => Pais del publicador.
 ;
-!define AMPC_VERSION "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
-!define AMPC_GUID "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}" ; PRODUCCION.
-!define AMPC_URL "https://github.com/hucrea/AMPc"
-!define AMPC_PUBLISHER "Hu SpA"
-!define AMPC_PUBLISHER_URL "https://hucreativa.cl"
-!define AMPC_PUBLISHER_COUNTRY "Chile"
+!define AMPC_VERSION            "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
+!define AMPC_GUID               "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
+!define AMPC_URL                "https://github.com/hucrea/AMPc"
+!define AMPC_PUBLISHER          "Hu SpA"
+!define AMPC_PUBLISHER_URL      "https://hucreativa.cl"
+!define AMPC_PUBLISHER_COUNTRY  "Chile"
 ;
 ; URL_*
 ;	Direcciones web utilizadas por el paquete.
 ;		URL_UPDATE		=> Consultar nuevas versiones del paquete.
 ;		URL_HELP 		=> Ayuda sobre el paquete.
 ;
-!define URL_UPDATE "${AMPC_URL}/releases"
-!define URL_HELP "${AMPC_URL}/wiki"
+!define URL_UPDATE  "${AMPC_URL}/releases"
+!define URL_HELP    "${AMPC_URL}/wiki"
 ;
 ; REGKEY_*
 ;	Claves del registro.
@@ -93,9 +97,9 @@ SetCompressor /SOLID /FINAL lzma
 ;		REGKEY_PACKAGE 	=> Ruta regedit del instalador.
 ;		REGKEY_UNINST 	=> Ruta regedit del desinstalador.
 ;
-!define REGKEY_ROOT "HKLM"
-!define REGKEY_PACKAGE "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
-!define REGKEY_UNINST "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
+!define REGKEY_ROOT     "HKLM"
+!define REGKEY_PACKAGE  "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
+!define REGKEY_UNINST   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
 
 ###############################################################################
 ; PREFERENCIAS DE LA COMPILACION.
@@ -121,8 +125,8 @@ RequestExecutionLevel admin
 ;
 ; Informacion de Version.
 VIProductVersion "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "FileVersion" "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "ProductVersion" "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "ProductName" "${PACKAGE}"
-VIAddVersionKey /LANG=0 "CompanyName" "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalCopyright" "© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
+VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"

@@ -81,12 +81,6 @@ Var pathPhp ; Almacena ruta de instalacion para PHP.
 Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
 Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
 Var pathAdminer ; Almacena ruta de instalacion para Adminer.
-Var versionApache
-Var versionMariadb
-Var versionPhp
-Var versionCACERT
-Var versionPMA
-Var versionAdminer
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
@@ -100,13 +94,13 @@ Var versionAdminer
 
 ; Configuracion de la instalacion.
 !define MUI_ABORTWARNING
-!define MUI_ICON "media-src\icon-install.ico"
-!define MUI_UNICON "media-src\icon-uninstall.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-install.bmp"
+!define MUI_ICON "media-src\ampc_install.ico"
+!define MUI_UNICON "media-src\ampc_uninstall.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "media-src\banner-uninstall.bmp"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "media-src\header-install.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP "media-src\header-uninstall.bmp"
+!define MUI_HEADERIMAGE_BITMAP "media-src\header.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP "media-src\header.bmp"
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "$(i18n_FINISHPAGE_RUN)"
 !define MUI_FINISHPAGE_RUN_FUNCTION func_StartServices
@@ -151,10 +145,10 @@ Function .onInit
 
 	; Splash al iniciar el instalador.
 	SetOutPath $PLUGINSDIR
-  	File /oname=splash.bmp "media-src\splash.bmp"
-	splash::show 1750 "$PLUGINSDIR\splash"
+  	File "media-src\splash-install.bmp"
+	splash::show 1750 "$PLUGINSDIR\splash-install"
 	Pop $0
-	Delete "$PLUGINSDIR\splash.bmp"
+	Delete "$PLUGINSDIR\splash-install.bmp"
 
 	SetOutPath $INSTDIR
 
@@ -180,12 +174,6 @@ Function .onInit
 	StrCpy $pathCACERT "unknow"
 	StrCpy $pathPMA "unknow"
 	StrCpy $pathAdminer "unknow"
-	StrCpy $versionApache "undefined"
-	StrCpy $versionMariadb "undefined"
-	StrCpy $versionPhp "undefined"
-	StrCpy $versionCACERT "undefined"
-	StrCpy $versionPMA "undefined"
-	StrCpy $versionAdminer "undefined"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
@@ -575,7 +563,7 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 
 	SetOverwrite off
 		File "www-src\index.html"
-		File /oname=favicon.ico media-src\icon-install.ico
+		File /oname=favicon.ico media-src\ampc.ico
 	SetOutPath "$INSTDIR\htdocs\cgi-bin"
 		File "www-src\printenv.pl"
 	SetOutPath "$pathApache\conf"
@@ -733,6 +721,15 @@ SectionEnd
 
 ; Al iniciar desinstalacion.
 Function un.onInit
+	InitPluginsDir
+
+	; Splash al iniciar el desinstalador.
+	SetOutPath $PLUGINSDIR
+  	File "media-src\splash-uninstall.bmp"
+	splash::show 1750 "$PLUGINSDIR\splash-uninstall"
+	Pop $0
+	Delete "$PLUGINSDIR\splash-uninstall.bmp"
+
 	SetRegView 64
 	!insertmacro MUI_UNGETLANGUAGE
 	MessageBox MB_ICONINFORMATION|MB_OK "Vas a desinstalar ${PACKAGE}.$\n$\n \
