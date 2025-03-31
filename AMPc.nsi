@@ -78,6 +78,7 @@ Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
 Var pathApache ; Almacena ruta de instalacion para Apache.
 Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
 Var pathPhp ; Almacena ruta de instalacion para PHP.
+Var pathLIBCURL ; Almacena ruta de instalacion para libcurl.
 Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
 Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
 Var pathAdminer ; Almacena ruta de instalacion para Adminer.
@@ -171,6 +172,7 @@ Function .onInit
 	StrCpy $pathApache "unknow"
 	StrCpy $pathMariadb "unknow"
 	StrCpy $pathPhp "unknow"
+	StrCpy $pathLIBCURL "unknow"
 	StrCpy $pathCACERT "unknow"
 	StrCpy $pathPMA "unknow"
 	StrCpy $pathAdminer "unknow"
@@ -439,7 +441,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Actualizador
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "Actualizador" section_Update
+Section "Actualizador" section_Update
 	LogText "######################"
 	LogText "#  Actualizador	  #"
 	LogText "######################"
@@ -450,8 +452,6 @@ Section /O "Actualizador" section_Update
 	SetOverwrite ifdiff
 		File 'bin-src\ampc\update-ampc.exe'
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
-
-	DetailPrint "Presione Siguiente para continuar"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -646,6 +646,22 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
 	SectionEnd
 
+	Section "libcurl (${VERSION_LIBCURL})" section_Libcurl
+		LogText "##############################"
+		LogText "#           libcurl          #"
+		LogText "##############################"
+
+		StrCpy $pathLIBCURL "$COMMONFILES64\AMPc"
+
+		SetOverwrite ifdiff
+		SetOutPath "$pathLIBCURL"
+			File "bin-src\libcurl\libcurl_a.lib"
+			File "bin-src\libcurl\libcurl_a.pdb"
+
+		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionLIBCURL" "${VERSION_LIBCURL}"
+		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathLIBCURL" "$pathLIBCURL"
+	SectionEnd
+
 	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" section_CACERT
 		LogText "##############################"
 		LogText "#         cacert.pem         #"
@@ -713,6 +729,7 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Update} "Permite actualizar AMPc for Windows"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Libcurl} "libcurl ${VERSION_LIBCURL} binary PHP"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################

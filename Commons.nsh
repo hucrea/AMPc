@@ -31,9 +31,9 @@ CommonsConstants.nsh - Constantes comunes entre archivos *.NSI del proyecto.
 SetCompressor /SOLID /FINAL lzma
 ;
 ; Establece marcas de tiempo para la compilacion actual.
-;   TIME_STAMP      => Marca numerica formato {anno}{mes}{dia}{hora}{min}{seg}
+;   TIME_STAMP      => Marca numerica formato {anno}{mes}{dia}_{hora}{min}{seg}
 ;   COMPILE_STAMP   => Marca para utilizar en BrandingText.
-!define /date TIME_STAMP    "%Y%m%d%H%M%S"
+!define /date TIME_STAMP    "%Y%m%d_%H%M%S"
 !define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}"
 ;
 ; VER_*
@@ -44,8 +44,8 @@ SetCompressor /SOLID /FINAL lzma
 ;		VER_BUILD => Version de la compilacion.
 ;
 !define VER_MAJOR "0"
-!define VER_MENOR "18"
-!define VER_PATCH "2"
+!define VER_MENOR "19"
+!define VER_PATCH "0"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
 ; VERSION_*
@@ -62,9 +62,9 @@ SetCompressor /SOLID /FINAL lzma
 !define VERSION_MARIADB "11.4.5"
 !define VERSION_PHP     "8.3.19"
 !define VERSION_PMA     "5.2.2"
-!define VERSION_ADMINER "5.0.5"
+!define VERSION_ADMINER "5.1.0"
 !define VERSION_CACERT  "25.02.25"
-;!define VERSION_CURL    "8.6.0"
+!define VERSION_LIBCURL    "8.6.0"
 ;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
