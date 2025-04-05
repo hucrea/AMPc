@@ -36,6 +36,9 @@ SetCompressor /SOLID /FINAL lzma
 !define /date TIME_STAMP    "%Y%m%d_%H%M%S"
 !define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}"
 ;
+; BUILD - Entorno de la build. Valores: dev|rc|prod.
+!define BUILD "dev"
+;
 ; VER_*
 ;	Versionado de AMPc.
 ;		VER_MAJOR => Version mayor.
