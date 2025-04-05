@@ -75,8 +75,8 @@ VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
 !include "VersionCompare.nsh"
 
 ; Configuracion de la instalacion.
-!define MUI_HEADERIMAGE_BITMAP "media-src\header.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner.bmp"
+!define MUI_HEADERIMAGE_BITMAP "media-src\header-update.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-update.bmp"
 !define MUI_ICON "media-src\ampc_update.ico"
 !define MUI_PAGE_HEADER_TEXT "Guardar (ejecutable de) actualización"
 !define MUI_PAGE_HEADER_SUBTEXT "Selecciona una carpeta para guardar la actualización"

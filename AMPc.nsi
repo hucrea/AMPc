@@ -42,7 +42,7 @@ NOTAS:
 !define VER_F_VIP "${AMPC_VERSION}.0"
 ;
 ; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
-!define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe" ;
+!define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 ;
 ; Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
 !include "Commons.nsh"
@@ -100,11 +100,11 @@ Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 !define MUI_ABORTWARNING
 !define MUI_ICON "media-src\ampc_install.ico"
 !define MUI_UNICON "media-src\ampc_uninstall.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-install.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "media-src\banner-uninstall.bmp"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "media-src\header.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP "media-src\header.bmp"
+!define MUI_HEADERIMAGE_BITMAP "media-src\header-install.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP "media-src\header-uninstall.bmp"
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "$(i18n_FINISHPAGE_RUN)"
 !define MUI_FINISHPAGE_RUN_FUNCTION func_StartServices
