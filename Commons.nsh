@@ -56,9 +56,9 @@ SetCompressor /SOLID /FINAL lzma
 !define VERSION_MARIADB "11.4.5"
 !define VERSION_PHP     "8.3.19"
 !define VERSION_PMA     "5.2.2"
-!define VERSION_ADMINER "5.1.0"
+!define VERSION_ADMINER "5.1.1"
 !define VERSION_CACERT  "25.02.25"
-!define VERSION_LIBCURL    "8.6.0"
+;!define VERSION_LIBCURL "8.6.0"
 ;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser

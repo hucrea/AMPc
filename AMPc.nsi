@@ -72,7 +72,7 @@ Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
 Var pathApache ; Almacena ruta de instalacion para Apache.
 Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
 Var pathPhp ; Almacena ruta de instalacion para PHP.
-Var pathLIBCURL ; Almacena ruta de instalacion para libcurl.
+;Var pathLIBCURL ; Almacena ruta de instalacion para libcurl.
 Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
 Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
 Var pathAdminer ; Almacena ruta de instalacion para Adminer.
@@ -166,7 +166,7 @@ Function .onInit
 	StrCpy $pathApache 	"unknow"
 	StrCpy $pathMariadb	"unknow"
 	StrCpy $pathPhp 	"unknow"
-	StrCpy $pathLIBCURL "unknow"
+	;StrCpy $pathLIBCURL "unknow"
 	StrCpy $pathCACERT 	"unknow"
 	StrCpy $pathPMA 	"unknow"
 	StrCpy $pathAdminer "unknow"
@@ -645,7 +645,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
 	SectionEnd
 
-	Section "libcurl (${VERSION_LIBCURL})" section_Libcurl
+/*	Section "libcurl (${VERSION_LIBCURL})" section_Libcurl
 		LogText "##############################"
 		LogText "#           libcurl          #"
 		LogText "##############################"
@@ -659,7 +659,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionLIBCURL" "${VERSION_LIBCURL}"
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathLIBCURL" "$pathLIBCURL"
-	SectionEnd
+	SectionEnd*/
 
 	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" section_CACERT
 		LogText "##############################"
@@ -728,7 +728,7 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Update} "Permite actualizar AMPc for Windows"
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Libcurl} "libcurl ${VERSION_LIBCURL} binary PHP"
+	;!insertmacro MUI_DESCRIPTION_TEXT ${section_Libcurl} "libcurl ${VERSION_LIBCURL} binary PHP"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################
@@ -755,7 +755,7 @@ FunctionEnd
 ; Desinstalacion.
 Section Uninstall
 	DetailPrint "Deteniendo servicio Apache HTTP"
-	nsExec::ExecToStack /OEM 'net stop Apache2.4'
+	nsExec::ExecToStack /OEM '"$INSTDIR\Apache\bin\httpd.exe" -k stop'
 	Pop $0
 	Pop $1
 	DetailPrint $0
