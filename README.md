@@ -6,6 +6,10 @@ Inspirado, pero no basado, en AppServ.
 ## Caracteristicas
 Concebido como un proyecto de uso interno, _AMPc for Windows_ está construido sobre NSIS, disponible bajo GNU/GPLv3 o posterior.
 
+> [!NOTE]
+> A contar de la versión ``0.19.0``, el código estará bajo Mozilla Public License 2.0.<br />
+> La versión ``0.18.1`` es la última versión disponible bajo los términos de la GNU/GPLv3.
+
 ### Configura desde la instalación
 Durante la instalación puedes configurar:
 - *Para Apache HTTP*: nombre del servidor; puerto.
