@@ -5,18 +5,9 @@ Copyright (C) 2025  Hu SpA ( https://hucreativa.cl )
 
 This file is part of AMPc for Windows.
 
-AMPc for Windows is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by 
-the Free Software Foundation, either version 3 of the License, or 
-(at your option) any later version.
-
-AMPc for Windows is distributed in the hope that it will be useful, but 
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
-for more details.
-
-You should have received a copy of the GNU General Public License along 
-with AMPc for Windows. If not, see <https://www.gnu.org/licenses/>. 
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this file,
+You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------
 
@@ -33,8 +24,17 @@ NOTAS:
 ; PACKAGE - Nombre del paquete a compilar.
 !define PACKAGE "Update AMPc for Windows"
 ;
-; URL_CURRENT_INI - URL para consultar ultima version publicada.
+; FILE_STATUS - Entorno final de este archivo compilado. Valores: dev|prod.
+!define FILE_STATUS "prod"
+;
+; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
+!define VER_F_VIP "${AMPC_VERSION}.1"
+;
+; URL_UPDATE_INI - URL del archivo update.ini
 !define URL_UPDATE_INI "https://raw.githubusercontent.com/hucrea/AMPc/main/update.ini"
+;
+; THE_UPDATE_EXE - Ruta del instalador actualizado.
+!define THE_UPDATE_EXE "$INSTDIR\ampc_for_windows-latest.exe"
 ;
 ; Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
 !include "Commons.nsh"
@@ -44,7 +44,7 @@ NOTAS:
 ###############################################################################
 ;
 ; Nombre del instalador EXE compilado.
-OutFile "update-ampc.exe"
+OutFile "bin-src\ampc\update-ampc.exe"
 ;
 ; Permitir mostrar detalles durante instalacion.
 ShowInstDetails show
@@ -58,7 +58,7 @@ VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
 ###############################################################################
 ; PROCESO DE INSTALACION.
 ###############################################################################
-;!include "MUI.nsh"
+!include "MUI.nsh"
 !include "x64.nsh"
 !include "MUI2.nsh"
 ;!include "nsDialogs.nsh"
@@ -66,9 +66,9 @@ VIAddVersionKey /LANG=0 "FileDescription" "${PACKAGE}"
 !include "VersionCompare.nsh"
 
 ; Configuracion de la instalacion.
-!define MUI_HEADERIMAGE_BITMAP "media-src\header-install.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-install.bmp"
-!define MUI_ICON "media-src\icon-updater.ico"
+!define MUI_HEADERIMAGE_BITMAP "media-src\header-update.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-update.bmp"
+!define MUI_ICON "media-src\ampc_update.ico"
 !define MUI_PAGE_HEADER_TEXT "Guardar (ejecutable de) actualización"
 !define MUI_PAGE_HEADER_SUBTEXT "Selecciona una carpeta para guardar la actualización"
 !define MUI_DIRECTORYPAGE_TEXT_TOP "Selecciona la carpeta donde se guardará el archivo ampc-lastest.exe$\n$\n \
@@ -79,7 +79,7 @@ Por defecto, se selecciona el directorio de la instalación actual aunque puede 
 !define MUI_PAGE_HEADER_SUBTEXT "Espera mientras se ejecutan las tareas de actualización."
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_FINISHPAGE_RUN "$INSTDIR\ampc_for_windows-latest.exe"
+!define MUI_FINISHPAGE_RUN "${THE_UPDATE_EXE}"
 !define MUI_FINISHPAGE_RUN_TEXT "Actualizar AMPc for Windows"
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_LANGUAGE "Spanish"
@@ -92,7 +92,7 @@ Var versionAvailableAMPc
 Var urlDownloadRelease
 Var urlUpdateINI
 Var remoteHashUpdate
-;Var proceedUpdate
+Var skipDownload
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Al iniciar el ejecutable.
@@ -100,12 +100,12 @@ Var remoteHashUpdate
 Function .onInit
 	InitPluginsDir
 
-	; Splash al iniciar el instalador.
+	; Splash al iniciar el actualizador.
 	SetOutPath $PLUGINSDIR
-  	File /oname=splash.bmp "media-src\splash-update.bmp"
-	splash::show 1750 "$PLUGINSDIR\splash"
+  	File "media-src\splash-update.bmp"
+	splash::show 1750 "$PLUGINSDIR\splash-update"
 	Pop $0
-	Delete "$PLUGINSDIR\splash.bmp"
+	Delete "$PLUGINSDIR\splash-update.bmp"
 
 	; Verifica que arquitectura del sistema anfitrion sea x64.
 	${IfNot} ${RunningX64}
@@ -131,7 +131,7 @@ Function .onInit
 	StrCpy $versionCurrentAMPc "$R1"
 	
 	; Descarga archivo update.ini desde el repositorio.
-	NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini" /INSIST /CANCEL /RESUME /END
+	NScurl::http get "${URL_UPDATE_INI}" "$PLUGINSDIR\update.ini" /TIMEOUT 10s /END
 	Pop $0
 
 	; NScurl devuelve OK solo si todo sale bien.
@@ -177,6 +177,7 @@ Function .onInit
 		false:
 			Abort ; Aborta el proceso.
 		true:
+			StrCpy $skipDownload "no"
 
 	${Else}
 	; No deberias llegar aqui, pero por si las moscas.
@@ -187,37 +188,71 @@ Function .onInit
 FunctionEnd
 
 Section -"Prepare"
-	DetailPrint "Estableciendo URL de descarga."
-	
-	; La URL de descarga no se puede establecer via constante.
-	StrCpy $urlDownloadRelease "https://github.com/hucrea/AMPc/releases/download/$versionAvailableAMPc/ampc-$versionAvailableAMPc.exe"
-	DetailPrint "URL de descarga establecida:$\n$\n$urlDownloadRelease"
+	DetailPrint "Verificando si existen actualizaciones descargadas"
+
+	IfFileExists "${THE_UPDATE_EXE}" exeFound exeNotFoud
+
+	exeFound:
+		ClearErrors
+		Crypto::HashFile "SHA2" "${THE_UPDATE_EXE}"
+		Pop $R0
+
+		${If} ${Errors}
+			DetailPrint "No se puede obtener el HASH de ${THE_UPDATE_EXE}"
+		${EndIf}
+
+		StrCmp $R0 $remoteHashUpdate isSameHash notSameHash
+		notSameHash:
+			DetailPrint "Hash esperado: $remoteHashUpdate"
+			DetailPrint "Hash obtenido: $R0"
+			DetailPrint "Resultado: hash NO coincide."
+			DetailPrint "Existe archivo EXE pero no coincide con el HASH de la última versión."
+			DetailPrint "Eliminando el archivo EXE existente."
+			Delete ${THE_UPDATE_EXE}
+			DetailPrint "Archivo EXE eliminado."
+			Goto exeNotFoud
+		isSameHash:
+			DetailPrint "Hash esperado: $remoteHashUpdate"
+			DetailPrint "Hash obtenido: $R0"
+			DetailPrint "Resultado: hash coincide."
+			DetailPrint "Se omitirá la descarga."
+			StrCpy $skipDownload "yes"
+	exeNotFoud:
 SectionEnd
 
 Section -"Download"
-	DetailPrint "Descargando versión $versionAvailableAMPc"
+	${If} $skipDownload == "no" 
+		DetailPrint "Estableciendo URL de descarga."
+		
+		; La URL de descarga no se puede establecer via constante.
+		StrCpy $urlDownloadRelease "https://github.com/hucrea/AMPc/releases/download/$versionAvailableAMPc/ampc-$versionAvailableAMPc.exe"
+		DetailPrint "URL de descarga establecida:$\n$\n$urlDownloadRelease"
+		DetailPrint "Descargando versión $versionAvailableAMPc"
 
-	; Descarga la ultima version disponbile.
-	NScurl::http get "$urlDownloadRelease" "$INSTDIR\ampc_for_windows-latest.exe" /INSIST /CANCEL /RESUME /END
-	Pop $0
+		; Descarga la ultima version disponbile.
+		NScurl::http get "$urlDownloadRelease" "${THE_UPDATE_EXE}" /INSIST /CANCEL /RESUME /END
+		Pop $0
 
-	; NScurl devuelve OK solo si todo sale bien.
-	${IfNot} $0 == "OK"
-		DetailPrint "La descarga no se pudo completar."
-		MessageBox MB_OK|MB_ICONEXCLAMATION "Ocurrio un error al intentar descargar la última versión. Reintenta más tarde o visita ${URL_UPDATE} para descargar la última versión disponible."
-		DetailPrint "Detalles del error: $0"
-		DetailPrint "Presiona Cancelar para cerrar."
-		Abort ; Aborta el proceso.
+		; NScurl devuelve OK solo si todo sale bien.
+		${IfNot} $0 == "OK"
+			DetailPrint "La descarga no se pudo completar."
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Ocurrio un error al intentar descargar la última versión. Reintenta más tarde o visita ${URL_UPDATE} para descargar la última versión disponible."
+			DetailPrint "Detalles del error: $0"
+			DetailPrint "Presiona Cancelar para cerrar."
+			Abort ; Aborta el proceso.
+		${EndIf}
+
+		DetailPrint "Última versión ($versionAvailableAMPc) descargada."
+	${Else}
+		DetailPrint "Descarga omitida"
 	${EndIf}
-
-	DetailPrint "Última versión ($versionAvailableAMPc) descargada."
 SectionEnd
 
 Section -"CheckIntegrity"
 	DetailPrint "Comprobando integridad de la descarga."
 
 	ClearErrors
-	Crypto::HashFile "SHA2" "$INSTDIR\ampc_for_windows-latest.exe"
+	Crypto::HashFile "SHA2" "${THE_UPDATE_EXE}"
 	Pop $R0
 
 	${If} ${Errors}
@@ -231,17 +266,17 @@ Section -"CheckIntegrity"
 	StrCmp $R0 $remoteHashUpdate isSameHash notSameHash
 
 	notSameHash:
-		DetailPrint "Los hash no coinciden."
 		DetailPrint "Hash esperado: $remoteHashUpdate"
 		DetailPrint "Hash obtenido: $R0"
+		DetailPrint "Resultado: hash NO coincide."
 		MessageBox MB_OK|MB_ICONEXCLAMATION "El hash de la descarga no coincide con el valor obtenido desde update.ini$\n$\nVuelve a ejecutar el actualizador y, si el problema persiste, visita la página de soporte."
 		DetailPrint "Presiona Cancelar para cerrar."
 		Abort ; Aborta el proceso.
 
 	isSameHash:
-	DetailPrint "Los hash coinciden."
 	DetailPrint "Hash esperado: $remoteHashUpdate"
 	DetailPrint "Hash obtenido: $R0"
+	DetailPrint "Resultado: hash coincide."
 
 	DetailPrint "Finalizando asistente."
 SectionEnd

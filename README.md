@@ -1,10 +1,14 @@
-# AMPc for Windows ``0.18.1``
-_AMPc for Windows_ es un paquete WAMP para Windows 10 y Windows 11 de 64 bits. Se diferencia del resto de paquetes WAMP al carecer totalmente de panel de control, centrándose exclusivamente en la instalación y actualización del entorno.
+# AMPc for Windows ``0.19.0``
+_AMPc for Windows_ es un paquete WAMP para Windows 10 y Windows 11 de 64 bits. 
+
+Centrado en la instalación y actualización de los componentes del entorno, AMPc no añade capas extras de administración ni servicios ajenos a los del propio entorno.
+
+Nuestra política de actualización sigue, pero no se limita, a la hoja de actualizaciones de PHP.
 
 Inspirado, pero no basado, en AppServ.
 
 ## Caracteristicas
-Concebido como un proyecto de uso interno, _AMPc for Windows_ está construido sobre NSIS, disponible bajo GNU/GPLv3 o posterior.
+Concebido como un proyecto de uso interno, _AMPc for Windows_ está construido sobre NSIS, disponible bajo [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/).
 
 > [!NOTE]
 > A contar de la versión ``0.19.0``, el código estará bajo Mozilla Public License 2.0.<br />
@@ -25,7 +29,7 @@ Si no se detecta una instalación existente, se ofrece al usuario la opción de:
 Por razones prácticas, si el usuario elije no instalar el componente, Apache HTTP **no se iniciará** y se advertirá al usuario de ello.
 
 ### Actualizaciones regulares
-_AMPc for Windows_ se actualiza regularmente para incluir las últimas versiones del entorno.
+_AMPc for Windows_ se actualiza tras cada lanzamiento de PHP (una vez al mes, aproximadamente).
 
 ## Componentes incluidos
 
@@ -36,7 +40,7 @@ _AMPc for Windows_ se actualiza regularmente para incluir las últimas versiones
 |---|:-:|---|
 | Apache HTTP Server | ``2.4.63`` | [Apache Lounge](https://www.apachelounge.com/download/) |
 | MariaDB Server | ``11.4.5`` | [MariaDB Community](https://mariadb.com/downloads/) |
-| PHP | ``8.3.19`` | [PHP for Windows](https://windows.php.net/download/) |
+| PHP | ``8.3.20`` | [PHP for Windows](https://windows.php.net/download/) |
 | phpMyAdmin | ``5.2.2`` | [phpMyAdmin](https://www.phpmyadmin.net/) |
-| Adminer | ``5.0.5`` | [Adminer](https://www.adminer.org/) |
+| Adminer | ``5.2.1`` | [Adminer](https://www.adminer.org/) |
 | CA certificate | ``25-Feb-2025`` | [cURL - CA certificates extracted from Mozilla](https://curl.se/docs/caextract.html) |
