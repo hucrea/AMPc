@@ -50,13 +50,13 @@ SetCompressor /SOLID /FINAL lzma
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
 ;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-;       VERSION_LIBCURL => cURL.
+;       VERSION_LIBCURL => cURL. No implementado.
 ;
 !define VERSION_APACHE  "2.4.63"
 !define VERSION_MARIADB "11.4.5"
-!define VERSION_PHP     "8.3.19"
+!define VERSION_PHP     "8.3.20"
 !define VERSION_PMA     "5.2.2"
-!define VERSION_ADMINER "5.1.1"
+!define VERSION_ADMINER "5.2.1"
 !define VERSION_CACERT  "25.02.25"
 ;!define VERSION_LIBCURL "8.6.0"
 ;

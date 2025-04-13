@@ -25,7 +25,7 @@ NOTAS:
 !define PACKAGE "Update AMPc for Windows"
 ;
 ; FILE_STATUS - Entorno final de este archivo compilado. Valores: dev|prod.
-!define FILE_STATUS "dev"
+!define FILE_STATUS "prod"
 ;
 ; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
 !define VER_F_VIP "${AMPC_VERSION}.1"
