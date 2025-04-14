@@ -1,4 +1,4 @@
-# AMPc for Windows ``0.19.0``
+# AMPc for Windows ``0.20.0-dev``
 _AMPc for Windows_ es un paquete WAMP para Windows 10 y Windows 11 de 64 bits. 
 
 Centrado en la instalación y actualización de los componentes del entorno, AMPc no añade capas extras de administración ni servicios ajenos a los del propio entorno.
