@@ -109,7 +109,7 @@ Function .onInit
 
 	; Verifica que arquitectura del sistema anfitrion sea x64.
 	${IfNot} ${RunningX64}
-		MessageBox MB_OK|MB_ICONSTOP "Error inesperado (2000)."
+		MessageBox MB_OK|MB_ICONSTOP "Error 2000.$\n$\nEste programa no es compatible con Windows de 32 bits."
 		Abort
 	${EndIf}
 
@@ -162,22 +162,16 @@ Function .onInit
 
 	${If} $R2 == "0"
 	; Esta utilizando la ultima version.
-		MessageBox MB_OK|MB_USERICON "Tienes la última versión disponible.$\n$\n$versionCurrentAMPc (actual) = $versionAvailableAMPc (disponible)"
+		MessageBox MB_OK|MB_USERICON "Tienes la última versión disponible.$\n$\n$versionCurrentAMPc (instalada) = $versionAvailableAMPc (disponible)"
 		Abort ; Aborta el proceso.
 
 	${ElseIf} $R2 == "1"
 	; La version instalada es superior a la ultima version.
-		MessageBox MB_OK|MB_USERICON "Estas usando una versión en desarrollo.$\n$\n$versionCurrentAMPc (actual) > $versionAvailableAMPc (disponible)"
-		Abort ; Aborta el proceso.
+		MessageBox MB_YESNO|MB_USERICON "Estas usando una versión en desarrollo.$\n$\n$versionCurrentAMPc (instalada) > $versionAvailableAMPc (disponible)$\n$\n¿Ejecutar de todas formas?" IDYES true IDNO false
 
 	${ElseIf} $R2 == "2"
 	; La version instalada es inferior a la ultima version.
-   		MessageBox MB_YESNO|MB_USERICON "Hay una actualización disponible.$\n$\n$versionCurrentAMPc (actual) < $versionAvailableAMPc (disponible)$\n$\n¿Descargar la última versión?" IDYES true IDNO false
-		; Usuario rechaza la descarga automatica.
-		false:
-			Abort ; Aborta el proceso.
-		true:
-			StrCpy $skipDownload "no"
+   		MessageBox MB_YESNO|MB_USERICON "Hay una actualización disponible.$\n$\n$versionCurrentAMPc (instalada) < $versionAvailableAMPc (disponible)$\n$\n¿Descargar la última versión?" IDYES true IDNO false
 
 	${Else}
 	; No deberias llegar aqui, pero por si las moscas.
@@ -185,48 +179,54 @@ Function .onInit
 		Abort ; Aborta el proceso.
 	${EndIf}
 
+	false:
+		Abort ; Aborta el proceso.
+	true:
 FunctionEnd
 
 Section -"Prepare"
-	DetailPrint "Verificando si existen actualizaciones descargadas"
+	DetailPrint "Revisando si existe archivo de última versión."
 
 	IfFileExists "${THE_UPDATE_EXE}" exeFound exeNotFoud
 
 	exeFound:
+		DetailPrint "Existe un archivo con el mismo nombre."
+		DetailPrint "Revisando hash SHA256."
 		ClearErrors
 		Crypto::HashFile "SHA2" "${THE_UPDATE_EXE}"
 		Pop $R0
 
 		${If} ${Errors}
-			DetailPrint "No se puede obtener el HASH de ${THE_UPDATE_EXE}"
+			DetailPrint "No se puede obtener el hash" 
+			DetailPrint "de ${THE_UPDATE_EXE}"
 		${EndIf}
 
 		StrCmp $R0 $remoteHashUpdate isSameHash notSameHash
 		notSameHash:
-			DetailPrint "Hash esperado: $remoteHashUpdate"
-			DetailPrint "Hash obtenido: $R0"
-			DetailPrint "Resultado: hash NO coincide."
-			DetailPrint "Existe archivo EXE pero no coincide con el HASH de la última versión."
-			DetailPrint "Eliminando el archivo EXE existente."
+			DetailPrint "El hash NO ES válido, archivo existente NO ES la última versión."
+			DetailPrint "Se eliminará archivo no válido."
 			Delete ${THE_UPDATE_EXE}
-			DetailPrint "Archivo EXE eliminado."
+			DetailPrint "Archivo eliminado."
 			Goto exeNotFoud
 		isSameHash:
-			DetailPrint "Hash esperado: $remoteHashUpdate"
-			DetailPrint "Hash obtenido: $R0"
-			DetailPrint "Resultado: hash coincide."
+			DetailPrint "El hash es válido, archivo existente es la última versión."
 			DetailPrint "Se omitirá la descarga."
 			StrCpy $skipDownload "yes"
+			Goto exeEnd
 	exeNotFoud:
+		StrCpy $skipDownload "no"
+	exeEnd:
 SectionEnd
 
 Section -"Download"
-	${If} $skipDownload == "no" 
+	${If} $skipDownload == "no"
+		DetailPrint "Se realizará la descargada de la última versión."
 		DetailPrint "Estableciendo URL de descarga."
 		
 		; La URL de descarga no se puede establecer via constante.
 		StrCpy $urlDownloadRelease "https://github.com/hucrea/AMPc/releases/download/$versionAvailableAMPc/ampc-$versionAvailableAMPc.exe"
-		DetailPrint "URL de descarga establecida:$\n$\n$urlDownloadRelease"
+		DetailPrint "URL de descarga establecida:"
+		DetailPrint "$urlDownloadRelease"
 		DetailPrint "Descargando versión $versionAvailableAMPc"
 
 		; Descarga la ultima version disponbile.
@@ -244,21 +244,21 @@ Section -"Download"
 
 		DetailPrint "Última versión ($versionAvailableAMPc) descargada."
 	${Else}
-		DetailPrint "Descarga omitida"
+		DetailPrint "La descarga no se realizó."
 	${EndIf}
 SectionEnd
 
 Section -"CheckIntegrity"
-	DetailPrint "Comprobando integridad de la descarga."
+	DetailPrint "Comprobando integridad del archivo."
 
 	ClearErrors
 	Crypto::HashFile "SHA2" "${THE_UPDATE_EXE}"
 	Pop $R0
 
 	${If} ${Errors}
-		DetailPrint "No se pudo obtener el HASH del archivo descargado."
+		DetailPrint "No se pudo obtener el HASH del archivo."
 		DetailPrint "Detalles del error: $R0"
-		MessageBox MB_OK|MB_ICONEXCLAMATION "No se pudo obtener el HASH para el archivo descargado. Proceso abortado."
+		MessageBox MB_OK|MB_ICONEXCLAMATION "No se pudo obtener el HASH para el archivo. Proceso abortado."
 		DetailPrint "Presiona Cancelar para cerrar."
 		Abort ; Aborta el proceso.
 	${EndIf}
@@ -274,9 +274,9 @@ Section -"CheckIntegrity"
 		Abort ; Aborta el proceso.
 
 	isSameHash:
-	DetailPrint "Hash esperado: $remoteHashUpdate"
-	DetailPrint "Hash obtenido: $R0"
-	DetailPrint "Resultado: hash coincide."
+		DetailPrint "Hash esperado: $remoteHashUpdate"
+		DetailPrint "Hash obtenido: $R0"
+		DetailPrint "Resultado: hash coincide."
 
 	DetailPrint "Finalizando asistente."
 SectionEnd

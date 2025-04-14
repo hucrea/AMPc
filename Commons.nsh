@@ -39,7 +39,7 @@ SetCompressor /SOLID /FINAL lzma
 ;
 !define VER_MAJOR "0"
 !define VER_MENOR "19"
-!define VER_PATCH "0"
+!define VER_PATCH "1"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
 ; VERSION_*
