@@ -1,5 +1,5 @@
 # Créditos
-_AMPc for Windows_ es código libre, licenciado bajo [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/). Es desarrollado, liberado, y soportado por [Hu SpA](https://hucreativa.cl/).
+_AMPc for Windows_ es código libre, licenciado bajo [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/). Es desarrollado, liberado, y soportado por [Hu SpA (Chile)](https://hucreativa.cl/).
 
 > [!IMPORTANT]
 > Hu SpA y Hu Creativa SpA son marcas comerciales de Hu SpA (Chile) y no se autoriza su uso sin una autorización expresa.
