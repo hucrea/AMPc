@@ -440,7 +440,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Actualizador
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "Actualizador" section_Update
+Section /O "Actualizador" section_Update
 	LogText "######################"
 	LogText "#  Actualizador	  #"
 	LogText "######################"

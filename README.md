@@ -1,4 +1,4 @@
-# AMPc for Windows ``0.19.1``
+# AMPc for Windows ``0.19.2``
 _AMPc for Windows_ es un paquete WAMP para Windows 10 y Windows 11 de 64 bits. 
 
 Centrado en la instalación y actualización de los componentes del entorno, AMPc no añade capas extras de administración ni servicios ajenos a los del propio entorno.
@@ -42,8 +42,8 @@ _AMPc for Windows_ se actualiza tras cada lanzamiento de PHP (una vez al mes, ap
 | Componente | Versión | Fuente |
 |---|:-:|---|
 | Apache HTTP Server | ``2.4.63`` | [Apache Lounge Binaries](https://www.apachelounge.com/download/) |
-| MariaDB Community Server | ``11.4.5`` | [MariaDB Community Server](https://mariadb.org/download/) |
-| PHP | ``8.3.21`` | [PHP for Windows](https://windows.php.net/download/) |
+| MariaDB Community Server | ``11.4.7`` | [MariaDB Community Server](https://mariadb.org/download/) |
+| PHP | ``8.3.22`` | [PHP for Windows](https://windows.php.net/download/) |
 | phpMyAdmin | ``5.2.2`` | [phpMyAdmin](https://www.phpmyadmin.net/) |
 | Adminer | ``5.3.0`` | [Adminer](https://www.adminer.org/) |
-| CA certificate | ``25-Feb-2025`` | [cURL - CA certificates extracted from Mozilla](https://curl.se/docs/caextract.html) |
+| CA certificate | ``20-May-2025`` | [cURL - CA certificates extracted from Mozilla](https://curl.se/docs/caextract.html) |
