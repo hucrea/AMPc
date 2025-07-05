@@ -440,7 +440,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Actualizador
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "Actualizador" section_Update
+/*Section /O "Actualizador" section_Update
 	LogText "######################"
 	LogText "#  Actualizador	  #"
 	LogText "######################"
@@ -451,7 +451,7 @@ Section /O "Actualizador" section_Update
 	SetOverwrite ifdiff
 		File 'bin-src\ampc\update-ampc.exe'
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
-SectionEnd
+SectionEnd*/
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Visual C++ Redistributable.
@@ -727,7 +727,6 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem" ; DEPRECATED.
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Update} "Permite actualizar AMPc for Windows"
 	;!insertmacro MUI_DESCRIPTION_TEXT ${section_Libcurl} "libcurl ${VERSION_LIBCURL} binary PHP"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 

@@ -1,49 +1,62 @@
-# AMPc for Windows ``0.19.2``
-_AMPc for Windows_ es un paquete WAMP para Windows 10 y Windows 11 de 64 bits. 
+# AMPc
 
-Centrado en la instalación y actualización de los componentes del entorno, AMPc no añade capas extras de administración ni servicios ajenos a los del propio entorno.
+> Instalador WAMP minimalista para Windows, inspirado en AppServ pero con componentes actualizados y sin paneles innecesarios.
 
-Nuestra política de actualización sigue, pero no se limita, a la hoja de actualizaciones de PHP.
+## 🚀 ¿Qué es AMPc?
 
-Inspirado, pero no basado, en AppServ.
+AMPc es un instalador para entornos de desarrollo WAMP (Windows, Apache, MariaDB, PHP) creado con NSIS.  
+Está pensado para desarrolladores que **prefieren controlar sus servicios manualmente**, sin paneles de control que agreguen capas innecesarias o instalen servicios que jamás usarás.
 
-## Caracteristicas
-Concebido como un proyecto de uso interno, _AMPc for Windows_ está construido sobre NSIS, disponible bajo [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/).
+Nació como respuesta a:
+- XAMPP: sobrecargado, con componentes desactualizados y un panel que oculta la configuración real.
+- AppServ: limpio, pero abandonado, con políticas de actualización dudosas.
 
-> [!NOTE]
-> A contar de la versión ``0.19.0``, el código fuente está bajo licencia MPL 2.0.<br />
-> La versión ``0.18.1`` corresponde a la última versión disponible bajo los términos de la GNU/GPLv3.
+Con AMPc tienes:
+- **Apache, MariaDB y PHP actualizados**, listos para usarse.
+- Configuración mínima lista para funcionar (rutas absolutas en `httpd.conf` y `my.ini`).
+- Instalación rápida, sin scripts extraños ni servicios corriendo en segundo plano.
+- Ideal para quienes **saben dónde están sus archivos de configuración** y prefieren hacer ajustes directos.
 
-### Configura desde la instalación
-Durante la instalación debes configurar:
-- *Para Apache HTTP*: nombre del servidor; puerto.
-- *Para MariaDB Server*: contraseña para ``root``; puerto.
+---
 
-### Instalación automática de Visual C++ Redistributable
-> [!IMPORTANT]
-> Este es un pre-requisito para los binarios de Apache HTTP Server y PHP. La comprobación **no es opcional** pero la descarga e instalación del componente si es opcional.
+## 🔍 Características principales
 
-Durante la instalación se verifica que exista  [Visual C++ Redistributable](https://learn.microsoft.com/es-es/cpp/windows/latest-supported-vc-redist?view=msvc-170).
+- **Sin panel de control:** maneja Apache y MariaDB por consola o por servicios directos, como siempre.
+- **Sin bloat:** no incluye Mercury, Tomcat, Perl, ni FileZilla.
+- **Instalación limpia y directa:** elige la carpeta de destino y listo.
+- **Fácil de desinstalar:** borra la carpeta y se acabó; no deja basura en el registro ni demonios ocultos.
+- **Política de actualizaciones mensual:** versiones estables de PHP, MariaDB y Apache alineadas con sus lanzamientos.
 
-Si no se detecta una instalación existente, se ofrece la opción de:
-1. **Descargar e instalar** la última versión desde la web oficial de Microsoft, y luego proseguir con la instalación de _AMPc for Windows_.
-2. Continuar con la instalación de _AMPc for Windows_ **sin descargar ni instalar** Visual C++ Redistributable.
+---
 
-Por razones prácticas, **si elije no instalar Visual C++ Redistributable, Apache HTTP no se instalara como servicio** una vez finalizado el asistente de configuración.
+## 📝 ¿Por qué AMPc?
 
-### Actualizaciones regulares
-_AMPc for Windows_ se actualiza tras cada lanzamiento de PHP (una vez al mes, aproximadamente).
+Porque a veces solo quieres:
+- Instalar el stack.
+- Configurar un `vhost` o el `my.ini` a mano.
+- Tener control total sin intermediarios.
+- Y olvidarte de actualizaciones rotas.
 
-## Componentes incluidos
+AMPc fue creado para entornos de desarrollo donde:
+- No necesitas interfaces gráficas para iniciar/parar servicios.
+- Te interesa que sea **portable**, fácil de borrar, y fácil de actualizar por componentes.
 
-> [!IMPORTANT]
-> La instalación de Apache HTTP, MariaDB, PHP, y CA certificate **no son opcionales**.
+---
 
-| Componente | Versión | Fuente |
-|---|:-:|---|
-| Apache HTTP Server | ``2.4.63`` | [Apache Lounge Binaries](https://www.apachelounge.com/download/) |
-| MariaDB Community Server | ``11.4.7`` | [MariaDB Community Server](https://mariadb.org/download/) |
-| PHP | ``8.3.22`` | [PHP for Windows](https://windows.php.net/download/) |
-| phpMyAdmin | ``5.2.2`` | [phpMyAdmin](https://www.phpmyadmin.net/) |
-| Adminer | ``5.3.0`` | [Adminer](https://www.adminer.org/) |
-| CA certificate | ``20-May-2025`` | [cURL - CA certificates extracted from Mozilla](https://curl.se/docs/caextract.html) |
+## 🚀 Instalación
+
+1. Descarga el instalador `.exe` desde la sección [Releases](https://github.com/hucrea/AMPc/releases).
+2. Elige el directorio de instalación (por defecto `C:\AMPc`).
+3. Al finalizar, el instalador abre tu navegador en `http://localhost/`.
+
+---
+
+## 💻 Uso básico
+
+- Configura Apache en `AMPc\Apache24\conf\httpd.conf`.
+- Configura MariaDB en `AMPc\MariaDB\my.ini`.
+- PHP ya está enlazado con Apache (`LoadModule` y `PHPIniDir` configurados).
+- Para iniciar o detener servicios, usa:
+  ```bash
+  httpd -k start
+  mysqld --console

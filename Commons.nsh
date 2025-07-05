@@ -39,7 +39,7 @@ SetCompressor /SOLID /FINAL lzma
 ;
 !define VER_MAJOR "0"
 !define VER_MENOR "19"
-!define VER_PATCH "2"
+!define VER_PATCH "3"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
 ; VERSION_*
@@ -54,7 +54,7 @@ SetCompressor /SOLID /FINAL lzma
 ;
 !define VERSION_APACHE  "2.4.63"
 !define VERSION_MARIADB "11.4.7"
-!define VERSION_PHP     "8.3.22"
+!define VERSION_PHP     "8.3.23"
 !define VERSION_PMA     "5.2.2"
 !define VERSION_ADMINER "5.3.0"
 !define VERSION_CACERT  "20.05.25"
