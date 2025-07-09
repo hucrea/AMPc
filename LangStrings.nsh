@@ -31,6 +31,21 @@ LangString i18n_KEYWORD ${LANG_PORTUGUESEBR} "O texto"
 */
 
 ; on.Init
+LangString i18n_32BITS_NOT_SUPPORT ${LANG_SPANISH} "AMPc no es compatible con Windows de 32 bits."
+LangString i18n_32BITS_NOT_SUPPORT ${LANG_ENGLISH} "AMPc is not compatible with 32-bit Windows."
+LangString i18n_32BITS_NOT_SUPPORT ${LANG_PORTUGUESEBR} "AMPc não é compatível com Windows do 32 bits."
+
+LangString i18n_INSTALL_CANT_CONTINUE ${LANG_SPANISH} "La instalación no puede continuar."
+LangString i18n_INSTALL_CANT_CONTINUE ${LANG_ENGLISH} "The installation cannot continue."
+LangString i18n_INSTALL_CANT_CONTINUE ${LANG_PORTUGUESEBR} "A instalação não pode continuar."
+
+LangString i18n_UNKNOW_ERROR ${LANG_SPANISH} "Error desconocido."
+LangString i18n_UNKNOW_ERROR ${LANG_ENGLISH} "Unknow error."
+LangString i18n_UNKNOW_ERROR ${LANG_PORTUGUESEBR} "Erro desconhecido."
+
+LangString i18n_PATH_MISSING ${LANG_SPANISH} "Error desconocido."
+LangString i18n_PATH_MISSING ${LANG_ENGLISH} "Unknow error."
+LangString i18n_PATH_MISSING ${LANG_PORTUGUESEBR} "Erro desconhecido."
 
 LangString i18n_FINISHPAGE_RUN ${LANG_SPANISH} "Iniciar servicios Apache HTTP y MariaDB."
 LangString i18n_FINISHPAGE_RUN ${LANG_ENGLISH} "Start Apache HTTP and MariaDB services"
@@ -139,14 +154,6 @@ LangString i18n_VCR_SKIP_REMINDER ${LANG_PORTUGUESEBR} "O Visual C++ Redistribut
 LangString i18n_VCR_EXIST ${LANG_SPANISH} "Visual C++ Redistributable encontrado, instalación omitida."
 LangString i18n_VCR_EXIST ${LANG_ENGLISH} "Visual C++ Redistributable found, installation skipped."
 LangString i18n_VCR_EXIST ${LANG_PORTUGUESEBR} "Visual C++ Redistributable encontrado, instalação ignorada."
-
-LangString i18n_32BITS_NOTSUPPORT ${LANG_SPANISH} "AMPc no es compatible con Windows de 32 bits."
-LangString i18n_32BITS_NOTSUPPORT ${LANG_ENGLISH} "AMPc is not compatible with 32-bit Windows."
-LangString i18n_32BITS_NOTSUPPORT ${LANG_PORTUGUESEBR} "AMPc não é compatível com Windows do 32 bits."
-
-LangString i18n_INSTALL_CANNOT ${LANG_SPANISH} "La instalación no puede continuar."
-LangString i18n_INSTALL_CANNOT ${LANG_ENGLISH} "The installation cannot continue."
-LangString i18n_INSTALL_CANNOT ${LANG_PORTUGUESEBR} "A instalação não pode continuar."
 
 LangString i18n_DESCR_APACHE ${LANG_SPANISH} "Servidor web local"
 LangString i18n_DESCR_APACHE ${LANG_ENGLISH} "Local web server"

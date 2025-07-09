@@ -26,9 +26,6 @@ NOTAS:
 ; PACKAGE - Nombre del paquete a compilar.
 !define PACKAGE "AMPc for Windows"
 ;
-; FILE_STATUS - Entorno final de este archivo compilado. Valores: dev|prod.
-!define FILE_STATUS "prod"
-;
 ; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
 !define VER_F_VIP "${AMPC_VERSION}.0"
 ;
@@ -61,21 +58,25 @@ VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
 ###############################################################################
-Var prevInstallAMPc ; Usada para verificar si existe instalacion previa.
+
+# Generales.
+Var statusVCRuntime ; Comprobacion de Visual C++ Redistributable.
+Var prevInstallAMPc ; Instalacion previa.
 Var backSlashInstDir ; Ver Functions.nsh, funcion func_ReplaceSlash.
-Var apacheConfigServerName ; Usada por custom_PageApache y leave_PageApache.
-Var apacheConfigPort ; Usada por custom_PageApache y leave_PageApache.
-Var mariadbConfigPass ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigCheck ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigPort ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
-Var pathApache ; Almacena ruta de instalacion para Apache.
-Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
-Var pathPhp ; Almacena ruta de instalacion para PHP.
-;Var pathLIBCURL ; Almacena ruta de instalacion para libcurl.
-Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
-Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
-Var pathAdminer ; Almacena ruta de instalacion para Adminer.
+# Paginas personalizadas.
+Var apacheConfigServerName ; Apache, custom_PageApache y leave_PageApache.
+Var apacheConfigPort ; Apache, custom_PageApache y leave_PageApache.
+Var mariadbConfigPass ; MariaDB, custom_PageMariadb y leave_PageMariadb.
+Var mariadbConfigCheck ; MariaDB, custom_PageMariadb y leave_PageMariadb.
+Var mariadbConfigPort ; MariaDB, custom_PageMariadb y leave_PageMariadb.
+# Rutas
+Var pathApache ; Apache.
+Var pathMariadb ; MariaDB.
+Var pathPhp ; PHP.
+;Var pathLIBCURL ; libcurl.
+Var pathCACERT ; ca-cert.
+Var pathPMA ; phpMyAdmin.
+Var pathAdminer ; Adminer.
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
@@ -127,8 +128,8 @@ Page Custom custom_PageMariadb leave_PageMariadb
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "PortugueseBR"
 !insertmacro MUI_RESERVEFILE_LANGDLL
-!define MUI_LANGDLL_REGISTRY_ROOT "${REGKEY_ROOT}" 
-!define MUI_LANGDLL_REGISTRY_KEY "${REGKEY_PACKAGE}" 
+!define MUI_LANGDLL_REGISTRY_ROOT "${REGKEY_ROOT}"
+!define MUI_LANGDLL_REGISTRY_KEY "${REGKEY_PACKAGE}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "LangInstall"
 !include "LangStrings.nsh"
 
@@ -149,7 +150,7 @@ Function .onInit
 
 	; Verifica que arquitectura del sistema anfitrion sea x64.
 	${IfNot} ${RunningX64}
-		MessageBox MB_OK|MB_ICONSTOP "$(i18n_32BITS_NOTSUPPORT).$\n$\n$(i18n_INSTALL_CANNOT)"
+		MessageBox MB_OK|MB_ICONSTOP "$(i18n_32BITS_NOT_SUPPORT).$\n$\n$(i18n_INSTALL_CANT_CONTINUE)"
 		Abort
 
 	${EndIf}
@@ -166,7 +167,6 @@ Function .onInit
 	StrCpy $pathApache 	"unknow"
 	StrCpy $pathMariadb	"unknow"
 	StrCpy $pathPhp 	"unknow"
-	;StrCpy $pathLIBCURL "unknow"
 	StrCpy $pathCACERT 	"unknow"
 	StrCpy $pathPMA 	"unknow"
 	StrCpy $pathAdminer "unknow"
@@ -195,7 +195,7 @@ Function .onInit
 			StrCpy "$INSTDIR" "$R1"
 
 		${Else}
-			MessageBox MB_OK|MB_ICONSTOP "ERROR 1001."
+			MessageBox MB_OK|MB_ICONSTOP "$(i18n_PATH_MISSING) INSTDIR_UNKNOW.$\n$\n$(i18n_INSTALL_CANT_CONTINUE)"
 			Abort
 		${EndIf}
 	${EndIf}
@@ -260,21 +260,11 @@ Function leave_PageApache ; Funcion de salida para custom_PageApache.
 			Abort
 
 		leaveActions:
-			Push '___AMPC_SERVERNAME___'
-			Push $R7
-			Push all
-			Push all
-			Push '$INSTDIR\Apache\conf\httpd.conf'
-			Call func_ReplaceInFile
+			!insertmacro ReplaceInFile "$pathApache\conf\httpd.conf" "___AMPC_SERVERNAME___" "$R7"
 			Pop $0
 			LogText $0
 
-			Push '___AMPC_HTTP_PORT___'
-			Push $R8 
-			Push all 
-			Push all 
-			Push '$INSTDIR\Apache\conf\httpd.conf' 
-			Call func_ReplaceInFile
+			!insertmacro ReplaceInFile "$pathApache\conf\httpd.conf" "___AMPC_HTTP_PORT___" "$R8"
 			Pop $0
 			LogText $0
 
@@ -426,7 +416,6 @@ Section -sectionInit
 	; contiene barras tipo Windows. La variable $backSlashInstDir almacena el valor
 	; de $INSTDIR con barras tipo UNIX.
 	Push $INSTDIR
-	Push "\"
 	Call func_ReplaceSlash
 	Pop $backSlashInstDir
 	LogText $backSlashInstDir
@@ -436,22 +425,6 @@ Section -sectionInit
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VER_BUILD}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall" "$INSTDIR"
 SectionEnd
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Actualizador
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-/*Section /O "Actualizador" section_Update
-	LogText "######################"
-	LogText "#  Actualizador	  #"
-	LogText "######################"
-
-	DetailPrint "Instalando Actualizador..."
-
-	SetOutPath $INSTDIR
-	SetOverwrite ifdiff
-		File 'bin-src\ampc\update-ampc.exe'
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
-SectionEnd*/
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Visual C++ Redistributable.
@@ -571,12 +544,7 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 	${If} $prevInstallAMPc == "none"
 		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 		; configuracion httpd.conf de Apache HTTP.
-		Push '___AMPC_PATH___'
-		Push $backSlashInstDir
-		Push all
-		Push all
-		Push '$pathApache\conf\httpd.conf'
-		Call func_ReplaceInFile
+		!insertmacro ReplaceInFile "$pathApache\conf\httpd.conf" "___AMPC_PATH___" "$backSlashInstDir"
 		Pop $R0
 		LogText $R0
 	${EndIf}
@@ -631,12 +599,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 		${If} $prevInstallAMPc == "none"
 			; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 			; configuracion php.ini de PHP.
-			Push '___AMPC_PATH___'
-			Push $backSlashInstDir
-			Push all
-			Push all
-			Push '$pathPhp\php.ini'
-			Call func_ReplaceInFile
+			!insertmacro ReplaceInFile "$pathPhp\php.ini" "___AMPC_PATH___" "$backSlashInstDir"
 			Pop $R0
 			LogText $R0
 		${EndIf}
@@ -644,22 +607,6 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${VERSION_PHP}"
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
 	SectionEnd
-
-/*	Section "libcurl (${VERSION_LIBCURL})" section_Libcurl
-		LogText "##############################"
-		LogText "#           libcurl          #"
-		LogText "##############################"
-
-		StrCpy $pathLIBCURL "$COMMONFILES64\AMPc"
-
-		SetOverwrite ifdiff
-		SetOutPath "$pathLIBCURL"
-			File "bin-src\libcurl\libcurl_a.lib"
-			File "bin-src\libcurl\libcurl_a.pdb"
-
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionLIBCURL" "${VERSION_LIBCURL}"
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathLIBCURL" "$pathLIBCURL"
-	SectionEnd*/
 
 	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" section_CACERT
 		LogText "##############################"
@@ -727,7 +674,6 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem" ; DEPRECATED.
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
-	;!insertmacro MUI_DESCRIPTION_TEXT ${section_Libcurl} "libcurl ${VERSION_LIBCURL} binary PHP"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################

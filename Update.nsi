@@ -1,4 +1,5 @@
 ﻿/*
+DEPRECATED!
 
 AMPc for Windows - Entorno web local para Windows
 Copyright (C) 2025  Hu SpA ( https://hucreativa.cl )
@@ -18,6 +19,7 @@ NOTAS:
  compartidas por otros archivos *.NSI del proyecto.
 + Todos los caracteres especiales se han omitido para mayor compatibilidad.
 
+DEPRECATED!
 */
 
 ;

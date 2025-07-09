@@ -22,171 +22,158 @@ IMPORTANTE:
 */
 
 /*
-
 func_ReplaceInFile
- Reemplaza un determinado valor por otro dado, en un archivo.
+ Funcion base para el macro ReplaceInFile.
 
- Creado por Stu (Afrow UK)
- https://nsis.sourceforge.io/More_advanced_replace_text_in_file#Code
- Licencia zlib/libpng
+ Reemplaza TODAS las ocurrencias de un texto por otro en un archivo.
+ Version simplificada para reemplazar todas las ocurrencias desde la primera ocurrencia.
+ Basado en codigo original de Stu (Afrow UK) y rainmanx.
 
- Modificaciones por rainmanx
- https://nsis.sourceforge.io/Advanced_Replace_within_text_II
- Licencia zlib/libpng
 */
 Function func_ReplaceInFile
-	Exch $0 ;file to replace in
-	Exch
-	Exch $1 ;number to replace after
-	Exch
-	Exch 2
-	Exch $2 ;replace and onwards
-	Exch 2
-	Exch 3
-	Exch $3 ;replace with
-	Exch 3
-	Exch 4
-	Exch $4 ;to replace
-	Exch 4
-
-	Push $5 ;minus count
-	Push $6 ;universal
-	Push $7 ;end string
-	Push $8 ;left string
-	Push $9 ;right string
-	Push $R0 ;file1
-	Push $R1 ;file2
-	Push $R2 ;read
-	Push $R3 ;universal
-	Push $R4 ;count (onwards)
-	Push $R5 ;count (after)
-	Push $R6 ;temp file name
-
-	; Find folder with file to edit:
-	GetFullPathName $R1 $0\..
-
-	; Put temporary file in same folder to preserve access rights:
-	GetTempFileName $R6 $R1
-
-	FileOpen $R1 $0 r ;file to search in
-	FileOpen $R0 $R6 w ;temp file
-
-	StrLen $R3 $4
-	StrCpy $R4 -1
-	StrCpy $R5 -1
-	loop_read:
-		ClearErrors
-		FileRead $R1 $R2 ;read line
-		IfErrors exit
-		StrCpy $5 0
-		StrCpy $7 $R2
-	loop_filter:
-		IntOp $5 $5 - 1
-		StrCpy $6 $7 $R3 $5 ;search
-		StrCmp $6 "" file_write2
-		StrCmp $6 $4 0 loop_filter
-		StrCpy $8 $7 $5 ;left part
-		IntOp $6 $5 + $R3
-		StrCpy $9 $7 "" $6 ;right part
-		StrLen $6 $7
-		StrCpy $7 $8$3$9 ;re-join
-		StrCmp -$6 $5 0 loop_filter
-		IntOp $R4 $R4 + 1
-		StrCmp $2 all file_write1
-		StrCmp $R4 $2 0 file_write2
-		IntOp $R4 $R4 - 1
-		IntOp $R5 $R5 + 1
-		StrCmp $1 all file_write1
-		StrCmp $R5 $1 0 file_write1
-		IntOp $R5 $R5 - 1
-		Goto file_write2
-	file_write1:
-		FileWrite $R0 $7 ;write modified line
-		Goto loop_read
-	file_write2:
-		FileWrite $R0 $7 ;write modified line
-		Goto loop_read
-	exit:
-		FileClose $R0
-		FileClose $R1
-		SetDetailsPrint none
-		Delete $0
-		Rename $R6 $0
-		Delete $R6
-		SetDetailsPrint both
-
-		Pop $R6
-		Pop $R5
-		Pop $R4
-		Pop $R3
-		Pop $R2
-		Pop $R1
-		Pop $R0
-		Pop $9
-		Pop $8
-		Pop $7
-		Pop $6
-		Pop $5
-		Pop $4
-		Pop $3
-		Pop $2
-		Pop $1
-		Pop $0
+    ; Obtener parametros del stack.
+    Pop $R2    ; texto a buscar.
+    Pop $R1    ; texto de reemplazo.
+    Pop $R0    ; archivo a modificar.
+    
+    ; Variables de trabajo.
+    Push $0    ; contador de posicion en linea.
+    Push $1    ; texto temporal.
+    Push $2    ; linea completa actual.
+    Push $3    ; parte izquierda de la linea.
+    Push $4    ; parte derecha de la linea.
+    Push $5    ; handle archivo original.
+    Push $6    ; handle archivo temporal.
+    Push $7    ; linea leida.
+    Push $8    ; longitud del texto a buscar.
+    Push $9    ; archivo temporal.
+    Push $R3   ; directorio del archivo original.
+    
+    ; Inicializar.
+    StrLen $8 $R2    ; longitud del texto a buscar.
+    
+    ; Crear archivo temporal en el mismo directorio.
+    GetFullPathName $R3 $R0\..
+    GetTempFileName $9 $R3
+    
+    ; Abrir archivos.
+    FileOpen $5 $R0 r     ; archivo original (lectura).
+    FileOpen $6 $9 w      ; archivo temporal (escritura).
+    
+    ; Procesar linea por linea.
+    leer_linea:
+        ClearErrors
+        FileRead $5 $7
+        IfErrors finalizar
+        
+        StrCpy $2 $7  ; copia de la linea para procesar.
+        
+        ; Buscar y reemplazar todas las ocurrencias en la linea actual.
+        buscar_en_linea:
+            StrCpy $0 0
+            
+            encontrar_siguiente:
+                IntOp $0 $0 - 1
+                StrCpy $1 $2 $8 $0    ; extraer substring para comparar.
+                StrCmp $1 "" escribir_linea  ; no hay mas texto.
+                StrCmp $1 $R2 reemplazar encontrar_siguiente
+            
+            reemplazar:
+                ; Dividir la linea en partes.
+                StrCpy $3 $2 $0               ; parte izquierda.
+                IntOp $1 $0 + $8             ; posicion despues del texto encontrado.
+                StrCpy $4 $2 "" $1           ; parte derecha.
+                
+                ; Reconstruir linea con el reemplazo.
+                StrCpy $2 "$3$R1$4"
+                
+                ; Ajustar posicion para continuar busqueda despues del reemplazo.
+                StrLen $1 $3
+                StrLen $0 $R1
+                IntOp $0 $1 + $0
+                IntOp $0 $0 - 1
+                
+                ; Continuar buscando en la misma linea.
+                Goto buscar_en_linea
+        
+        escribir_linea:
+            FileWrite $6 $2
+            Goto leer_linea
+    
+    finalizar:
+        ; Cerrar archivos.
+        FileClose $5
+        FileClose $6
+        
+        ; Reemplazar archivo original.
+        SetDetailsPrint none
+        Delete $R0
+        Rename $9 $R0
+        Delete $9
+        SetDetailsPrint both
+        
+        ; Limpiar stack.
+        Pop $R3
+        Pop $9
+        Pop $8
+        Pop $7
+        Pop $6
+        Pop $5
+        Pop $4
+        Pop $3
+        Pop $2
+        Pop $1
+        Pop $0
 FunctionEnd
 
-/*
+; Macro ReplaceInFile.
+; !insertmacro ReplaceInFile "$INSTDIR\config.ini" "__TEXT_TO_REPLACE__" "192.168.1.100"
+!macro ReplaceInFile archivo buscar reemplazar
+    Push "${archivo}"
+    Push "${reemplazar}"
+    Push "${buscar}"
+    Call func_ReplaceInFile
+!macroend
 
+/*
 func_ReplaceSlash
  Reemplaza las barras \ por barras /.
 
  Esto evita ciertos errores al momento de guardar la ruta completa de instalacion
  en los archivos de configuracion php.ini y httpd.conf.
 
- Codigo generado por ChatGPT con modificaciones propias.
-
 */
 Function func_ReplaceSlash
-	Exch $R3       ; $R3 = Needle (carácter a reemplazar "\" o "/")
-	Exch
-	Exch $R1       ; $R1 = String de entrada (ruta original)
-	Push $R2       ; $R2 = Resultado con reemplazos
-	Push $R4       ; $R4 = Carácter de reemplazo ("/" o "\")
-	Push $R6       ; $R6 = Longitud de la cadena
-	Push $R7       ; $R7 = Carácter actual en el loop
+    Exch $R1       ; $R1 = String de entrada.
+    Push $R2       ; $R2 = Resultado.
+    Push $R6       ; $R6 = Longitud.
+    Push $R7       ; $R7 = Caracter actual.
+    
+    StrCpy $R2 ""
+    StrLen $R6 $R1
+    StrCmp $R6 0 done
+    
+    loop:
+        StrCpy $R7 $R1 1
+        StrCpy $R1 $R1 "" 1
+        StrCmp $R7 "\" 0 +3
+        StrCpy $R2 "$R2/"    ; Siempre reemplaza \ por /.
+        Goto continue
+        
+        StrCpy $R2 "$R2$R7"
 
-	StrCpy $R2 ""  ; Inicializa la cadena vacía (donde construiremos el resultado)
-	StrLen $R6 $R1 ; Obtiene la longitud de la cadena de entrada
-	StrCpy $R4 "/" ; Define el carácter de reemplazo
-
-	StrCmp $R3 "/" 0 +2  ; Si el needle es "/", cambia el reemplazo a "\"
-	StrCpy $R4 "\"       
-
-	StrCmp $R6 0 done  ; Si la longitud de la cadena de entrada es 0, termina
-
-	loop:
-		StrCpy $R7 $R1 1    ; Obtiene el primer carácter de la cadena original
-		StrCpy $R1 $R1 "" 1 ; Elimina el primer carácter de la cadena original
-
-		StrCmp $R7 $R3 found  ; Si el carácter es igual al needle, se reemplaza
-		StrCpy $R2 "$R2$R7"   ; Si no, se agrega tal cual
-		StrCmp $R1 "" done    ; Si la cadena original está vacía, terminamos
-		Goto loop             ; Continúa el bucle
-
-	found:
-		StrCpy $R2 "$R2$R4"  ; Reemplaza el carácter encontrado
-		StrCmp $R1 "" done   ; Si la cadena original está vacía, terminamos
-		Goto loop            ; Continúa el bucle
-
-	done:
-		Pop $R7
-		Pop $R6
-		Pop $R4
-		Pop $R1
-		Exch $R2            ; Devuelve la cadena convertida
+        continue:
+            StrCmp $R1 "" done
+            Goto loop
+    
+    done:
+        Pop $R7
+        Pop $R6
+        Pop $R1
+        Exch $R2
 FunctionEnd
 
 /*
-
 func_DisableBackButton
  Deshabilita el boton "Atras".
 
@@ -204,7 +191,6 @@ Function func_DisableBackButton
 FunctionEnd
 
 /*
-
 func_StartServices
  Inicia los servicios Apache HTTP y MariaDB
 
@@ -234,18 +220,3 @@ Function func_StartServices
 		Pop $R3
 		LogText $R3
 FunctionEnd
-
-/*
-
-func_OnLabelClick
-https://nsis-dev.github.io/NSIS-Forums/html/t-316187.html
-
-* /
-Function func_OnLabelClick
-    ; Set label to bold
-    CreateFont $R2 "MS Shell Dlg" 10 700
-    SendMessage $LABEL ${WM_SETFONT} $R2 0
-    ; Force label redraw
-    ShowWindow $LABEL ${SW_HIDE}
-    ShowWindow $LABEL ${SW_SHOW}
-FunctionEnd*/

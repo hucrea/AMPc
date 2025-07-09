@@ -27,9 +27,6 @@ SetCompressor /SOLID /FINAL lzma
 !define /date TIME_STAMP    "%Y%m%d_%H%M%S"
 !define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}"
 ;
-; BUILD - Entorno de la build. Valores: dev|rc|prod.
-!define BUILD "dev"
-;
 ; VER_*
 ;	Versionado de AMPc.
 ;		VER_MAJOR => Version mayor.
@@ -38,8 +35,8 @@ SetCompressor /SOLID /FINAL lzma
 ;		VER_BUILD => Version de la compilacion.
 ;
 !define VER_MAJOR "0"
-!define VER_MENOR "19"
-!define VER_PATCH "3"
+!define VER_MENOR "20"
+!define VER_PATCH "0" ; NOTA: no compilara si no es valor numerico.
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
 ; VERSION_*
@@ -50,7 +47,6 @@ SetCompressor /SOLID /FINAL lzma
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
 ;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-;       VERSION_LIBCURL => cURL. No implementado.
 ;
 !define VERSION_APACHE  "2.4.63"
 !define VERSION_MARIADB "11.4.7"
@@ -58,7 +54,6 @@ SetCompressor /SOLID /FINAL lzma
 !define VERSION_PMA     "5.2.2"
 !define VERSION_ADMINER "5.3.0"
 !define VERSION_CACERT  "20.05.25"
-;!define VERSION_LIBCURL "8.6.0"
 ;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
