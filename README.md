@@ -1,11 +1,11 @@
-# AMPc
-
-> Instalador WAMP minimalista para Windows, inspirado en AppServ pero con componentes actualizados y sin paneles innecesarios.
+# AMPc for Windows
+![GitHub Release](https://img.shields.io/github/v/release/hucrea/AMPc?color=%2523585858&link=https://github.com/hucrea/AMPc/releases/latest)
+> Instalador WAMP mínimo para Windows, con componentes actualizados y sin paneles innecesarios.
 
 ## 🚀 ¿Qué es AMPc?
 
 AMPc es un instalador para entornos de desarrollo WAMP (Windows, Apache, MariaDB, PHP) creado con NSIS.  
-Está pensado para desarrolladores que **prefieren controlar sus servicios manualmente**, sin paneles de control que agreguen capas innecesarias o instalen servicios que jamás usarás.
+Está pensado para desarrolladores que **prefieren controlar sus servicios manualmente**, sin paneles de control que agreguen capas innecesarias o instalen servicios adicionales.
 
 Nació como respuesta a:
 - XAMPP: sobrecargado, con componentes desactualizados y un panel que oculta la configuración real.
@@ -17,8 +17,6 @@ Con AMPc tienes:
 - Instalación rápida, sin scripts extraños ni servicios corriendo en segundo plano.
 - Ideal para quienes **saben dónde están sus archivos de configuración** y prefieren hacer ajustes directos.
 
----
-
 ## 🔍 Características principales
 
 - **Sin panel de control:** maneja Apache y MariaDB por consola o por servicios directos, como siempre.
@@ -26,8 +24,6 @@ Con AMPc tienes:
 - **Instalación limpia y directa:** elige la carpeta de destino y listo.
 - **Fácil de desinstalar:** borra la carpeta y se acabó; no deja basura en el registro ni demonios ocultos.
 - **Política de actualizaciones mensual:** versiones estables de PHP, MariaDB y Apache alineadas con sus lanzamientos.
-
----
 
 ## 📝 ¿Por qué AMPc?
 
@@ -41,15 +37,11 @@ AMPc fue creado para entornos de desarrollo donde:
 - No necesitas interfaces gráficas para iniciar/parar servicios.
 - Te interesa que sea **portable**, fácil de borrar, y fácil de actualizar por componentes.
 
----
-
 ## 🚀 Instalación
 
 1. Descarga el instalador `.exe` desde la sección [Releases](https://github.com/hucrea/AMPc/releases).
 2. Elige el directorio de instalación (por defecto `C:\AMPc`).
 3. Al finalizar, el instalador abre tu navegador en `http://localhost/`.
-
----
 
 ## 💻 Uso básico
 
