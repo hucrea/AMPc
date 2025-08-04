@@ -64,19 +64,18 @@ Var statusVCRuntime ; Comprobacion de Visual C++ Redistributable.
 Var prevInstallAMPc ; Instalacion previa.
 Var backSlashInstDir ; Ver Functions.nsh, funcion func_ReplaceSlash.
 # Paginas personalizadas.
-Var apacheConfigServerName ; Apache, custom_PageApache y leave_PageApache.
-Var apacheConfigPort ; Apache, custom_PageApache y leave_PageApache.
-Var mariadbConfigPass ; MariaDB, custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigCheck ; MariaDB, custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigPort ; MariaDB, custom_PageMariadb y leave_PageMariadb.
+Var apache_ConfigServerName ; Apache, custom_PageApache y leave_PageApache.
+Var apache_ConfigPort ; Apache, custom_PageApache y leave_PageApache.
+Var mariadb_ConfigPass ; MariaDB, custom_PageMariadb y leave_PageMariadb.
+Var mariadb_ConfigCheck ; MariaDB, custom_PageMariadb y leave_PageMariadb.
+Var mariadb_ConfigPort ; MariaDB, custom_PageMariadb y leave_PageMariadb.
 # Rutas
-Var pathApache ; Apache.
-Var pathMariadb ; MariaDB.
-Var pathPhp ; PHP.
-;Var pathLIBCURL ; libcurl.
-Var pathCACERT ; ca-cert.
-Var pathPMA ; phpMyAdmin.
-Var pathAdminer ; Adminer.
+Var path_Apache ; Apache.
+Var path_Mariadb ; MariaDB.
+Var path_Php ; PHP.
+Var path_Cacert ; ca-cert.
+Var path_PMA ; phpMyAdmin.
+Var path_Adminer ; Adminer.
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
@@ -164,18 +163,18 @@ Function .onInit
 
 	# INSTALACION PREVIA
 	; Inicializa variables.
-	StrCpy $pathApache 	"unknow"
-	StrCpy $pathMariadb	"unknow"
-	StrCpy $pathPhp 	"unknow"
-	StrCpy $pathCACERT 	"unknow"
-	StrCpy $pathPMA 	"unknow"
-	StrCpy $pathAdminer "unknow"
+	StrCpy $path_Apache 	"unknow"
+	StrCpy $path_Mariadb	"unknow"
+	StrCpy $path_Php 	"unknow"
+	StrCpy $path_Cacert 	"unknow"
+	StrCpy $path_PMA 	"unknow"
+	StrCpy $path_Adminer "unknow"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
 	EnumRegKey $R0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" 0
 
-	; No existe instalacion previa.
+	; NO EXISTE instalacion previa.
 	${If} ${Errors}
 		StrCpy $prevInstallAMPc "none"
 
@@ -183,16 +182,14 @@ Function .onInit
 		StrCpy "$INSTDIR" "$WINDIR" 2
 		StrCpy "$INSTDIR" "$INSTDIR\AMPc"
 
-	; Existe instalacion previa.
+	; EXISTE instalacion previa.
 	${Else}
-		StrCpy $prevInstallAMPc "yes"
-		
-		; Lee la ruta de la instalacion actual.
-		ClearErrors
+		ClearErrors ; Ahora, lee la ruta de la instalacion actual.
 		ReadRegStr $R1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
 
 		${IfNot} ${Errors}
 			StrCpy "$INSTDIR" "$R1"
+			StrCpy $prevInstallAMPc "$R1"
 
 		${Else}
 			MessageBox MB_OK|MB_ICONSTOP "$(i18n_PATH_MISSING) INSTDIR_UNKNOW.$\n$\n$(i18n_INSTALL_CANT_CONTINUE)"
@@ -222,11 +219,11 @@ Function custom_PageApache
 
 			${NSD_CreateLabel} 0 0 100% 8u "$(i18n_APACHE_SERVNAME)"
 			${NSD_CreateText} 0 12u 80% 12u "localhost"
-			Pop $apacheConfigServerName
+			Pop $apache_ConfigServerName
 
 			${NSD_CreateLabel} 0 30u 100% 8u "$(i18n_APACHE_PORT)"
 			${NSD_CreateNumber} 0 42u 20% 12u "80"
-			Pop $apacheConfigPort
+			Pop $apache_ConfigPort
 
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
 			Pop $R1
@@ -243,8 +240,8 @@ Function leave_PageApache ; Funcion de salida para custom_PageApache.
 		LogText "# leave_PageApache #"
 		LogText "####################"
 
-		${NSD_GetText} $apacheConfigServerName $R7
-		${NSD_GetText} $apacheConfigPort $R8
+		${NSD_GetText} $apache_ConfigServerName $R7
+		${NSD_GetText} $apache_ConfigPort $R8
 
 		StrCmp $R7 "" failEmptyServer stepCheckPort
 
@@ -260,11 +257,11 @@ Function leave_PageApache ; Funcion de salida para custom_PageApache.
 			Abort
 
 		leaveActions:
-			!insertmacro ReplaceInFile "$pathApache\conf\httpd.conf" "___AMPC_SERVERNAME___" "$R7"
+			!insertmacro ReplaceInFile "$path_Apache\conf\httpd.conf" "___AMPC_SERVERNAME___" "$R7"
 			Pop $0
 			LogText $0
 
-			!insertmacro ReplaceInFile "$pathApache\conf\httpd.conf" "___AMPC_HTTP_PORT___" "$R8"
+			!insertmacro ReplaceInFile "$path_Apache\conf\httpd.conf" "___AMPC_HTTP_PORT___" "$R8"
 			Pop $0
 			LogText $0
 
@@ -301,15 +298,15 @@ Function custom_PageMariadb
 
 			${NSD_CreateLabel} 0 0 100% 8u "$(i18n_MARIADB_PASS)"
 			${NSD_CreatePassword} 0 12u 80% 12u ""
-			Pop $mariadbConfigPass
+			Pop $mariadb_ConfigPass
 
 			${NSD_CreateLabel} 0 36u 100% 8u "$(i18n_MARIADB_PASSCHECK)"
 			${NSD_CreatePassword} 0 48u 80% 12u ""
-			Pop $mariadbConfigCheck
+			Pop $mariadb_ConfigCheck
 
 			${NSD_CreateLabel} 0 72u 100% 8u "$(i18n_MARIADB_PORT)"
 			${NSD_CreateNumber} 0 84u 20% 12u "3306"
-			Pop $mariadbConfigPort
+			Pop $mariadb_ConfigPort
 
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
 			Pop $R1
@@ -326,9 +323,9 @@ Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
 		LogText "# leave_PageMariaDB #"
 		LogText "#####################"
 		
-		${NSD_GetText} $mariadbConfigPass $R0
-		${NSD_GetText} $mariadbConfigCheck $R1
-		${NSD_GetText} $mariadbConfigPort $R2
+		${NSD_GetText} $mariadb_ConfigPass $R0
+		${NSD_GetText} $mariadb_ConfigCheck $R1
+		${NSD_GetText} $mariadb_ConfigPort $R2
 
 		StrCmp $R0 "" failEmptyPass stepPassMatch
 
@@ -371,16 +368,19 @@ Section -sectionInit
 	; aqui y no antes, es porque desde este punto hay garantia absoluta de la ruta
 	; de instalacion y, por tanto, un lugar donde almacenar el archivo.
 	LogSet on
-	LogText "${PACKAGE} ${AMPC_VERSION}"
-	LogText "${COMPILED_STAMP}"
+	LogText "########################################################################################################"
+	LogText "########################################################################################################"
+	LogText "########################################################################################################"
+	LogText "		${PACKAGE}"
+	LogText "		${AMPC_VERSION}"
+	LogText "		${COMPILED_STAMP}"
+	LogText "########################################################################################################"
 
 	${If} $prevInstallAMPc == "none"
 		; Si es una instalacion nueva, se crea el directorio.
 		; El directorio se crea inmediatamente para asegurar que el LOG tenga donde
 		; almacenarse y, asi, se registre todo el proceso de instalacion.
 		CreateDirectory "$INSTDIR"
-
-		DetailPrint "Creando desinstalador"
 
 	${Else}
 		; Si se detecto una instalacion previa, se detienen los servicios de 
@@ -393,21 +393,7 @@ Section -sectionInit
 		nsExec::ExecToStack /OEM 'net stop MariaDB'
 		Pop $0
 
-		DetailPrint "Actualizando desinstalador"
-
 	${EndIf}
-
-	; Se registra el desinstalador.
-	WriteUninstaller "$INSTDIR\uninstall-ampc.exe"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${PACKAGE}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayIcon" "$INSTDIR\uninstall-ampc.exe"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "InstallLocation" "$INSTDIR"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "UninstallString" "$INSTDIR\uninstall-ampc.exe"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion" "${AMPC_VERSION}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLInfoAbout" "${AMPC_URL}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLUpdateInfo" "${URL_UPDATE}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "HelpLink" "${URL_HELP}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${AMPC_PUBLISHER}"
 
 	DetailPrint "Creando acceso directo a web del proyecto"
 	WriteIniStr "$INSTDIR\${PACKAGE}.url" "InternetShortcut" "URL" "${AMPC_URL}"
@@ -420,6 +406,7 @@ Section -sectionInit
 	Pop $backSlashInstDir
 	LogText $backSlashInstDir
 
+	; Se registran valores de la instalacion actual, para futuras actualizaciones.
 	WriteRegDWORD ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "LangInstall" "$LANGUAGE"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${AMPC_VERSION}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VER_BUILD}"
@@ -525,7 +512,7 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 
 	SectionIn RO
 
-	StrCpy $pathApache "$INSTDIR\Apache"
+	StrCpy $path_Apache "$INSTDIR\Apache"
 
 	DetailPrint "Instalando Apache HTTP..."
 
@@ -538,19 +525,20 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 		File /oname=favicon.ico media-src\ampc.ico
 	SetOutPath "$INSTDIR\htdocs\cgi-bin"
 		File "www-src\printenv.pl"
-	SetOutPath "$pathApache\conf"
+	SetOutPath "$path_Apache\conf"
 		File "config-src\httpd.conf"
 
 	${If} $prevInstallAMPc == "none"
 		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 		; configuracion httpd.conf de Apache HTTP.
-		!insertmacro ReplaceInFile "$pathApache\conf\httpd.conf" "___AMPC_PATH___" "$backSlashInstDir"
+		!insertmacro ReplaceInFile "$path_Apache\conf\httpd.conf" "___AMPC_PATH___" "$backSlashInstDir"
 		Pop $R0
 		LogText $R0
 	${EndIf}
 
+	; Se registra la version instalada y la ruta de instalacion, para futuras versiones.
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache" "${VERSION_APACHE}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathApache" "$pathApache"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "path_Apache" "$path_Apache"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -563,14 +551,15 @@ Section "MariaDB Community Server (${VERSION_MARIADB})" section_Mariadb
 
 	SectionIn RO
 
-	StrCpy $pathMariadb "$INSTDIR\MariaDB"
+	StrCpy $path_Mariadb "$INSTDIR\MariaDB"
 
 	DetailPrint "Instalando MariaDB..."
 	SetOverwrite ifdiff
 		!include "bin-src\mariadb\files.nsh" ; Incluye archivos del paquete.
 
+	; Se registra la version instalada y la ruta de instalacion, para futuras versiones.
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${VERSION_MARIADB}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$pathMariadb"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "path_Mariadb" "$path_Mariadb"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -584,14 +573,14 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		SectionIn RO
 
-		StrCpy $pathPhp "$INSTDIR\PHP"
+		StrCpy $path_Php "$INSTDIR\PHP"
 
 		DetailPrint "Instalando PHP..."
 		SetOverwrite ifdiff
 			!include "bin-src\php\files.nsh" ; Incluye archivos del paquete.
 
 		SetOverwrite off
-		SetOutPath "$pathPhp"
+		SetOutPath "$path_Php"
 			File "config-src\php.ini"
 		SetOutPath "$INSTDIR\htdocs"
 			File "www-src\phpinfo.php"
@@ -599,13 +588,14 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 		${If} $prevInstallAMPc == "none"
 			; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 			; configuracion php.ini de PHP.
-			!insertmacro ReplaceInFile "$pathPhp\php.ini" "___AMPC_PATH___" "$backSlashInstDir"
+			!insertmacro ReplaceInFile "$path_Php\php.ini" "___AMPC_PATH___" "$backSlashInstDir"
 			Pop $R0
 			LogText $R0
 		${EndIf}
 
+		; Se registra la version instalada y la ruta de instalacion, para futuras versiones.
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${VERSION_PHP}"
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
+		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "path_Php" "$path_Php"		
 	SectionEnd
 
 	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" section_CACERT
@@ -615,14 +605,15 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		SectionIn RO
 
-		StrCpy $pathCACERT "$pathPhp\extras\ssl"
+		StrCpy $path_Cacert "$path_Php\extras\ssl"
 
 		SetOverwrite ifdiff
-		SetOutPath "$pathCACERT"
+		SetOutPath "$path_Cacert"
 			File "bin-src\cacert\cacert.pem"
 
+		; Se registra la version instalada y la ruta de instalacion, para futuras versiones.
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${VERSION_CACERT}"
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
+		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "path_Cacert" "$path_Cacert"
 	SectionEnd
 SectionGroupEnd
 
@@ -634,14 +625,15 @@ Section "phpMyAdmin (${VERSION_PMA})" section_Pma
 	LogText "#     phpMyAdmin     #"
 	LogText "######################"
 
-	StrCpy $pathPMA "$INSTDIR\htdocs\phpmyadmin"
+	StrCpy $path_PMA "$INSTDIR\htdocs\phpmyadmin"
 
 	DetailPrint "Instalando phpMyAdmin..."
 	SetOverwrite ifdiff
 		!include "bin-src\phpmyadmin\files.nsh" ; Incluye archivos del paquete.
 
+	; Se registra la version instalada y la ruta de instalacion, para futuras versiones.
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA" "${VERSION_PMA}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA" "$pathPMA"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "path_PMA" "$path_PMA"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -652,15 +644,34 @@ Section /O "Adminer (${VERSION_ADMINER})" section_Adminer
 	LogText "#      Adminer       #"
 	LogText "######################"
 
-	StrCpy $pathAdminer "$INSTDIR\htdocs\adminer"
+	StrCpy $path_Adminer "$INSTDIR\htdocs\adminer"
 
 	DetailPrint "Instalando Adminer..."
 	SetOverwrite ifdiff
-	SetOutPath "$pathAdminer"
+	SetOutPath "$path_Adminer"
 		File /oname=index.php bin-src\adminer\adminer-${VERSION_ADMINER}.php
 	
+	; Se registra la version instalada y la ruta de instalacion, para futuras versiones.
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer" "${VERSION_ADMINER}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "path_Adminer" "$path_Adminer"
+SectionEnd
+
+Section -uninstaller
+	LogText "################ DESINSTALADOR"
+
+	DetailPrint "Creando desinstalador"
+
+	; Se registra el desinstalador.
+	WriteUninstaller "$INSTDIR\uninstall-ampc.exe"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${PACKAGE}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayIcon" "$INSTDIR\uninstall-ampc.exe"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "InstallLocation" "$INSTDIR"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "UninstallString" "$INSTDIR\uninstall-ampc.exe"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion" "${AMPC_VERSION}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLInfoAbout" "${AMPC_URL}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLUpdateInfo" "${URL_UPDATE}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "HelpLink" "${URL_HELP}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${AMPC_PUBLISHER}"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -720,6 +731,9 @@ Section Uninstall
 	DetailPrint $0
 	DetailPrint $1
 
+	DetailPrint "Eliminando archivos de Apache HTTP"
+	RMDir /r /REBOOTOK "$INSTDIR\Apache"
+
 	DetailPrint "Eliminando servicio MariaDB"
 	nsExec::ExecToStack /OEM 'sc delete MariaDB'
 	Pop $0
@@ -731,9 +745,6 @@ Section Uninstall
 	Delete "$INSTDIR\${PACKAGE}.url"
 	Delete "$INSTDIR\uninstall-ampc.exe"
 	Delete "$INSTDIR\updater-ampc.exe"
-
-	DetailPrint "Eliminando archivos de Apache HTTP"
-	RMDir /r /REBOOTOK "$INSTDIR\Apache"
 
 	DetailPrint "Eliminando archivos de MariaDB"
 	RMDir /r /REBOOTOK "$INSTDIR\MariaDB"

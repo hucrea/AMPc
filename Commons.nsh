@@ -46,14 +46,14 @@ SetCompressor /SOLID /FINAL lzma
 ;		VERSION_PHP 	=> PHP.
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
-;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
+;		VERSION_CACERT 	=> Mozilla CA certificate (formato AA.MM.DD).
 ;
 !define VERSION_APACHE  "2.4.63"
 !define VERSION_MARIADB "11.4.7"
-!define VERSION_PHP     "8.3.23"
+!define VERSION_PHP     "8.3.24"
 !define VERSION_PMA     "5.2.2"
 !define VERSION_ADMINER "5.3.0"
-!define VERSION_CACERT  "20.05.25"
+!define VERSION_CACERT  "25.07.15"
 ;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
