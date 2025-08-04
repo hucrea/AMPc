@@ -1,4 +1,6 @@
 # AMPc
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhucrea%2FAMPc.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhucrea%2FAMPc?ref=badge_shield)
+
 
 > Instalador WAMP minimalista para Windows, inspirado en AppServ pero con componentes actualizados y sin paneles innecesarios.
 
@@ -60,3 +62,6 @@ AMPc fue creado para entornos de desarrollo donde:
   ```bash
   httpd -k start
   mysqld --console
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhucrea%2FAMPc.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhucrea%2FAMPc?ref=badge_large)
