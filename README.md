@@ -1,5 +1,6 @@
 # AMPc for Windows
 ![GitHub Release](https://img.shields.io/github/v/release/hucrea/AMPc?color=%2523585858&link=https://github.com/hucrea/AMPc/releases/latest)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhucrea%2FAMPc.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhucrea%2FAMPc?ref=badge_shield)
 > Instalador WAMP mínimo para Windows, con componentes actualizados y sin paneles innecesarios.
 
 ## ¿Qué es AMPc?
@@ -57,5 +58,15 @@ Porque a veces solo quieres:
 - PHP ya está enlazado con Apache (`LoadModule` y `PHPIniDir` configurados).
 - Para iniciar o detener servicios, usa:
   ```bash
-  Apache2.4 -k start
-  MariaDB --console
+  httpd -k start
+  mysqld --console
+
+## Licencia
+> [!NOTE]
+> Los componentes incluidos en las versiones compiladas se encuentran en https://github.com/hucrea/AMPc-bin
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhucrea%2FAMPc.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhucrea%2FAMPc?ref=badge_large)
+
+AMPc está disponible bajo Mozilla Public License 2.0.
+
+Las versiones compiladas de AMPc incluye software licenciado bajo otras licencias, citadas en [CREDITS.md](CREDITS.md). Para consultar el código de los componentes distribuidos, dirígase a https://github.com/hucrea/AMPc-bin
