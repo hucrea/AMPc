@@ -1,7 +1,18 @@
 # AMPc for Windows
+
 ![GitHub Release](https://img.shields.io/github/v/release/hucrea/AMPc?color=%2523585858&link=https://github.com/hucrea/AMPc/releases/latest)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhucrea%2FAMPc.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhucrea%2FAMPc?ref=badge_shield)
-> Instalador WAMP mínimo para Windows, con componentes actualizados y sin paneles innecesarios.
+
+AMPc es un instalador de entorno WAMP, iniciales de:
+
+```
+Apache HTTP Server 2.4.65
+MariaDB Community Server 11.4.8
+PHP 8.3.25
+ca-cert (12 agosto 2025)
+```
+
+Enfocado en una experiencia vanilla, AMPc carece de paneles de control o servicios ajenos a los propios componentes del entorno.
 
 ## ¿Qué es AMPc?
 
@@ -17,6 +28,7 @@ Durante la instalación se verifica que exista Visual C++ Redistributable y se o
 Posterior a la instalación, un breve asistente te ayudará a configurar rapidamente Apache HTTP Server, establecer la contraseña y puerto para MariaDB, y ejecutar ambos servicios.
 
 Con AMPc obtienes:
+
 - **Apache HTTP Server, MariaDB Community Server y PHP actualizados**, listos para usarse.
 - Configuración mínima lista para funcionar.
 - Instalación rápida, sin servicios ajenos al stack en segundo plano.
@@ -33,13 +45,16 @@ Con AMPc obtienes:
 ## ¿Por qué AMPc?
 
 Porque a veces solo quieres:
+
 - Instalar el entorno.
 - Configurar el resto a mano.
 - Tener control total sin intermediarios.
 - Actualizar de forma segura los componentes.
 
 > [!IMPORTANT]
+> 
 > ## AMPc NO fue creado para entornos de producción
+> 
 > Está específicamente diseñado para entornos de desarrollo. Evite su uso en servidores de producción.
 
 ## Instalación
@@ -54,14 +69,20 @@ Porque a veces solo quieres:
 ## Uso básico
 
 - Configura Apache en `<ruta de instalación>\Apache\conf\httpd.conf`.
+
 - Configura MariaDB en `<ruta de instalación>\MariaDB\data\my.ini`.
+
 - PHP ya está enlazado con Apache (`LoadModule` y `PHPIniDir` configurados).
+
 - Para iniciar o detener servicios, usa:
+  
   ```bash
   httpd -k start
   mysqld --console
+  ```
 
 ## Licencia
+
 > [!NOTE]
 > Los componentes incluidos en las versiones compiladas se encuentran en https://github.com/hucrea/AMPc-bin
 

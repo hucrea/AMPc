@@ -11,6 +11,7 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------
 
+DEPRECATED_FILE SINCE 0.19.5
 Updater.nsi - Genera ejecutable para consulta y descarga de actualizaciones.
 
 NOTAS:

@@ -106,6 +106,12 @@ Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 
 ; Proceso de instalacion.
 !insertmacro MUI_PAGE_LICENSE "media-src\license.rtf"
+!define MUI_PAGE_HEADER_TEXT "Términos Adicionales"
+!define MUI_PAGE_HEADER_SUBTEXT "Información importante sobre componentes de terceros"
+!define MUI_LICENSEPAGE_TEXT_TOP "Lea los siguientes términos adicionales:"
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "Presione Acepto si está de acuerdo con los términos adicionales."
+!define MUI_LICENSEPAGE_BUTTON "&Acepto"
+!insertmacro MUI_PAGE_LICENSE "media-src\license-components.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_FINISHPAGE_NOAUTOCLOSE
@@ -682,7 +688,7 @@ SectionGroupEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; phpMyAdmin.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "phpMyAdmin (${VERSION_PMA})" section_Pma
+Section /O "phpMyAdmin (${VERSION_PMA})" section_Pma
 	LogText "######################"
 	LogText "#     phpMyAdmin     #"
 	LogText "######################"
