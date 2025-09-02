@@ -1,7 +1,7 @@
 # Lista de cambios
 
 ## 0.19.5
-
+- 🆕 Ejecutable firmado con PGP
 - 🆕 Añadida Lista de Cambios (este archivo)
 - 🆕 Las licencias de los componentes incluidos se muestra durante la instalación y la actualización.
 - 🛠 Actualizado Apache HTTP Server a la versión 2.4.65 de ApacheLounge.
