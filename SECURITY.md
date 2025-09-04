@@ -6,7 +6,7 @@ La última versión estable es la única con soporte oficial. El último prelanz
 
 | Versión | Soportada          | Rama |
 | ------- | ------------------ | ---- |
-| 26.x.y   | :white_check_mark: | next |
+| 26.x.y   | :x:                | next |
 | 0.19.x   | :white_check_mark: | main |
 | 0.18.x   | :x:                | 😧  |
 
