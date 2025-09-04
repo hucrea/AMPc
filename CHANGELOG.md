@@ -1,6 +1,11 @@
-# Lista de cambios
+[README.md](README.md) | [Lista de Cambios](CHANGELOG.md) | [Lanzamiento Actual](release/README.md) | [Licencias y Créditos](LICENSES.md)
+---
+# AMPc: lista de cambios
 
-## 0.19.5
+> Última actualización: 03 de septiembre de 2025
+
+### ``0.19.5``
+02 de septiembre de 2025
 - 🆕 Ejecutable firmado con PGP
 - 🆕 Añadida Lista de Cambios (este archivo)
 - 🆕 Las licencias de los componentes incluidos se muestra durante la instalación y la actualización.
