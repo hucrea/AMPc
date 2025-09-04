@@ -15,13 +15,13 @@ Para fines practicos, ``{{version}}`` será utilizado para referirse a la versi�
 
 La compilación y firmas de integridad están disponibles en la carpeta que acompaña este README.md, y corresponden a:
 
-``
+```
     ampc-{{version}}.exe            [ Distribución compilada. Archivo omitido por <.gitignore>.]
     ampc-{{version}}.exe.sig        [ Firma PGP para la distribución compilada.]
     ampc-{{version}}.exe.sha256     [ SHA-256 de la distribución compilada.]
     ampc-{{version}}.exe.sha256.sig [ Firma PGP para el SHA-256 de la distribución.]
     public-key.asc                  [ Clave pública PGP para validar firmas.]
-``
+```
 
 El contenido de esta carpeta es actualizado cuando se genera una nueva versión, y corresponden a los archivos adjuntados en [las notas de la versión](https://github.com/hucrea/AMPc/releases/latest).
 
