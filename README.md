@@ -103,4 +103,4 @@ PackageLicenseDeclared: MPL-2.0
 PackageCopyrightText: Copyright © 2025 Hu SpA
 ```
 
-Las versiones compiladas de AMPc incluye software licenciado bajo otras licencias, citadas en [CREDITS.md](CREDITS.md). Para consultar el código de los componentes distribuidos, dirígase a https://github.com/hucrea/AMPc-bin
+Las versiones compiladas de AMPc incluye software licenciado bajo otras licencias, citadas en [LICENCES.md](LICENCES.md). Para consultar el código de los componentes distribuidos, dirígase a https://github.com/hucrea/AMPc-bin
