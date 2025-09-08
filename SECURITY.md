@@ -2,13 +2,7 @@
 
 ## Versión soportada
 
-La última versión estable es la única con soporte oficial. El último prelanzamiento se considera abierto a retroalimentación, pero no cuenta con soporte.
-
-| Versión | Soportada          | Rama |
-| ------- | ------------------ | ---- |
-| 26.x.y   | :x:                | next |
-| 0.19.x   | :white_check_mark: | main |
-| 0.18.x   | :x:                | 😧  |
+La [última versión estable](https://github.com/hucrea/AMPc/releases/latest/) es la única con soporte oficial.
 
 ## Reportar una vulnerabilidad
 
