@@ -167,3 +167,31 @@ LangString i18n_DESCR_PMA ${LANG_PORTUGUESEBR} "Administrador de banco de dados,
 LangString i18n_DESCR_ADMINER ${LANG_SPANISH} "Alternativa ultra ligera a phpMyAdmin"
 LangString i18n_DESCR_ADMINER ${LANG_ENGLISH} "Ultra-lightweight alternative to phpMyAdmin"
 LangString i18n_DESCR_ADMINER ${LANG_PORTUGUESEBR} "Alternativa ultraleve ao phpMyAdmin"
+
+LangString i18n_LICENSE_TITLE ${LANG_SPANISH} "Licencia de la distribución"
+LangString i18n_LICENSE_TITLE ${LANG_ENGLISH} "The text"
+LangString i18n_LICENSE_TITLE ${LANG_PORTUGUESEBR} "O texto"
+
+LangString i18n_LICENSE_SUBTITLE ${LANG_SPANISH} "Revise la licencia de la distribución, deberá aceptarla para continuar."
+LangString i18n_LICENSE_SUBTITLE ${LANG_ENGLISH} "The text"
+LangString i18n_LICENSE_SUBTITLE ${LANG_PORTUGUESEBR} "O texto"
+
+LangString i18n_LICENSE_THIRD_TITLE ${LANG_SPANISH} "Licencias de los componentes"
+LangString i18n_LICENSE_THIRD_TITLE ${LANG_ENGLISH} "The text"
+LangString i18n_LICENSE_THIRD_TITLE ${LANG_PORTUGUESEBR} "O texto"
+
+LangString i18n_LICENSE_THIRD_SUBTITLE ${LANG_SPANISH} "Los componentes poseen licencias diferentes a la distribución."
+LangString i18n_LICENSE_THIRD_SUBTITLE ${LANG_ENGLISH} "The text"
+LangString i18n_LICENSE_THIRD_SUBTITLE ${LANG_PORTUGUESEBR} "O texto"
+
+LangString i18n_LICENSE_THIRD_TEXTTOP ${LANG_SPANISH} "AMPc es una distribución WAMP, cuyos componentes poseen licencias propias:"
+LangString i18n_LICENSE_THIRD_TEXTTOP ${LANG_ENGLISH} "The text"
+LangString i18n_LICENSE_THIRD_TEXTTOP ${LANG_PORTUGUESEBR} "O texto"
+
+LangString i18n_LICENSE_THIRD_TEXTTBOTTOM ${LANG_SPANISH} "Presione Acepto si está de acuerdo con las licencias de los componentes."
+LangString i18n_LICENSE_THIRD_TEXTTBOTTOM ${LANG_ENGLISH} "The text"
+LangString i18n_LICENSE_THIRD_TEXTTBOTTOM ${LANG_PORTUGUESEBR} "O texto"
+
+LangString i18n_LICENSE_THIRD_BUTTON ${LANG_SPANISH} "&Acepto"
+LangString i18n_LICENSE_THIRD_BUTTON ${LANG_ENGLISH} "The text"
+LangString i18n_LICENSE_THIRD_BUTTON ${LANG_PORTUGUESEBR} "O texto"

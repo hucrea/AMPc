@@ -11,21 +11,16 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------
 
+DEPRECATED_FILE SINCE 0.19.6
 CommonsConstants.nsh - Constantes comunes entre archivos *.NSI del proyecto.
 
 */
 
-; Nivel de detalle durante la compilacion.
-;!verbose 3
-;
-; Algoritmo de compresion.
-SetCompressor /SOLID /FINAL lzma
-;
 ; Establece marcas de tiempo para la compilacion actual.
 ;   TIME_STAMP      => Marca numerica formato {anno}{mes}{dia}_{hora}{min}{seg}
 ;   COMPILE_STAMP   => Marca para utilizar en BrandingText.
-!define /date TIME_STAMP    "%Y%m%d_%H%M%S"
-!define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}"
+!define /date TIME_STAMP    "%Y%m%d_%H%M%S";ampc.nsi
+!define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}";ampc.nsi
 ;
 ; BUILD - Entorno de la build. Valores: dev|rc|prod.
 !define BUILD "dev"
@@ -37,10 +32,10 @@ SetCompressor /SOLID /FINAL lzma
 ;		VER_PATCH => Version parche.
 ;		VER_BUILD => Version de la compilacion.
 ;
-!define VER_MAJOR "0"
-!define VER_MENOR "19"
-!define VER_PATCH "5"
-!define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
+!define VER_MAJOR "0";ampc.nsi
+!define VER_MENOR "19";ampc.nsi
+!define VER_PATCH "6";ampc.nsi
+!define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}";ampc.nsi
 ;
 ; VERSION_*
 ;	Versiones declarada de los componentes incluidos en la compilacion..
@@ -50,7 +45,6 @@ SetCompressor /SOLID /FINAL lzma
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
 ;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-;       VERSION_LIBCURL => cURL. No implementado.
 ;
 !define VERSION_APACHE  "2.4.65"
 !define VERSION_MARIADB "11.4.8"
@@ -58,7 +52,6 @@ SetCompressor /SOLID /FINAL lzma
 !define VERSION_PMA     "5.2.2"
 !define VERSION_ADMINER "5.3.0"
 !define VERSION_CACERT  "25.08.12"
-;!define VERSION_LIBCURL "8.6.0"
 ;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
@@ -94,33 +87,3 @@ SetCompressor /SOLID /FINAL lzma
 !define REGKEY_ROOT     "HKLM"
 !define REGKEY_PACKAGE  "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
 !define REGKEY_UNINST   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
-
-###############################################################################
-; PREFERENCIAS DE LA COMPILACION.
-###############################################################################
-;
-; Nombre del paquete.
-Name "${PACKAGE}"
-;
-; Titulo para el paquete.
-Caption "${PACKAGE}"
-;
-; Texto al pie del paquete.
-BrandingText "${AMPC_VERSION} - ${COMPILED_STAMP}"
-;
-; Manifest Windows 10 o superior.
-ManifestSupportedOS Win10
-;
-; Codificacion.
-Unicode True
-;
-; Requiere privilegios de Administrador.
-RequestExecutionLevel admin
-;
-; Informacion de Version.
-VIProductVersion "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
-VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"

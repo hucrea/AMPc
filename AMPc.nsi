@@ -1,60 +1,64 @@
 ﻿/*
+	AMPc - Distribucion WAMP ligera.
+	Copyright (C) 2025  Hu SpA - https://hucreativa.cl/.
 
-AMPc for Windows - Entorno web local para Windows
-Copyright (C) 2025  Hu SpA ( https://hucreativa.cl )
+	This file is part of AMPc for Windows.
 
-This file is part of AMPc for Windows.
+	This Source Code Form is subject to the terms of the Mozilla Public
+	License, v. 2.0. If a copy of the MPL was not distributed with this file,
+	You can obtain one at http://mozilla.org/MPL/2.0/.
 
-This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this file,
-You can obtain one at http://mozilla.org/MPL/2.0/.
+	///////////////////////////
+	
+	AMPc.nsi - Archivo principal de la distribucion.
 
--------------------------------------------------------------------------------
-
-AMPc.nsi - Archivo principal del paquete.
-
-NOTAS:
-+ Algunas constantes estan ubicadas en el archivo Commons.nsi y son
- compartidas por otros archivos *.NSI del proyecto.
-+ Todos los caracteres especiales se han omitido para mayor compatibilidad.
+	Tildes y caracteres especiales omitidos por compatibilidad.
 
 */
 
-###############################################################################
+; Nivel de detalle durante la compilacion.
+;!verbose 3
+
+; Algoritmo de compresion.
+SetCompressor /SOLID /FINAL lzma
+
+###############################
 ; CONSTANTES DEL PAQUETE.
-###############################################################################
-; PACKAGE - Nombre del paquete a compilar.
+###############################
+; Nombre del paquete a compilar.
 !define PACKAGE "AMPc for Windows"
-;
-; FILE_STATUS - Entorno final de este archivo compilado. Valores: dev|prod.
-!define FILE_STATUS "prod"
-;
-; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
-!define VER_F_VIP "${AMPC_VERSION}.0"
-;
-; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
+
+; Version apta para VIProductVersion (no cumple SemVer).
+!define VER_F_VIP "${AMPC_VERSION}.1"
+
+; URL de descarga para Visual C++ Redistributable.
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
-;
-; Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
+
+# Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
 !include "Commons.nsh"
 
 ###############################################################################
 ; DETALLES DE LA COMPILACION ACTUAL.
 ###############################################################################
-; Nombre del instalador EXE compilado.
+Unicode True
+Name "${PACKAGE}"
+Caption "${PACKAGE}"
+BrandingText "${AMPC_VERSION} - ${COMPILED_STAMP}"
+AllowRootDirInstall true
 OutFile "ampc-${VER_BUILD}.exe"
 InstallDir "$PROGRAMFILES\AMPc"
-;
-; Detalles durante la instalacion.
+ManifestSupportedOS Win10
+RequestExecutionLevel admin
 ShowInstDetails hide
-;
-; Detalles durante la desinstalacion.
 ShowUnInstDetails hide
-;
-; Habilita instalacion en carpeta raiz.
-AllowRootDirInstall true
-;
-; Detalles del paquete (Archivo EXE > Propiedades > Detalles).
+
+; Version Information
+VIProductVersion "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
+VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
 VIAddVersionKey /LANG=0 "LegalTrademarks" "${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
 VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
 
@@ -72,7 +76,6 @@ Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
 Var pathApache ; Almacena ruta de instalacion para Apache.
 Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
 Var pathPhp ; Almacena ruta de instalacion para PHP.
-;Var pathLIBCURL ; Almacena ruta de instalacion para libcurl.
 Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
 Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
 Var pathAdminer ; Almacena ruta de instalacion para Adminer.
@@ -105,12 +108,14 @@ Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 !define MUI_COMPONENTSPAGE_SMALLDESC
 
 ; Proceso de instalacion.
+!define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_TITLE)"
+!define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_SUBTITLE)"
 !insertmacro MUI_PAGE_LICENSE "media-src\license.rtf"
-!define MUI_PAGE_HEADER_TEXT "Términos Adicionales"
-!define MUI_PAGE_HEADER_SUBTEXT "Información importante sobre componentes de terceros"
-!define MUI_LICENSEPAGE_TEXT_TOP "Lea los siguientes términos adicionales:"
-!define MUI_LICENSEPAGE_TEXT_BOTTOM "Presione Acepto si está de acuerdo con los términos adicionales."
-!define MUI_LICENSEPAGE_BUTTON "&Acepto"
+!define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_THIRD_TITLE)"
+!define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_THIRD_SUBTITLE)"
+!define MUI_LICENSEPAGE_TEXT_TOP "$(i18n_LICENSE_THIRD_TEXTTOP)"
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "$(i18n_LICENSE_THIRD_TEXTTBOTTOM)"
+!define MUI_LICENSEPAGE_BUTTON "$(i18n_LICENSE_THIRD_BUTTON)"
 !insertmacro MUI_PAGE_LICENSE "media-src\license-components.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
@@ -172,7 +177,6 @@ Function .onInit
 	StrCpy $pathApache 	"unknow"
 	StrCpy $pathMariadb	"unknow"
 	StrCpy $pathPhp 	"unknow"
-	;StrCpy $pathLIBCURL "unknow"
 	StrCpy $pathCACERT 	"unknow"
 	StrCpy $pathPMA 	"unknow"
 	StrCpy $pathAdminer "unknow"
@@ -444,22 +448,6 @@ Section -sectionInit
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Actualizador
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-/*Section /O "Actualizador" section_Update
-	LogText "######################"
-	LogText "#  Actualizador	  #"
-	LogText "######################"
-
-	DetailPrint "Instalando Actualizador..."
-
-	SetOutPath $INSTDIR
-	SetOverwrite ifdiff
-		File 'bin-src\ampc\update-ampc.exe'
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
-SectionEnd*/
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Visual C++ Redistributable.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section -sectionVCRedist
@@ -614,76 +602,58 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PHP.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
-	Section "Núcleo" section_PhpCore
-		LogText "#######################"
-		LogText "#         PHP         #"
-		LogText "#######################"
+Section "PHP (${VERSION_PHP})" section_Php
+	LogText "#######################"
+	LogText "#         PHP         #"
+	LogText "#######################"
 
-		SectionIn RO
+	SectionIn RO
 
-		StrCpy $pathPhp "$INSTDIR\PHP"
+	StrCpy $pathPhp "$INSTDIR\PHP"
 
-		DetailPrint "Instalando PHP..."
-		SetOverwrite ifdiff
-			!include "bin-src\php\files.nsh" ; Incluye archivos del paquete.
+	DetailPrint "Instalando PHP..."
+	SetOverwrite ifdiff
+		!include "bin-src\php\files.nsh" ; Incluye archivos del paquete.
 
-		SetOverwrite off
-		SetOutPath "$pathPhp"
-			File "config-src\php.ini"
-		SetOutPath "$INSTDIR\htdocs"
-			File "www-src\phpinfo.php"
+	SetOverwrite off
+	SetOutPath "$pathPhp"
+		File "config-src\php.ini"
+	SetOutPath "$INSTDIR\htdocs"
+		File "www-src\phpinfo.php"
 
-		${If} $prevInstallAMPc == "none"
-			; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
-			; configuracion php.ini de PHP.
-			Push '___AMPC_PATH___'
-			Push $backSlashInstDir
-			Push all
-			Push all
-			Push '$pathPhp\php.ini'
-			Call func_ReplaceInFile
-			Pop $R0
-			LogText $R0
-		${EndIf}
+	${If} $prevInstallAMPc == "none"
+		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
+		; configuracion php.ini de PHP.
+		Push '___AMPC_PATH___'
+		Push $backSlashInstDir
+		Push all
+		Push all
+		Push '$pathPhp\php.ini'
+		Call func_ReplaceInFile
+		Pop $R0
+		LogText $R0
+	${EndIf}
 
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${VERSION_PHP}"
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
-	SectionEnd
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${VERSION_PHP}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
+SectionEnd
 
-/*	Section "libcurl (${VERSION_LIBCURL})" section_Libcurl
-		LogText "##############################"
-		LogText "#           libcurl          #"
-		LogText "##############################"
+Section "ca-cert (${VERSION_CACERT})" section_CACERT
+	LogText "##############################"
+	LogText "#         cacert.pem         #"
+	LogText "##############################"
 
-		StrCpy $pathLIBCURL "$COMMONFILES64\AMPc"
+	SectionIn RO
 
-		SetOverwrite ifdiff
-		SetOutPath "$pathLIBCURL"
-			File "bin-src\libcurl\libcurl_a.lib"
-			File "bin-src\libcurl\libcurl_a.pdb"
+	StrCpy $pathCACERT "$pathPhp\extras\ssl"
 
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionLIBCURL" "${VERSION_LIBCURL}"
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathLIBCURL" "$pathLIBCURL"
-	SectionEnd*/
+	SetOverwrite ifdiff
+	SetOutPath "$pathCACERT"
+		File "bin-src\cacert\cacert.pem"
 
-	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" section_CACERT
-		LogText "##############################"
-		LogText "#         cacert.pem         #"
-		LogText "##############################"
-
-		SectionIn RO
-
-		StrCpy $pathCACERT "$pathPhp\extras\ssl"
-
-		SetOverwrite ifdiff
-		SetOutPath "$pathCACERT"
-			File "bin-src\cacert\cacert.pem"
-
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${VERSION_CACERT}"
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
-	SectionEnd
-SectionGroupEnd
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${VERSION_CACERT}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
+SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; phpMyAdmin.
@@ -699,8 +669,8 @@ Section /O "phpMyAdmin (${VERSION_PMA})" section_Pma
 	SetOverwrite ifdiff
 		!include "bin-src\phpmyadmin\files.nsh" ; Incluye archivos del paquete.
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA" "${VERSION_PMA}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA" "$pathPMA"
+	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA" "${VERSION_PMA}"
+	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA" "$pathPMA"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -718,22 +688,20 @@ Section /O "Adminer (${VERSION_ADMINER})" section_Adminer
 	SetOutPath "$pathAdminer"
 		File /oname=index.php bin-src\adminer\adminer-${VERSION_ADMINER}.php
 	
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer" "${VERSION_ADMINER}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
+	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer" "${VERSION_ADMINER}"
+	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Describe las secciones declaradas.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Apache} "$(i18n_DESCR_APACHE)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_PhpCore} "$(i18n_DESCR_PHP)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem" ; DEPRECATED.
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Apache} "$(i18n_DESCR_APACHE)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem" ;
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
-	;!insertmacro MUI_DESCRIPTION_TEXT ${section_Libcurl} "libcurl ${VERSION_LIBCURL} binary PHP"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################
