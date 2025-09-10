@@ -25,27 +25,114 @@ SetCompressor /SOLID /FINAL lzma
 ###############################
 ; CONSTANTES DEL PAQUETE.
 ###############################
-; Nombre del paquete a compilar.
-!define PACKAGE "AMPc for Windows"
+!define /date BUILD_TIMESTAMP   "%Y%m%d_%H%M%S"
+!define BUILD_TIMESTAMP_BRAND   "Compiled at ${__TIME__} on ${__DATE__}"
+
+!define DIST_NAME "AMPc"
+!define SHORTNAME "ampc"
+!define PACKAGE "${DIST_NAME} for Windows"
 
 ; Version apta para VIProductVersion (no cumple SemVer).
-!define VER_F_VIP "${AMPC_VERSION}.1"
+!define VER_F_VIP "${AMPC_VERSION}.${API_LEVEL}"
 
 ; URL de descarga para Visual C++ Redistributable.
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 
-# Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
-!include "Commons.nsh"
+; VER_*
+;	Versionado de AMPc.
+;		VER_MAJOR => Version mayor.
+;		VER_MENOR => Version menor.
+;		VER_PATCH => Version parche.
+;		VER_BUILD => Version de la compilacion.
+;
+;!define YEAR        "25"
+!define RELEASE     "20"
+!define PATCH       "0"
+!define API_LEVEL   "2"
+# DEPRECATED
+!define VER_MAJOR "0" ;DEPRECATED.
+!define VER_MENOR "${RELEASE}"
+!define VER_PATCH "${PATCH}"
+!define VER_BUILD "${AMPC_VERSION}+${BUILD_TIMESTAMP}"
+
+
+
+;---------------
+# DEPRECATED
+; VERSION_*
+;	Versiones declarada de los componentes incluidos en la compilacion..
+;		VERSION_APACHE 	=> Apache HTTP Server.
+;		VERSION_MARIADB => MariaDB Community Server.
+;		VERSION_PHP 	=> PHP.
+;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
+;
+
+# REEMPLAZO
+!define COMP_APACHE_VER     "2.4.65"
+!define COMP_MARIADB_VER    "11.4.8"
+!define COMP_PHP_VER        "8.3.25"
+!define COMP_CACERT_VER     "25.08.12"
+
+;---------------
+# DEPRECATED
+; AMPC_*
+;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
+;	cambiadas para evitar problemas tecnicos y legales.
+;		AMPC_VERSION 	        => Version del paquete, formato SemVer.
+;		AMPC_GUID		        => GUID para el paquete.
+;		AMPC_URL			    => URL oficial del paquete.
+;		AMPC_PUBLISHER	        => Nombre del publicador (aviso marca comercial)
+;		AMPC_PUBLISHER_URL	    => Direccion web del publicador
+;		AMPC_PUBLISHER_COUNTRY  => Pais del publicador.
+;
+!define AMPC_VERSION            "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
+!define AMPC_GUID               "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
+!define AMPC_URL                "https://github.com/hucrea/AMPc"
+!define AMPC_PUBLISHER          "Hu SpA"
+!define AMPC_PUBLISHER_URL      "https://hucreativa.cl"
+!define AMPC_PUBLISHER_COUNTRY  "Chile"
+
+# REEMPLAZO
+!define DIST_VERSION        "${DIST_YEAR}.${DIST_RELEASE}.${DIST_PATCH}"
+!define DIST_GUID           "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
+!define DIST_URL            "https://github.com/hucrea/AMPc"
+!define PUB_NAME            "Hu SpA"
+!define PUB_WEBSITE         "https://hucreativa.cl"
+!define PUB_COUNTRY         "Chile"
+
+;
+; URL_*
+;	Direcciones web utilizadas por el paquete.
+;		URL_UPDATE		=> Consultar nuevas versiones del paquete.
+;		URL_HELP 		=> Ayuda sobre el paquete.
+;
+!define URL_UPDATE  "${AMPC_URL}/releases"
+!define URL_HELP    "${AMPC_URL}/wiki"
+
+!define DIST_URL_UPDATE  "${DIST_URL}/releases"
+!define DIST_URL_HELP    "${DIST_URL}/wiki"
+;
+; REGKEY_*
+;	Claves del registro.
+;		REGKEY_ROOT 	=> Clave raiz en regedit.
+;		REGKEY_PACKAGE 	=> Ruta regedit del instalador.
+;		REGKEY_UNINST 	=> Ruta regedit del desinstalador.
+;
+!define REGKEY_ROOT     "HKLM"
+!define REGKEY_PACKAGE  "Software\${AMPC_PUBLISHER}\${AMPC_GUID}" # DEPRECATED
+!define REGKEY_UNINST   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
+
+!define REGKEY_DIST "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
 
 ###############################################################################
 ; DETALLES DE LA COMPILACION ACTUAL.
 ###############################################################################
 Unicode True
-Name "${PACKAGE}"
+Name "${DIST_NAME}"
 Caption "${PACKAGE}"
-BrandingText "${AMPC_VERSION} - ${COMPILED_STAMP}"
+BrandingText "${AMPC_VERSION} - ${BUILD_TIMESTAMP_BRAND}"
 AllowRootDirInstall true
-OutFile "ampc-${VER_BUILD}.exe"
+OutFile "${SHORTNAME}-${VER_BUILD}.exe"
 InstallDir "$PROGRAMFILES\AMPc"
 ManifestSupportedOS Win10
 RequestExecutionLevel admin
@@ -392,7 +479,7 @@ Section -sectionInit
 	; de instalacion y, por tanto, un lugar donde almacenar el archivo.
 	LogSet on
 	LogText "${PACKAGE} ${AMPC_VERSION}"
-	LogText "${COMPILED_STAMP}"
+	LogText "${BUILD_TIMESTAMP_BRAND}"
 
 	${If} $prevInstallAMPc == "none"
 		; Si es una instalacion nueva, se crea el directorio.
@@ -539,7 +626,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Apache HTTP Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
+Section "Apache HTTP Server (${COMP_APACHE_VER})" section_Apache
 	LogText "######################"
 	LogText "# Apache HTTP Server #"
 	LogText "######################"
@@ -575,14 +662,14 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 		LogText $R0
 	${EndIf}
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache" "${VERSION_APACHE}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache" "${COMP_APACHE_VER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathApache" "$pathApache"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; MariaDB Community Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "MariaDB Community Server (${VERSION_MARIADB})" section_Mariadb
+Section "MariaDB Community Server (${COMP_MARIADB_VER})" section_Mariadb
 	LogText "############################"
 	LogText "# MariaDB Community Server #"
 	LogText "############################"
@@ -595,14 +682,14 @@ Section "MariaDB Community Server (${VERSION_MARIADB})" section_Mariadb
 	SetOverwrite ifdiff
 		!include "bin-src\mariadb\files.nsh" ; Incluye archivos del paquete.
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${VERSION_MARIADB}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${COMP_MARIADB_VER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$pathMariadb"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PHP.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "PHP (${VERSION_PHP})" section_Php
+Section "PHP (${COMP_PHP_VER})" section_Php
 	LogText "#######################"
 	LogText "#         PHP         #"
 	LogText "#######################"
@@ -634,11 +721,11 @@ Section "PHP (${VERSION_PHP})" section_Php
 		LogText $R0
 	${EndIf}
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${VERSION_PHP}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${COMP_PHP_VER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
 SectionEnd
 
-Section "ca-cert (${VERSION_CACERT})" section_CACERT
+Section "ca-cert (${COMP_CACERT_VER})" section_CACERT
 	LogText "##############################"
 	LogText "#         cacert.pem         #"
 	LogText "##############################"
@@ -651,45 +738,8 @@ Section "ca-cert (${VERSION_CACERT})" section_CACERT
 	SetOutPath "$pathCACERT"
 		File "bin-src\cacert\cacert.pem"
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${VERSION_CACERT}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${COMP_CACERT_VER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
-SectionEnd
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; phpMyAdmin.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "phpMyAdmin (${VERSION_PMA})" section_Pma
-	LogText "######################"
-	LogText "#     phpMyAdmin     #"
-	LogText "######################"
-
-	StrCpy $pathPMA "$INSTDIR\htdocs\phpmyadmin"
-
-	DetailPrint "Instalando phpMyAdmin..."
-	SetOverwrite ifdiff
-		!include "bin-src\phpmyadmin\files.nsh" ; Incluye archivos del paquete.
-
-	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA" "${VERSION_PMA}"
-	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA" "$pathPMA"
-SectionEnd
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Adminer.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "Adminer (${VERSION_ADMINER})" section_Adminer
-	LogText "######################"
-	LogText "#      Adminer       #"
-	LogText "######################"
-
-	StrCpy $pathAdminer "$INSTDIR\htdocs\adminer"
-
-	DetailPrint "Instalando Adminer..."
-	SetOverwrite ifdiff
-	SetOutPath "$pathAdminer"
-		File /oname=index.php bin-src\adminer\adminer-${VERSION_ADMINER}.php
-	
-	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer" "${VERSION_ADMINER}"
-	;WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -700,8 +750,6 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem" ;
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################
