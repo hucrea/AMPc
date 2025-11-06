@@ -16,9 +16,6 @@
 
 */
 
-; Nivel de detalle durante la compilacion.
-;!verbose 3
-
 ; Algoritmo de compresion.
 SetCompressor /SOLID /FINAL lzma
 
@@ -54,8 +51,6 @@ SetCompressor /SOLID /FINAL lzma
 !define VER_MENOR "${RELEASE}"
 !define VER_PATCH "${PATCH}"
 !define VER_BUILD "${AMPC_VERSION}+${BUILD_TIMESTAMP}"
-
-
 
 ;---------------
 # DEPRECATED
@@ -265,8 +260,6 @@ Function .onInit
 	StrCpy $pathMariadb	"unknow"
 	StrCpy $pathPhp 	"unknow"
 	StrCpy $pathCACERT 	"unknow"
-	StrCpy $pathPMA 	"unknow"
-	StrCpy $pathAdminer "unknow"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
@@ -311,10 +304,6 @@ Function custom_PageApache
 		nsDialogs::Create 1018
 			Pop $0
 
-			LogText "#####################"
-			LogText "# custom_PageApache #"
-			LogText "#####################"
-
 			!insertmacro MUI_HEADER_TEXT "$(i18n_APACHE_HEADER)" "$(i18n_APACHE_DESCR)"
 
 			${NSD_CreateLabel} 0 0 100% 8u "$(i18n_APACHE_SERVNAME)"
@@ -336,9 +325,6 @@ FunctionEnd
 Function leave_PageApache ; Funcion de salida para custom_PageApache.
 	; Ejecutar solo si NO EXISTE instalacion previa.
 	${If} $prevInstallAMPc == "none"
-		LogText "####################"
-		LogText "# leave_PageApache #"
-		LogText "####################"
 
 		${NSD_GetText} $apacheConfigServerName $R7
 		${NSD_GetText} $apacheConfigPort $R8
@@ -399,10 +385,8 @@ FunctionEnd
 Function custom_PageMariadb
 	; Mostrar solo si NO EXISTE instalacion previa.
 	${If} $prevInstallAMPc == "none"
+
 		nsDialogs::Create 1018
-			LogText "######################"
-			LogText "# custom_PageMariadb #"
-			LogText "######################"
 			Pop $R0
 			!insertmacro MUI_HEADER_TEXT "$(i18n_MARIADB_HEADER)" "$(i18n_MARIADB_DESCR)"
 
@@ -429,9 +413,6 @@ FunctionEnd
 Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
 	; Ejecutar solo si NO EXISTE instalacion previa.
 	${If} $prevInstallAMPc == "none"
-		LogText "#####################"
-		LogText "# leave_PageMariaDB #"
-		LogText "#####################"
 		
 		${NSD_GetText} $mariadbConfigPass $R0
 		${NSD_GetText} $mariadbConfigCheck $R1
@@ -461,8 +442,6 @@ Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
 			nsExec::ExecToStack /OEM '"$INSTDIR\MariaDB\bin\mariadb-install-db.exe" --service=MariaDB --password="$R0" --port=$R2'
 			Pop $0
 			Pop $1
-			LogText $0
-			LogText $1
 	${EndIf}
 FunctionEnd
 
@@ -485,22 +464,19 @@ Section -sectionInit
 		; Si es una instalacion nueva, se crea el directorio.
 		; El directorio se crea inmediatamente para asegurar que el LOG tenga donde
 		; almacenarse y, asi, se registre todo el proceso de instalacion.
+		DetailPrint "$(i18n_INSTALL_CREATEDIR) $INSTDIR"
 		CreateDirectory "$INSTDIR"
-
-		DetailPrint "Creando desinstalador"
 
 	${Else}
 		; Si se detecto una instalacion previa, se detienen los servicios de 
 		; Apache HTTP y de MariaDB.
-		DetailPrint "Instalación previa detectada."
-		DetailPrint "Deteniendo servicio Apache HTTP"
+		DetailPrint "$(i18n_INSTALL_PREVINSTALL)"
+		DetailPrint "$(i18n_INSTALL_STOP_APACHESRV)"
 		nsExec::ExecToStack /OEM 'net stop Apache2.4'
 		Pop $0
-		DetailPrint "Deteniendo servicio MariaDB"
+		DetailPrint "$(i18n_INSTALL_STOP_MARIADBSRV)"
 		nsExec::ExecToStack /OEM 'net stop MariaDB'
 		Pop $0
-
-		DetailPrint "Actualizando desinstalador"
 
 	${EndIf}
 
@@ -538,10 +514,6 @@ SectionEnd
 ; Visual C++ Redistributable.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section -sectionVCRedist
-	LogText "##############################"
-	LogText "# Visual C++ Redistributable #"
-	LogText "##############################"
-
 	; Visual C++ Redistributable es requerido por Apache HTTP y PHP.
 	; Para verificar si existe dicho componente, se consulta una clave del registro
 	; tal como se indica en la web de Microsoft (revise el link de abajo)

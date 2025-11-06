@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
 
-set LOG_FILE=%~dp0update.log
-set SCRIPT_PATH=%~dp0update.php
+set LOG_FILE=%~dp0update_components.log
+set SCRIPT_PATH=%~dp0scripts\update_components.php
 set PHP_EXE=C:\AMPc\PHP\php.exe
 
 if exist "%LOG_FILE%" del "%LOG_FILE%"
@@ -24,8 +24,8 @@ if not exist "%PHP_EXE%" (
 )
 
 if not exist "%SCRIPT_PATH%" (
-    echo [X] ERROR: No se encontro el archivo update.php
-    echo [X] ERROR: No se encontro el archivo update.php >> "%LOG_FILE%"
+    echo [X] ERROR: No se encontro %SCRIPT_PATH%
+    echo [X] ERROR: No se encontro %SCRIPT_PATH% >> "%LOG_FILE%"
     pause
     exit /b 1
 )

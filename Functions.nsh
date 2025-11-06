@@ -234,18 +234,3 @@ Function func_StartServices
 		Pop $R3
 		LogText $R3
 FunctionEnd
-
-/*
-
-func_OnLabelClick
-https://nsis-dev.github.io/NSIS-Forums/html/t-316187.html
-
-* /
-Function func_OnLabelClick
-    ; Set label to bold
-    CreateFont $R2 "MS Shell Dlg" 10 700
-    SendMessage $LABEL ${WM_SETFONT} $R2 0
-    ; Force label redraw
-    ShowWindow $LABEL ${SW_HIDE}
-    ShowWindow $LABEL ${SW_SHOW}
-FunctionEnd*/

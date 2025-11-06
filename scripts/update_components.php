@@ -53,8 +53,8 @@ function delete_all( string $dir ) {
  * 
  * @since 0.20.0
  */
-$dirbase = __DIR__;
-$components_ini = dirname($dirbase) . DIRECTORY_SEPARATOR . 'components.ini';
+$dirbase = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components';
+$components_ini = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components.ini';
 
 echo "===========================================\n";
 echo "Iniciando descompresion de archivos ZIP\n";
