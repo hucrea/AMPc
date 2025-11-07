@@ -140,27 +140,25 @@ VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
 VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
 VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
 VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalTrademarks" "${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
-VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
+VIAddVersionKey /LANG=0 "LegalCopyright"	"© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalTrademarks"	"${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
+VIAddVersionKey /LANG=0 "FileDescription"	"Install ${PACKAGE}"
 
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
 ###############################################################################
-Var prevInstallAMPc ; Usada para verificar si existe instalacion previa.
-Var backSlashInstDir ; Ver Functions.nsh, funcion func_ReplaceSlash.
-Var apacheConfigServerName ; Usada por custom_PageApache y leave_PageApache.
-Var apacheConfigPort ; Usada por custom_PageApache y leave_PageApache.
-Var mariadbConfigPass ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigCheck ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var mariadbConfigPort ; Usada por custom_PageMariadb y leave_PageMariadb.
-Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
-Var pathApache ; Almacena ruta de instalacion para Apache.
-Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
-Var pathPhp ; Almacena ruta de instalacion para PHP.
-Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
-Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
-Var pathAdminer ; Almacena ruta de instalacion para Adminer.
+Var prevInstallAMPc ; Instalacion previa.
+Var backSlashInstDir ; Usada por func_ReplaceSlash.
+Var apacheConfigServerName ; Nombre del servidor (Apache).
+Var apacheConfigPort ; Puerto (Apache).
+Var mariadbConfigPass ; Contrasenna root (MariaDB).
+Var mariadbConfigCheck ; Repeticion de contrasenna root (MariaDB).
+Var mariadbConfigPort ; Puerto (MariaDB).
+Var statusVCRuntime ; Estado de Visual C++ Redistributable.
+Var pathApache ; Ruta de instalacion de Apache.
+Var pathMariadb ; Ruta de instalacion de MariaDB.
+Var pathPhp ; Ruta de instalacion de PHP.
+Var pathCACERT ; Ruta de instalacion de ca-cert.
 
 ###############################################################################
 ; PROCESO DE INSTALACION.
@@ -231,15 +229,6 @@ Page Custom custom_PageMariadb leave_PageMariadb
 Function .onInit
 	InitPluginsDir
 
-	; Splash al iniciar el instalador.
-	SetOutPath $PLUGINSDIR
-  	File "media-src\splash-install.bmp"
-	splash::show 1750 "$PLUGINSDIR\splash-install"
-	Pop $0
-	Delete "$PLUGINSDIR\splash-install.bmp"
-
-	SetOutPath $INSTDIR
-
 	; Verifica que arquitectura del sistema anfitrion sea x64.
 	${IfNot} ${RunningX64}
 		MessageBox MB_OK|MB_ICONSTOP "$(i18n_32BITS_NOTSUPPORT).$\n$\n$(i18n_INSTALL_CANNOT)"
@@ -269,6 +258,15 @@ Function .onInit
 	${If} ${Errors}
 		StrCpy $prevInstallAMPc "none"
 
+		; Splash al iniciar el instalador.
+		SetOutPath $PLUGINSDIR
+		File "media-src\splash-install.bmp"
+		splash::show 1750 "$PLUGINSDIR\splash-install"
+		Pop $0
+		Delete "$PLUGINSDIR\splash-install.bmp"
+
+		SetOutPath $INSTDIR
+
 		; Establece la ruta de instalacion en la unidad raiz de Windows.
 		StrCpy "$INSTDIR" "$WINDIR" 2
 		StrCpy "$INSTDIR" "$INSTDIR\AMPc"
@@ -276,6 +274,15 @@ Function .onInit
 	; Existe instalacion previa.
 	${Else}
 		StrCpy $prevInstallAMPc "yes"
+
+		; Splash al iniciar el instalador.
+		SetOutPath $PLUGINSDIR
+		File "media-src\splash-update.bmp"
+		splash::show 1750 "$PLUGINSDIR\splash-update"
+		Pop $0
+		Delete "$PLUGINSDIR\splash-update.bmp"
+
+		SetOutPath $INSTDIR
 		
 		; Lee la ruta de la instalacion actual.
 		ClearErrors
@@ -479,8 +486,11 @@ Section -sectionInit
 		Pop $0
 
 	${EndIf}
+SectionEnd
 
+Section -sectionUninstaller
 	; Se registra el desinstalador.
+	DetailPrint "$(i18n_CREATE_UNINSTALL)"
 	WriteUninstaller "$INSTDIR\uninstall-ampc.exe"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${PACKAGE}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayIcon" "$INSTDIR\uninstall-ampc.exe"
@@ -492,7 +502,7 @@ Section -sectionInit
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "HelpLink" "${URL_HELP}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${AMPC_PUBLISHER}"
 
-	DetailPrint "Creando acceso directo a web del proyecto"
+	DetailPrint "$(i18n_CREATE_SHORTLINK)"
 	WriteIniStr "$INSTDIR\${PACKAGE}.url" "InternetShortcut" "URL" "${AMPC_URL}"
 
 	; Algunos archivos requieren barras invertidas tipo UNIX, mientras que $INSTDIR
@@ -528,8 +538,6 @@ Section -sectionVCRedist
 
 	; No se ha detectado el componente.
 	${If} ${Errors}
-		LogText "Visual C++ Redistributable no encontrado."
-		
 		; Se ofrece al usuario la descarga e instalacion automatica de 
 		; Visual C++ Redistributable. Puede rechazar esta accion.
 		DetailPrint "$(i18n_VCR_NOTFOUND)"
@@ -538,7 +546,6 @@ Section -sectionVCRedist
 
 		; El usuario acepta la descarga e instalacion.
 		install:
-			LogText "Usuario ACEPTA la descarga e instalación de Visual C++ Redistributable."
 			DetailPrint "$(i18n_VCR_DOWNLOADING)"
 			NScurl::http get "${URL_VCREDIST}" "$PLUGINSDIR\vcredist_x64.exe" /INSIST /CANCEL /RESUME /END
 			Pop $1
@@ -554,16 +561,14 @@ Section -sectionVCRedist
 				; Si ocurre un error al instalar, se notifica al usuario.
 				${If} $R0 == "error"
 					StrCpy $statusVCRuntime "none"
-					LogText "No se pudo completar la instalacion: $R1"
-					MessageBox MB_OK "No se pudo completar la instalacion del componente debido a un error: $R1" 
+					MessageBox MB_OK "$(i18n_ERROR_VCREDIST) $R1" 
 					Goto skip
 				${EndIf}
 
 				; Si se agota el tiempo de ejecucion al instalar, se notifica al usuario.
 				${If} $R0 == "timeout"
 					StrCpy $statusVCRuntime "none"
-					LogText "No se pudo completar la instalacion: $R1"
-					MessageBox MB_OK "Se agoto el tiempo de espera para la instalación: $R1"
+					MessageBox MB_OK "$(i18n_TIMEOUT_VCREDIST) $R1"
 					Goto skip
 				${EndIf}
 
@@ -574,7 +579,6 @@ Section -sectionVCRedist
 			${Else}
 				StrCpy $statusVCRuntime "none"
 				DetailPrint "$(i18n_VCR_ERROR) $1"
-				LogText "No se pudo completar la descarga: $1"
 			${EndIf}
 
 		; Si el usuario rechaza la instalacion u ocurre un error que impide que el
@@ -582,7 +586,6 @@ Section -sectionVCRedist
 		; componente por sus propios medios.
 		skip:
 			StrCpy $statusVCRuntime "none"
-			LogText "Usuario RECHAZA la descarga e instalación de Visual C++ Redistributable."
 			MessageBox MB_OK "$(i18n_VCR_SKIP_REMINDER)"
 			DetailPrint "$(i18n_VCR_SKIP_REMINDER)"
 
@@ -590,7 +593,6 @@ Section -sectionVCRedist
 	; Se ha detectado el componente, se omite todo lo anterior.
 	${Else}
 		StrCpy $statusVCRuntime "done"
-		LogText "Visual C++ Redistributable encontrado."
 		DetailPrint "$(i18n_VCR_EXIST)"
 	${EndIf}
 SectionEnd
@@ -599,10 +601,6 @@ SectionEnd
 ; Apache HTTP Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "Apache HTTP Server (${COMP_APACHE_VER})" section_Apache
-	LogText "######################"
-	LogText "# Apache HTTP Server #"
-	LogText "######################"
-
 	SectionIn RO
 
 	StrCpy $pathApache "$INSTDIR\Apache"
@@ -610,14 +608,12 @@ Section "Apache HTTP Server (${COMP_APACHE_VER})" section_Apache
 	DetailPrint "Instalando Apache HTTP..."
 
 	SetOverwrite ifdiff
-		!include "bin-src\apache\files.nsh" ; Incluye archivos del paquete.
+		!include "components\apache\files.nsh" ; Incluye archivos del paquete.
 	SetOutPath "$INSTDIR\htdocs"
 
 	SetOverwrite off
 		File "www-src\index.html"
 		File /oname=favicon.ico media-src\ampc.ico
-	SetOutPath "$INSTDIR\htdocs\cgi-bin"
-		File "www-src\printenv.pl"
 	SetOutPath "$pathApache\conf"
 		File "config-src\httpd.conf"
 
@@ -642,17 +638,13 @@ SectionEnd
 ; MariaDB Community Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "MariaDB Community Server (${COMP_MARIADB_VER})" section_Mariadb
-	LogText "############################"
-	LogText "# MariaDB Community Server #"
-	LogText "############################"
-
 	SectionIn RO
 
 	StrCpy $pathMariadb "$INSTDIR\MariaDB"
 
 	DetailPrint "Instalando MariaDB..."
 	SetOverwrite ifdiff
-		!include "bin-src\mariadb\files.nsh" ; Incluye archivos del paquete.
+		!include "components\mariadb\files.nsh" ; Incluye archivos del paquete.
 
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${COMP_MARIADB_VER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$pathMariadb"
@@ -662,17 +654,13 @@ SectionEnd
 ; PHP.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "PHP (${COMP_PHP_VER})" section_Php
-	LogText "#######################"
-	LogText "#         PHP         #"
-	LogText "#######################"
-
 	SectionIn RO
 
 	StrCpy $pathPhp "$INSTDIR\PHP"
 
 	DetailPrint "Instalando PHP..."
 	SetOverwrite ifdiff
-		!include "bin-src\php\files.nsh" ; Incluye archivos del paquete.
+		!include "components\php\files.nsh" ; Incluye archivos del paquete.
 
 	SetOverwrite off
 	SetOutPath "$pathPhp"
@@ -698,17 +686,13 @@ Section "PHP (${COMP_PHP_VER})" section_Php
 SectionEnd
 
 Section "ca-cert (${COMP_CACERT_VER})" section_CACERT
-	LogText "##############################"
-	LogText "#         cacert.pem         #"
-	LogText "##############################"
-
 	SectionIn RO
 
 	StrCpy $pathCACERT "$pathPhp\extras\ssl"
 
 	SetOverwrite ifdiff
 	SetOutPath "$pathCACERT"
-		File "bin-src\cacert\cacert.pem"
+		File "components\cacert\cacert.pem"
 
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${COMP_CACERT_VER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
@@ -721,7 +705,7 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Apache} "$(i18n_DESCR_APACHE)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem" ;
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "$(i18n_DESCR_CACERT)" ;
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################

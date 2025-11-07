@@ -189,3 +189,13 @@ LangString i18n_INSTALL_PREVINSTALL ${LANG_SPANISH} "Instalación anterior detec
 LangString i18n_INSTALL_STOP_APACHESRV ${LANG_SPANISH} "Deteniendo servicio Apache"
 
 LangString i18n_INSTALL_STOP_MARIADBSRV ${LANG_SPANISH} "Deteniendo servicio MariaDB"
+
+LangString i18n_DESCR_CACERT ${LANG_SPANISH} "ca-cert.pem"
+
+LangString i18n_CREATE_UNINSTALL ${LANG_SPANISH} "Creando el desinstalador"
+
+LangString i18n_CREATE_SHORTLINK ${LANG_SPANISH} "Creando acceso directo a web del proyecto"
+
+LangString i18n_ERROR_VCREDIST ${LANG_SPANISH} "No se pudo completar la instalacion del componente debido a un error:"
+
+LangString i18n_TIMEOUT_VCREDIST ${LANG_SPANISH} "Se agoto el tiempo de espera para la instalación:"
