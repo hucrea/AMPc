@@ -23,146 +23,91 @@ SetCompressor /SOLID /FINAL lzma
 ; CONSTANTES DEL PAQUETE.
 ###############################
 !define /date BUILD_TIMESTAMP   "%Y%m%d_%H%M%S"
-!define BUILD_TIMESTAMP_BRAND   "Compiled at ${__TIME__} on ${__DATE__}"
+!define BUILD_TIMESTAMP_BRAND   "Build at ${__TIME__} on ${__DATE__}"
 
-!define DIST_NAME "AMPc"
+!define VERSION_DISTRO "0.20.0"
+!define VERSION_API "2"
+!define VERSION_BUILD "${VERSION_DISTRO}+${BUILD_TIMESTAMP}"
+!define VERSION_VIPV "${VERSION_DISTRO}.${VERSION_API}"
+
 !define SHORTNAME "ampc"
-!define PACKAGE "${DIST_NAME} for Windows"
+!define DISTRO_NAME "AMPc"
+!define DISTRO_GUID "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
+!define DISTRO_PUB "Hu SpA"
+!define DISTRO_PUB_COUNTRY "Chile"
 
-; Version apta para VIProductVersion (no cumple SemVer).
-!define VER_F_VIP "${AMPC_VERSION}.${API_LEVEL}"
+!define COMPONENT_A_VERSION "2.4.65"
+!define COMPONENT_M_VERSION "11.4.8"
+!define COMPONENT_P_VERSION "8.3.25"
+!define COMPONENT_C_VERSION "25.08.12"
 
-; URL de descarga para Visual C++ Redistributable.
+!define REGKEY_ROOT "HKLM"
+!define REGKEY_PACKAGE "Software\${DISTRO_PUB}\${DISTRO_GUID}"
+!define REGKEY_UNINST "Software\Microsoft\Windows\CurrentVersion\Uninstall\${DISTRO_GUID}"
+!define REGKEY_DIST "Software\${DISTRO_PUB}\${DISTRO_GUID}"
+
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+!define URL_DISTRO "https://github.com/hucrea/AMPc"
+!define URL_DISTRO_PUB "https://hucreativa.cl"
+!define URL_DISTRO_UPDATE "${AMPC_URL}/releases"
+!define URL_DISTRO_HELP "${AMPC_URL}/wiki"
 
-; VER_*
-;	Versionado de AMPc.
-;		VER_MAJOR => Version mayor.
-;		VER_MENOR => Version menor.
-;		VER_PATCH => Version parche.
-;		VER_BUILD => Version de la compilacion.
-;
-;!define YEAR        "25"
-!define RELEASE     "20"
-!define PATCH       "0"
-!define API_LEVEL   "2"
-# DEPRECATED
-!define VER_MAJOR "0" ;DEPRECATED.
-!define VER_MENOR "${RELEASE}"
-!define VER_PATCH "${PATCH}"
-!define VER_BUILD "${AMPC_VERSION}+${BUILD_TIMESTAMP}"
+!define DIR_MEDIA "media-src"
+!define DIR_COMPONENTS "components"
+!define DIR_WWW "www-src"
+!define DIR_CONFIG "config-src"
 
-;---------------
-# DEPRECATED
-; VERSION_*
-;	Versiones declarada de los componentes incluidos en la compilacion..
-;		VERSION_APACHE 	=> Apache HTTP Server.
-;		VERSION_MARIADB => MariaDB Community Server.
-;		VERSION_PHP 	=> PHP.
-;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-;
-
-# REEMPLAZO
-!define COMP_APACHE_VER     "2.4.65"
-!define COMP_MARIADB_VER    "11.4.8"
-!define COMP_PHP_VER        "8.3.25"
-!define COMP_CACERT_VER     "25.08.12"
-
-;---------------
-# DEPRECATED
-; AMPC_*
-;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
-;	cambiadas para evitar problemas tecnicos y legales.
-;		AMPC_VERSION 	        => Version del paquete, formato SemVer.
-;		AMPC_GUID		        => GUID para el paquete.
-;		AMPC_URL			    => URL oficial del paquete.
-;		AMPC_PUBLISHER	        => Nombre del publicador (aviso marca comercial)
-;		AMPC_PUBLISHER_URL	    => Direccion web del publicador
-;		AMPC_PUBLISHER_COUNTRY  => Pais del publicador.
-;
-!define AMPC_VERSION            "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
-!define AMPC_GUID               "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
-!define AMPC_URL                "https://github.com/hucrea/AMPc"
-!define AMPC_PUBLISHER          "Hu SpA"
-!define AMPC_PUBLISHER_URL      "https://hucreativa.cl"
-!define AMPC_PUBLISHER_COUNTRY  "Chile"
-
-# REEMPLAZO
-!define DIST_VERSION        "${DIST_YEAR}.${DIST_RELEASE}.${DIST_PATCH}"
-!define DIST_GUID           "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
-!define DIST_URL            "https://github.com/hucrea/AMPc"
-!define PUB_NAME            "Hu SpA"
-!define PUB_WEBSITE         "https://hucreativa.cl"
-!define PUB_COUNTRY         "Chile"
-
-;
-; URL_*
-;	Direcciones web utilizadas por el paquete.
-;		URL_UPDATE		=> Consultar nuevas versiones del paquete.
-;		URL_HELP 		=> Ayuda sobre el paquete.
-;
-!define URL_UPDATE  "${AMPC_URL}/releases"
-!define URL_HELP    "${AMPC_URL}/wiki"
-
-!define DIST_URL_UPDATE  "${DIST_URL}/releases"
-!define DIST_URL_HELP    "${DIST_URL}/wiki"
-;
-; REGKEY_*
-;	Claves del registro.
-;		REGKEY_ROOT 	=> Clave raiz en regedit.
-;		REGKEY_PACKAGE 	=> Ruta regedit del instalador.
-;		REGKEY_UNINST 	=> Ruta regedit del desinstalador.
-;
-!define REGKEY_ROOT     "HKLM"
-!define REGKEY_PACKAGE  "Software\${AMPC_PUBLISHER}\${AMPC_GUID}" # DEPRECATED
-!define REGKEY_UNINST   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
-
-!define REGKEY_DIST "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
-
-###############################################################################
-; DETALLES DE LA COMPILACION ACTUAL.
-###############################################################################
+###############################
+; DETALLES DE LA COMPILACION.
+###############################
 Unicode True
-Name "${DIST_NAME}"
-Caption "${PACKAGE}"
-BrandingText "${AMPC_VERSION} - ${BUILD_TIMESTAMP_BRAND}"
+Name "${DISTRO_NAME}"
+Caption "${DISTRO_NAME}"
+BrandingText "${DISTRO_NAME} ${VERSION_DISTRO} - ${BUILD_TIMESTAMP_BRAND}"
 AllowRootDirInstall true
-OutFile "${SHORTNAME}-${VER_BUILD}.exe"
-InstallDir "$PROGRAMFILES\AMPc"
+OutFile "${SHORTNAME}-${VERSION_BUILD}.exe"
+InstallDir "$PROGRAMFILES\${DISTRO_NAME}"
 ManifestSupportedOS Win10
 RequestExecutionLevel admin
 ShowInstDetails hide
 ShowUnInstDetails hide
 
 ; Version Information
-VIProductVersion "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
-VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalCopyright"	"© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalTrademarks"	"${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
-VIAddVersionKey /LANG=0 "FileDescription"	"Install ${PACKAGE}"
+VIProductVersion "${VERSION_VIPV}"
+VIAddVersionKey /LANG=0 "FileVersion" "${VERSION_VIPV}"
+VIAddVersionKey /LANG=0 "ProductVersion" "${VERSION_VIPV}"
+VIAddVersionKey /LANG=0 "ProductName" "${DISTRO_NAME}"
+VIAddVersionKey /LANG=0 "CompanyName" "${DISTRO_PUB} (${DISTRO_PUB_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalCopyright" "© 2025 ${DISTRO_PUB} (${DISTRO_PUB_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalTrademarks" "${DISTRO_NAME} is a trademark of ${DISTRO_PUB}"
+VIAddVersionKey /LANG=0 "FileDescription" "Installer ${DISTRO_NAME}"
 
-###############################################################################
+###############################
 ; VARIABLES DEL PAQUETE.
-###############################################################################
-Var prevInstallAMPc ; Instalacion previa.
-Var backSlashInstDir ; Usada por func_ReplaceSlash.
-Var apacheConfigServerName ; Nombre del servidor (Apache).
-Var apacheConfigPort ; Puerto (Apache).
-Var mariadbConfigPass ; Contrasenna root (MariaDB).
-Var mariadbConfigCheck ; Repeticion de contrasenna root (MariaDB).
-Var mariadbConfigPort ; Puerto (MariaDB).
-Var statusVCRuntime ; Estado de Visual C++ Redistributable.
-Var pathApache ; Ruta de instalacion de Apache.
-Var pathMariadb ; Ruta de instalacion de MariaDB.
-Var pathPhp ; Ruta de instalacion de PHP.
-Var pathCACERT ; Ruta de instalacion de ca-cert.
+###############################
+Var ampcPrevInstall ; Instalacion previa.
+Var ampcBackSlash ; Usada por func_ReplaceSlash.
+Var ampcVCRedist ; Estado de Visual C++ Redistributable.
 
-###############################################################################
+Var apachePath ; Ruta local de instalacion de Apache.
+Var apacheVersion ; Version local de Apache.
+Var apacheCustomServerName ; Nombre del servidor (Apache).
+Var apacheCustomPort ; Puerto (Apache).
+Var apacheCustomServiceName ; Nombre del servicio (Apache).
+Var mariadbPath ; Ruta local de instalacion de MariaDB.
+Var mariadbVersion ; Version local de MariaDB.
+Var mariadbCustomPass ; Contrasenna root (MariaDB).
+Var mariadbCustomPassCheck ; Repeticion de contrasenna root (MariaDB).
+Var mariadbCustomPort ; Puerto (MariaDB).
+Var mariadbCustomServiceName ; Nombre del servicio (MariaDB).
+Var phpVersion ; Version local de PHP.
+Var phpPath ; Ruta local de instalacion de PHP.
+Var cacertPath ; Ruta local de instalacion de ca-cert.
+Var cacertVersion ; Version local de cacert.
+
+###############################
 ; PROCESO DE INSTALACION.
-###############################################################################
+###############################
 !include "x64.nsh"
 !include "MUI.nsh"
 !include "MUI2.nsh"
@@ -172,19 +117,19 @@ Var pathCACERT ; Ruta de instalacion de ca-cert.
 
 ; Configuracion de la instalacion.
 !define MUI_ABORTWARNING
-!define MUI_ICON "media-src\ampc_install.ico"
-!define MUI_UNICON "media-src\ampc_uninstall.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-install.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "media-src\banner-uninstall.bmp"
+!define MUI_ICON "${DIR_MEDIA}\ampc_install.ico"
+!define MUI_UNICON "${DIR_MEDIA}\ampc_uninstall.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${DIR_MEDIA}\banner-install.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${DIR_MEDIA}\banner-uninstall.bmp"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "media-src\header-install.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP "media-src\header-uninstall.bmp"
+!define MUI_HEADERIMAGE_BITMAP "${DIR_MEDIA}\header-install.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP "${DIR_MEDIA}\header-uninstall.bmp"
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "$(i18n_FINISHPAGE_RUN)"
 !define MUI_FINISHPAGE_RUN_FUNCTION func_StartServices
 !define MUI_LICENSEPAGE_BUTTON
-!define MUI_FINISHPAGE_LINK "${PACKAGE}"
-!define MUI_FINISHPAGE_LINK_LOCATION "${AMPC_URL}"
+!define MUI_FINISHPAGE_LINK "${DISTRO_NAME}"
+!define MUI_FINISHPAGE_LINK_LOCATION "${DISTRO_URL}"
 !define MUI_COMPONENTSPAGE_SMALLDESC
 
 ; Proceso de instalacion.
@@ -223,9 +168,9 @@ Page Custom custom_PageMariadb leave_PageMariadb
 !define MUI_LANGDLL_REGISTRY_VALUENAME "LangInstall"
 !include "LangStrings.nsh"
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Al iniciar el instalador.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+###############################
+# Al iniciar el instalador.
+###############################
 Function .onInit
 	InitPluginsDir
 
@@ -233,7 +178,6 @@ Function .onInit
 	${IfNot} ${RunningX64}
 		MessageBox MB_OK|MB_ICONSTOP "$(i18n_32BITS_NOTSUPPORT).$\n$\n$(i18n_INSTALL_CANNOT)"
 		Abort
-
 	${EndIf}
 
 	; Evita redirecciones de WOW64 en directorios y registros.
@@ -245,10 +189,14 @@ Function .onInit
 
 	# INSTALACION PREVIA
 	; Inicializa variables.
-	StrCpy $pathApache 	"unknow"
-	StrCpy $pathMariadb	"unknow"
-	StrCpy $pathPhp 	"unknow"
-	StrCpy $pathCACERT 	"unknow"
+	StrCpy $apachePath "unknow"
+	StrCpy $apacheVersion "unknow"
+	StrCpy $mariadbPath "unknow"
+	StrCpy $mariadbVersion "unknow"
+	StrCpy $phpPath "unknow"
+	StrCpy $phpVersion "unknow"
+	StrCpy $cacertPath "unknow"
+	StrCpy $cacertVersion "unknow"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
@@ -256,7 +204,7 @@ Function .onInit
 
 	; No existe instalacion previa.
 	${If} ${Errors}
-		StrCpy $prevInstallAMPc "none"
+		StrCpy $ampcPrevInstall "none"
 
 		; Splash al iniciar el instalador.
 		SetOutPath $PLUGINSDIR
@@ -273,9 +221,9 @@ Function .onInit
 
 	; Existe instalacion previa.
 	${Else}
-		StrCpy $prevInstallAMPc "yes"
+		StrCpy $ampcPrevInstall "yes"
 
-		; Splash al iniciar el instalador.
+		; Splash al iniciar el actualizador.
 		SetOutPath $PLUGINSDIR
 		File "media-src\splash-update.bmp"
 		splash::show 1750 "$PLUGINSDIR\splash-update"
@@ -292,22 +240,22 @@ Function .onInit
 			StrCpy "$INSTDIR" "$R1"
 
 		${Else}
-			MessageBox MB_OK|MB_ICONSTOP "ERROR 1001."
+			MessageBox MB_OK|MB_ICONSTOP "$(i18n_NOT_PATH_FOUND)"
 			Abort
 		${EndIf}
 	${EndIf}
 FunctionEnd
 
-###############################################################################
+###############################
 ; PAGINAS PERSONALIZADAS.
-###############################################################################
+###############################
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Apache HTTP Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function custom_PageApache
 	; Mostrar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $ampcPrevInstall == "none"
 		nsDialogs::Create 1018
 			Pop $0
 
@@ -315,11 +263,11 @@ Function custom_PageApache
 
 			${NSD_CreateLabel} 0 0 100% 8u "$(i18n_APACHE_SERVNAME)"
 			${NSD_CreateText} 0 12u 80% 12u "localhost"
-			Pop $apacheConfigServerName
+			Pop $apacheCustomServerName
 
 			${NSD_CreateLabel} 0 30u 100% 8u "$(i18n_APACHE_PORT)"
 			${NSD_CreateNumber} 0 42u 20% 12u "80"
-			Pop $apacheConfigPort
+			Pop $apacheCustomPort
 
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
 			Pop $R1
@@ -331,10 +279,10 @@ FunctionEnd
 
 Function leave_PageApache ; Funcion de salida para custom_PageApache.
 	; Ejecutar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $ampcPrevInstall == "none"
 
-		${NSD_GetText} $apacheConfigServerName $R7
-		${NSD_GetText} $apacheConfigPort $R8
+		${NSD_GetText} $apacheCustomServerName $R7
+		${NSD_GetText} $apacheCustomPort $R8
 
 		StrCmp $R7 "" failEmptyServer stepCheckPort
 
@@ -368,7 +316,7 @@ Function leave_PageApache ; Funcion de salida para custom_PageApache.
 			Pop $0
 			LogText $0
 
-			StrCmp $statusVCRuntime "none" vcrNotInstall vcrInstalled
+			StrCmp $ampcVCRedist "none" vcrNotInstall vcrInstalled
 
 			vcrNotInstall:
 				MessageBox MB_OK "$(i18n_VCR_APACHE_LEAVE)$\n$\n$(i18n_VCR_DOWNLOAD_REMINDER)"
@@ -391,7 +339,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function custom_PageMariadb
 	; Mostrar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $ampcPrevInstall == "none"
 
 		nsDialogs::Create 1018
 			Pop $R0
@@ -399,15 +347,15 @@ Function custom_PageMariadb
 
 			${NSD_CreateLabel} 0 0 100% 8u "$(i18n_MARIADB_PASS)"
 			${NSD_CreatePassword} 0 12u 80% 12u ""
-			Pop $mariadbConfigPass
+			Pop $mariadbCustomPass
 
 			${NSD_CreateLabel} 0 36u 100% 8u "$(i18n_MARIADB_PASSCHECK)"
 			${NSD_CreatePassword} 0 48u 80% 12u ""
-			Pop $mariadbConfigCheck
+			Pop $mariadbCustomPassCheck
 
 			${NSD_CreateLabel} 0 72u 100% 8u "$(i18n_MARIADB_PORT)"
 			${NSD_CreateNumber} 0 84u 20% 12u "3306"
-			Pop $mariadbConfigPort
+			Pop $mariadbCustomPort
 
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
 			Pop $R1
@@ -419,7 +367,7 @@ FunctionEnd
 
 Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
 	; Ejecutar solo si NO EXISTE instalacion previa.
-	${If} $prevInstallAMPc == "none"
+	${If} $ampcPrevInstall == "none"
 		
 		${NSD_GetText} $mariadbConfigPass $R0
 		${NSD_GetText} $mariadbConfigCheck $R1
@@ -464,10 +412,10 @@ Section -sectionInit
 	; aqui y no antes, es porque desde este punto hay garantia absoluta de la ruta
 	; de instalacion y, por tanto, un lugar donde almacenar el archivo.
 	LogSet on
-	LogText "${PACKAGE} ${AMPC_VERSION}"
+	LogText "${DIST_NAME} ${VERSION_DIST}"
 	LogText "${BUILD_TIMESTAMP_BRAND}"
 
-	${If} $prevInstallAMPc == "none"
+	${If} $ampcPrevInstall == "none"
 		; Si es una instalacion nueva, se crea el directorio.
 		; El directorio se crea inmediatamente para asegurar que el LOG tenga donde
 		; almacenarse y, asi, se registre todo el proceso de instalacion.
@@ -486,37 +434,39 @@ Section -sectionInit
 		Pop $0
 
 	${EndIf}
+
+	; Algunos archivos requieren barras invertidas tipo UNIX, mientras que $INSTDIR
+	; contiene barras tipo Windows. La variable $ampcBackSlash almacena el valor
+	; de $INSTDIR con barras tipo UNIX.
+	Push $INSTDIR
+	Push "\"
+	Call func_ReplaceSlash
+	Pop $ampcBackSlash
+	LogText $ampcBackSlash
 SectionEnd
 
 Section -sectionUninstaller
 	; Se registra el desinstalador.
 	DetailPrint "$(i18n_CREATE_UNINSTALL)"
 	WriteUninstaller "$INSTDIR\uninstall-ampc.exe"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${PACKAGE}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${DISTRO_NAME}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayIcon" "$INSTDIR\uninstall-ampc.exe"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "InstallLocation" "$INSTDIR"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "UninstallString" "$INSTDIR\uninstall-ampc.exe"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion" "${AMPC_VERSION}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLInfoAbout" "${AMPC_URL}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLUpdateInfo" "${URL_UPDATE}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "HelpLink" "${URL_HELP}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${AMPC_PUBLISHER}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion" "${VERSION_DISTRO}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLInfoAbout" "${URL_DISTRO}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLUpdateInfo" "${URL_DISTRO_UPDATE}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "HelpLink" "${URL_DISTRO_HELP}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${DISTRO_PUB}"
+SectionEnd
 
+Section -sectionAmpc
 	DetailPrint "$(i18n_CREATE_SHORTLINK)"
-	WriteIniStr "$INSTDIR\${PACKAGE}.url" "InternetShortcut" "URL" "${AMPC_URL}"
-
-	; Algunos archivos requieren barras invertidas tipo UNIX, mientras que $INSTDIR
-	; contiene barras tipo Windows. La variable $backSlashInstDir almacena el valor
-	; de $INSTDIR con barras tipo UNIX.
-	Push $INSTDIR
-	Push "\"
-	Call func_ReplaceSlash
-	Pop $backSlashInstDir
-	LogText $backSlashInstDir
+	WriteIniStr "$INSTDIR\${DISTRO_NAME}.url" "InternetShortcut" "URL" "${DISTRO_URL}"
 
 	WriteRegDWORD ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "LangInstall" "$LANGUAGE"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${AMPC_VERSION}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VER_BUILD}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${VERSION_DISTRO}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VERSION_BUILD}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall" "$INSTDIR"
 SectionEnd
 
@@ -552,7 +502,7 @@ Section -sectionVCRedist
 
 			; El componente se pudo descargar y se procede a instalar.
 			${If} $1 == "OK"
-				StrCpy $statusVCRuntime "install"
+				StrCpy $ampcVCRedist "install"
 				DetailPrint "$(i18n_VCR_INSTALLING)"
 				nsExec::ExecToStack /OEM '"$PLUGINSDIR\vcredist_x64.exe" /q /norestart'
 				Pop $R0
@@ -560,14 +510,14 @@ Section -sectionVCRedist
 
 				; Si ocurre un error al instalar, se notifica al usuario.
 				${If} $R0 == "error"
-					StrCpy $statusVCRuntime "none"
+					StrCpy $ampcVCRedist "none"
 					MessageBox MB_OK "$(i18n_ERROR_VCREDIST) $R1" 
 					Goto skip
 				${EndIf}
 
 				; Si se agota el tiempo de ejecucion al instalar, se notifica al usuario.
 				${If} $R0 == "timeout"
-					StrCpy $statusVCRuntime "none"
+					StrCpy $ampcVCRedist "none"
 					MessageBox MB_OK "$(i18n_TIMEOUT_VCREDIST) $R1"
 					Goto skip
 				${EndIf}
@@ -577,7 +527,7 @@ Section -sectionVCRedist
 
 			; El componente no se pudo descargar.
 			${Else}
-				StrCpy $statusVCRuntime "none"
+				StrCpy $ampcVCRedist "none"
 				DetailPrint "$(i18n_VCR_ERROR) $1"
 			${EndIf}
 
@@ -585,14 +535,14 @@ Section -sectionVCRedist
 		; componente sea instalado, se notifica al usuario que debe instalar el
 		; componente por sus propios medios.
 		skip:
-			StrCpy $statusVCRuntime "none"
+			StrCpy $ampcVCRedist "none"
 			MessageBox MB_OK "$(i18n_VCR_SKIP_REMINDER)"
 			DetailPrint "$(i18n_VCR_SKIP_REMINDER)"
 
 		continue:
 	; Se ha detectado el componente, se omite todo lo anterior.
 	${Else}
-		StrCpy $statusVCRuntime "done"
+		StrCpy $ampcVCRedist "done"
 		DetailPrint "$(i18n_VCR_EXIST)"
 	${EndIf}
 SectionEnd
@@ -600,102 +550,103 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Apache HTTP Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "Apache HTTP Server (${COMP_APACHE_VER})" section_Apache
+Section "Apache HTTP Server (${COMPONENT_A_VERSION})" section_Apache
 	SectionIn RO
 
-	StrCpy $pathApache "$INSTDIR\Apache"
+	StrCpy $apachePath "$INSTDIR\Apache"
 
-	DetailPrint "Instalando Apache HTTP..."
+	DetailPrint "$(i18n_INSTALL_APACHE)"
+	SetOverwrite on
+		!include "${DIR_COMPONENTS}\apache\files.nsh" ; Incluye archivos del paquete.
 
-	SetOverwrite ifdiff
-		!include "components\apache\files.nsh" ; Incluye archivos del paquete.
-	SetOutPath "$INSTDIR\htdocs"
+	${If} $ampcPrevInstall == "none"
 
-	SetOverwrite off
-		File "www-src\index.html"
-		File /oname=favicon.ico media-src\ampc.ico
-	SetOutPath "$pathApache\conf"
-		File "config-src\httpd.conf"
+		SetOutPath "$INSTDIR\htdocs"
+			File "${DIR_WWW}\index.html"
+			File /oname=favicon.ico media-src\ampc.ico
 
-	${If} $prevInstallAMPc == "none"
+		SetOutPath "$apachePath\conf"
+			File "${DIR_CONFIG}\httpd.conf"
+
 		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 		; configuracion httpd.conf de Apache HTTP.
 		Push '___AMPC_PATH___'
-		Push $backSlashInstDir
+		Push $ampcBackSlash
 		Push all
 		Push all
-		Push '$pathApache\conf\httpd.conf'
+		Push '$apachePath\conf\httpd.conf'
 		Call func_ReplaceInFile
 		Pop $R0
 		LogText $R0
 	${EndIf}
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache" "${COMP_APACHE_VER}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathApache" "$pathApache"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionApache" "${COMPONENT_A_VERSION}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathApache" "$apachePath"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; MariaDB Community Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "MariaDB Community Server (${COMP_MARIADB_VER})" section_Mariadb
+Section "MariaDB Community Server (${COMPONENT_M_VERSION})" section_Mariadb
 	SectionIn RO
 
-	StrCpy $pathMariadb "$INSTDIR\MariaDB"
+	StrCpy $mariadbPath "$INSTDIR\MariaDB"
 
-	DetailPrint "Instalando MariaDB..."
-	SetOverwrite ifdiff
-		!include "components\mariadb\files.nsh" ; Incluye archivos del paquete.
+	DetailPrint "$(i18n_INSTALL_MARIADB)"
+	SetOverwrite on
+		!include "${DIR_COMPONENTS}\mariadb\files.nsh" ; Incluye archivos del paquete.
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${COMP_MARIADB_VER}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$pathMariadb"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${COMPONENT_M_VERSION}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$mariadbPath"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PHP.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "PHP (${COMP_PHP_VER})" section_Php
+Section "PHP (${COMPONENT_P_VERSION})" section_Php
 	SectionIn RO
 
-	StrCpy $pathPhp "$INSTDIR\PHP"
+	StrCpy $phpPath "$INSTDIR\PHP"
 
-	DetailPrint "Instalando PHP..."
-	SetOverwrite ifdiff
-		!include "components\php\files.nsh" ; Incluye archivos del paquete.
-
-	SetOverwrite off
-	SetOutPath "$pathPhp"
-		File "config-src\php.ini"
-	SetOutPath "$INSTDIR\htdocs"
-		File "www-src\phpinfo.php"
+	DetailPrint "$(i18n_INSTALL_PHP)"
+	SetOverwrite on
+		!include "${DIR_COMPONENTS}\php\files.nsh" ; Incluye archivos del paquete.
 
 	${If} $prevInstallAMPc == "none"
+
+		SetOutPath "$pathPhp"
+			File "${DIR_CONFIG}\php.ini"
+		SetOutPath "$INSTDIR\htdocs"
+			File "${DIR_WWW}\phpinfo.php"
+
 		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
 		; configuracion php.ini de PHP.
 		Push '___AMPC_PATH___'
-		Push $backSlashInstDir
+		Push $ampcBackSlash
 		Push all
 		Push all
-		Push '$pathPhp\php.ini'
+		Push '$phpPath\php.ini'
 		Call func_ReplaceInFile
 		Pop $R0
 		LogText $R0
 	${EndIf}
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${COMP_PHP_VER}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPhp" "${COMPONENT_P_VERSION}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$phpPath"		
 SectionEnd
 
-Section "ca-cert (${COMP_CACERT_VER})" section_CACERT
+Section "ca-cert (${COMPONENT_C_VERSION})" section_CACERT
 	SectionIn RO
 
-	StrCpy $pathCACERT "$pathPhp\extras\ssl"
+	StrCpy $cacertPath "$pathPhp\extras\ssl"
 
-	SetOverwrite ifdiff
-	SetOutPath "$pathCACERT"
-		File "components\cacert\cacert.pem"
+	DetailPrint "$(i18n_INSTALL_CACERT)"
+	SetOverwrite on
+	SetOutPath "$cacertPath"
+		File "${DIR_COMPONENTS}\cacert\cacert.pem"
 
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${COMP_CACERT_VER}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${COMPONENT_C_VERSION}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$cacertPath"
 SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -705,7 +656,7 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Apache} "$(i18n_DESCR_APACHE)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)"
 	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "$(i18n_DESCR_CACERT)" ;
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "$(i18n_DESCR_CACERT)"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################
@@ -718,7 +669,7 @@ Function un.onInit
 
 	; Splash al iniciar el desinstalador.
 	SetOutPath $PLUGINSDIR
-  	File "media-src\splash-uninstall.bmp"
+  	File "${DIR_MEDIA}\splash-uninstall.bmp"
 	splash::show 1750 "$PLUGINSDIR\splash-uninstall"
 	Pop $0
 	Delete "$PLUGINSDIR\splash-uninstall.bmp"

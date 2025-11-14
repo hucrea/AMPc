@@ -198,4 +198,16 @@ LangString i18n_CREATE_SHORTLINK ${LANG_SPANISH} "Creando acceso directo a web d
 
 LangString i18n_ERROR_VCREDIST ${LANG_SPANISH} "No se pudo completar la instalacion del componente debido a un error:"
 
-LangString i18n_TIMEOUT_VCREDIST ${LANG_SPANISH} "Se agoto el tiempo de espera para la instalación:"
+LangString i18n_TIMEOUT_VCREDIST ${LANG_SPANISH} "Se agotó el tiempo de espera para la instalación:"
+
+LangString i18n_NOT_PATH_FOUND ${LANG_SPANISH} "No se puede recuperar la información de la instalación anterior."
+
+LangString i18n_INSTALL_APACHE ${LANG_SPANISH} "Instalando Apache HTTP Server..."
+
+LangString i18n_INSTALL_MARIADB ${LANG_SPANISH} "Instalando MariaDB Community Server..."
+
+LangString i18n_INSTALL_PHP ${LANG_SPANISH} "Instalando PHP Hypertext Preprocessor..."
+
+LangString i18n_INSTALL_CACERT ${LANG_SPANISH} "Instalando ca-cert..."
+
+LangString i18n_INSTALL_APACHE ${LANG_SPANISH} "Instalando Apache HTTP..."
