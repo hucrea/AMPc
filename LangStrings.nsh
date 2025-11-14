@@ -168,46 +168,86 @@ LangString i18n_DESCR_ADMINER ${LANG_SPANISH} "Alternativa ultra ligera a phpMyA
 LangString i18n_DESCR_ADMINER ${LANG_ENGLISH} "Ultra-lightweight alternative to phpMyAdmin"
 LangString i18n_DESCR_ADMINER ${LANG_PORTUGUESEBR} "Alternativa ultraleve ao phpMyAdmin"
 
+LangString i18n_DESCR_CACERT ${LANG_SPANISH} "ca-cert.pem"
+LangString i18n_DESCR_CACERT ${LANG_ENGLISH} "ca-cert.pem"
+LangString i18n_DESCR_CACERT ${LANG_PORTUGUESEBR} "ca-cert.pem"
+
 LangString i18n_LICENSE_TITLE ${LANG_SPANISH} "Licencia de la distribución"
+LangString i18n_LICENSE_TITLE ${LANG_ENGLISH} "Distribution License"
+LangString i18n_LICENSE_TITLE ${LANG_PORTUGUESEBR} "Licença de distribuição"
 
 LangString i18n_LICENSE_SUBTITLE ${LANG_SPANISH} "Revise la licencia de la distribución, deberá aceptarla para continuar."
+LangString i18n_LICENSE_SUBTITLE ${LANG_ENGLISH} "Review the distribution license, you must accept it to continue."
+LangString i18n_LICENSE_SUBTITLE ${LANG_PORTUGUESEBR} "Revise a licença de distribuição, você deve aceitá-la para continuar."
 
 LangString i18n_LICENSE_THIRD_TITLE ${LANG_SPANISH} "Licencias de los componentes"
+LangString i18n_LICENSE_THIRD_TITLE ${LANG_ENGLISH} "Component Licenses"
+LangString i18n_LICENSE_THIRD_TITLE ${LANG_PORTUGUESEBR} "Licenças de componentes"
 
 LangString i18n_LICENSE_THIRD_SUBTITLE ${LANG_SPANISH} "Los componentes poseen licencias diferentes a la distribución."
+LangString i18n_LICENSE_THIRD_SUBTITLE ${LANG_ENGLISH} "The components have different licenses than the distribution."
+LangString i18n_LICENSE_THIRD_SUBTITLE ${LANG_PORTUGUESEBR} "Os componentes têm licenças diferentes da distribuição."
 
 LangString i18n_LICENSE_THIRD_TEXTTOP ${LANG_SPANISH} "AMPc es una distribución WAMP, cuyos componentes poseen licencias propias:"
+LangString i18n_LICENSE_THIRD_TEXTTOP ${LANG_ENGLISH} "AMPc is a WAMP distribution, whose components have their own licenses:"
+LangString i18n_LICENSE_THIRD_TEXTTOP ${LANG_PORTUGUESEBR} "AMPc é uma distribuição WAMP, cujos componentes possuem suas próprias licenças:"
 
 LangString i18n_LICENSE_THIRD_TEXTTBOTTOM ${LANG_SPANISH} "Presione Acepto si está de acuerdo con las licencias de los componentes."
+LangString i18n_LICENSE_THIRD_TEXTTBOTTOM ${LANG_ENGLISH} "Click I Accept if you agree with the component licenses."
+LangString i18n_LICENSE_THIRD_TEXTTBOTTOM ${LANG_PORTUGUESEBR} "Clique em Aceito se você concordar com as licenças dos componentes."
 
 LangString i18n_LICENSE_THIRD_BUTTON ${LANG_SPANISH} "&Acepto"
+LangString i18n_LICENSE_THIRD_BUTTON ${LANG_ENGLISH} "I &Accept"
+LangString i18n_LICENSE_THIRD_BUTTON ${LANG_PORTUGUESEBR} "&Aceito"
 
 LangString i18n_INSTALL_CREATEDIR ${LANG_SPANISH} "Creando directorio"
+LangString i18n_INSTALL_CREATEDIR ${LANG_ENGLISH} "Creating directory"
+LangString i18n_INSTALL_CREATEDIR ${LANG_PORTUGUESEBR} "Criando diretório"
 
 LangString i18n_INSTALL_PREVINSTALL ${LANG_SPANISH} "Instalación anterior detectada"
+LangString i18n_INSTALL_PREVINSTALL ${LANG_ENGLISH} "Previous installation detected"
+LangString i18n_INSTALL_PREVINSTALL ${LANG_PORTUGUESEBR} "Instalação anterior detectada"
 
 LangString i18n_INSTALL_STOP_APACHESRV ${LANG_SPANISH} "Deteniendo servicio Apache"
+LangString i18n_INSTALL_STOP_APACHESRV ${LANG_ENGLISH} "Stopping Apache service"
+LangString i18n_INSTALL_STOP_APACHESRV ${LANG_PORTUGUESEBR} "Parando o serviço Apache"
 
 LangString i18n_INSTALL_STOP_MARIADBSRV ${LANG_SPANISH} "Deteniendo servicio MariaDB"
-
-LangString i18n_DESCR_CACERT ${LANG_SPANISH} "ca-cert.pem"
+LangString i18n_INSTALL_STOP_MARIADBSRV ${LANG_ENGLISH} "Stopping MariaDB service"
+LangString i18n_INSTALL_STOP_MARIADBSRV ${LANG_PORTUGUESEBR} "Parando o serviço MariaDB"
 
 LangString i18n_CREATE_UNINSTALL ${LANG_SPANISH} "Creando el desinstalador"
+LangString i18n_CREATE_UNINSTALL ${LANG_ENGLISH} "Creating uninstaller"
+LangString i18n_CREATE_UNINSTALL ${LANG_PORTUGUESEBR} "Criando desinstalador"
 
 LangString i18n_CREATE_SHORTLINK ${LANG_SPANISH} "Creando acceso directo a web del proyecto"
+LangString i18n_CREATE_SHORTLINK ${LANG_ENGLISH} "Creating shortcut to project website"
+LangString i18n_CREATE_SHORTLINK ${LANG_PORTUGUESEBR} "Criando atalho para o site do projeto"
 
 LangString i18n_ERROR_VCREDIST ${LANG_SPANISH} "No se pudo completar la instalacion del componente debido a un error:"
+LangString i18n_ERROR_VCREDIST ${LANG_ENGLISH} "Component installation could not be completed due to an error:"
+LangString i18n_ERROR_VCREDIST ${LANG_PORTUGUESEBR} "A instalação do componente não pôde ser concluída devido a um erro:"
 
 LangString i18n_TIMEOUT_VCREDIST ${LANG_SPANISH} "Se agotó el tiempo de espera para la instalación:"
+LangString i18n_TIMEOUT_VCREDIST ${LANG_ENGLISH} "Installation timeout expired:"
+LangString i18n_TIMEOUT_VCREDIST ${LANG_PORTUGUESEBR} "Tempo de espera da instalação expirou:"
 
 LangString i18n_NOT_PATH_FOUND ${LANG_SPANISH} "No se puede recuperar la información de la instalación anterior."
+LangString i18n_NOT_PATH_FOUND ${LANG_ENGLISH} "Cannot retrieve information from previous installation."
+LangString i18n_NOT_PATH_FOUND ${LANG_PORTUGUESEBR} "Não é possível recuperar informações da instalação anterior."
 
 LangString i18n_INSTALL_APACHE ${LANG_SPANISH} "Instalando Apache HTTP Server..."
+LangString i18n_INSTALL_APACHE ${LANG_ENGLISH} "Installing Apache HTTP Server..."
+LangString i18n_INSTALL_APACHE ${LANG_PORTUGUESEBR} "Instalando Apache HTTP Server..."
 
 LangString i18n_INSTALL_MARIADB ${LANG_SPANISH} "Instalando MariaDB Community Server..."
+LangString i18n_INSTALL_MARIADB ${LANG_ENGLISH} "Installing MariaDB Community Server..."
+LangString i18n_INSTALL_MARIADB ${LANG_PORTUGUESEBR} "Instalando MariaDB Community Server..."
 
 LangString i18n_INSTALL_PHP ${LANG_SPANISH} "Instalando PHP Hypertext Preprocessor..."
+LangString i18n_INSTALL_PHP ${LANG_ENGLISH} "Installing PHP Hypertext Preprocessor..."
+LangString i18n_INSTALL_PHP ${LANG_PORTUGUESEBR} "Instalando PHP Hypertext Preprocessor..."
 
 LangString i18n_INSTALL_CACERT ${LANG_SPANISH} "Instalando ca-cert..."
-
-LangString i18n_INSTALL_APACHE ${LANG_SPANISH} "Instalando Apache HTTP..."
+LangString i18n_INSTALL_CACERT ${LANG_ENGLISH} "Installing ca-cert..."
+LangString i18n_INSTALL_CACERT ${LANG_PORTUGUESEBR} "Instalando ca-cert..."

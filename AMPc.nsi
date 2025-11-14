@@ -49,8 +49,8 @@ SetCompressor /SOLID /FINAL lzma
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 !define URL_DISTRO "https://github.com/hucrea/AMPc"
 !define URL_DISTRO_PUB "https://hucreativa.cl"
-!define URL_DISTRO_UPDATE "${AMPC_URL}/releases"
-!define URL_DISTRO_HELP "${AMPC_URL}/wiki"
+!define URL_DISTRO_UPDATE "${URL_DISTRO}/releases"
+!define URL_DISTRO_HELP "${URL_DISTRO}/wiki"
 
 !define DIR_MEDIA "media-src"
 !define DIR_COMPONENTS "components"
@@ -369,9 +369,9 @@ Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
 	; Ejecutar solo si NO EXISTE instalacion previa.
 	${If} $ampcPrevInstall == "none"
 		
-		${NSD_GetText} $mariadbConfigPass $R0
-		${NSD_GetText} $mariadbConfigCheck $R1
-		${NSD_GetText} $mariadbConfigPort $R2
+		${NSD_GetText} $mariadbCustomPass $R0
+		${NSD_GetText} $mariadbCustomPassCheck $R1
+		${NSD_GetText} $mariadbCustomPort $R2
 
 		StrCmp $R0 "" failEmptyPass stepPassMatch
 
@@ -412,7 +412,7 @@ Section -sectionInit
 	; aqui y no antes, es porque desde este punto hay garantia absoluta de la ruta
 	; de instalacion y, por tanto, un lugar donde almacenar el archivo.
 	LogSet on
-	LogText "${DIST_NAME} ${VERSION_DIST}"
+	LogText "${DISTRO_NAME} ${VERSION_DISTRO}"
 	LogText "${BUILD_TIMESTAMP_BRAND}"
 
 	${If} $ampcPrevInstall == "none"
@@ -462,7 +462,7 @@ SectionEnd
 
 Section -sectionAmpc
 	DetailPrint "$(i18n_CREATE_SHORTLINK)"
-	WriteIniStr "$INSTDIR\${DISTRO_NAME}.url" "InternetShortcut" "URL" "${DISTRO_URL}"
+	WriteIniStr "$INSTDIR\${DISTRO_NAME}.url" "InternetShortcut" "URL" "${URL_DISTRO}"
 
 	WriteRegDWORD ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "LangInstall" "$LANGUAGE"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${VERSION_DISTRO}"
@@ -612,9 +612,9 @@ Section "PHP (${COMPONENT_P_VERSION})" section_Php
 	SetOverwrite on
 		!include "${DIR_COMPONENTS}\php\files.nsh" ; Incluye archivos del paquete.
 
-	${If} $prevInstallAMPc == "none"
+	${If} $ampcPrevInstall == "none"
 
-		SetOutPath "$pathPhp"
+		SetOutPath "$phpPath"
 			File "${DIR_CONFIG}\php.ini"
 		SetOutPath "$INSTDIR\htdocs"
 			File "${DIR_WWW}\phpinfo.php"
@@ -638,7 +638,7 @@ SectionEnd
 Section "ca-cert (${COMPONENT_C_VERSION})" section_CACERT
 	SectionIn RO
 
-	StrCpy $cacertPath "$pathPhp\extras\ssl"
+	StrCpy $cacertPath "$phpPath\extras\ssl"
 
 	DetailPrint "$(i18n_INSTALL_CACERT)"
 	SetOverwrite on
@@ -676,7 +676,7 @@ Function un.onInit
 
 	SetRegView 64
 	!insertmacro MUI_UNGETLANGUAGE
-	MessageBox MB_ICONINFORMATION|MB_OK "Vas a desinstalar ${PACKAGE}.$\n$\n \
+	MessageBox MB_ICONINFORMATION|MB_OK "Vas a desinstalar ${DISTRO_NAME}.$\n$\n \
 	La carpeta $INSTDIR\htdocs NO SE ELIMINARÁ"
 FunctionEnd
 
@@ -741,6 +741,6 @@ SectionEnd
 ; Al finalizar desinstalacion.
 Function un.onUninstSuccess
 	HideWindow
-	MessageBox MB_ICONINFORMATION|MB_OK "La desinstalación de ${PACKAGE} finalizó correctamente.$\n$\n \
+	MessageBox MB_ICONINFORMATION|MB_OK "La desinstalación de ${DISTRO_NAME} finalizó correctamente.$\n$\n \
 	La carpeta $INSTDIR\htdocs no se ha eliminado."
 FunctionEnd
