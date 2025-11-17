@@ -1,5 +1,5 @@
 /components/*/*
-!/components/*/files.nsh
+!/components/*/*.nsh
 *.exe
 *.tmp
 *.log

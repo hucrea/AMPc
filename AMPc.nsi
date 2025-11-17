@@ -129,7 +129,7 @@ Var cacertVersion ; Version local de cacert.
 !define MUI_FINISHPAGE_RUN_FUNCTION func_StartServices
 !define MUI_LICENSEPAGE_BUTTON
 !define MUI_FINISHPAGE_LINK "${DISTRO_NAME}"
-!define MUI_FINISHPAGE_LINK_LOCATION "${DISTRO_URL}"
+!define MUI_FINISHPAGE_LINK_LOCATION "${URL_DISTRO}"
 !define MUI_COMPONENTSPAGE_SMALLDESC
 
 ; Proceso de instalacion.
@@ -421,18 +421,6 @@ Section -sectionInit
 		; almacenarse y, asi, se registre todo el proceso de instalacion.
 		DetailPrint "$(i18n_INSTALL_CREATEDIR) $INSTDIR"
 		CreateDirectory "$INSTDIR"
-
-	${Else}
-		; Si se detecto una instalacion previa, se detienen los servicios de 
-		; Apache HTTP y de MariaDB.
-		DetailPrint "$(i18n_INSTALL_PREVINSTALL)"
-		DetailPrint "$(i18n_INSTALL_STOP_APACHESRV)"
-		nsExec::ExecToStack /OEM 'net stop Apache2.4'
-		Pop $0
-		DetailPrint "$(i18n_INSTALL_STOP_MARIADBSRV)"
-		nsExec::ExecToStack /OEM 'net stop MariaDB'
-		Pop $0
-
 	${EndIf}
 
 	; Algunos archivos requieren barras invertidas tipo UNIX, mientras que $INSTDIR
@@ -445,6 +433,40 @@ Section -sectionInit
 	LogText $ampcBackSlash
 SectionEnd
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Instalacion Previa
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Section -sectionPrevInstall
+	${If} $ampcPrevInstall == "yes"
+		DetailPrint "$(i18n_INSTALL_PREVINSTALL)"
+
+		DetailPrint "$(i18n_INSTALL_STOP_APACHESRV)"
+		nsExec::ExecToStack /TIMEOUT=30000 /OEM 'net stop Apache2.4'
+		Pop $0
+
+		${If} $0 == "timeout"
+            DetailPrint "$(i18n_INSTALL_KILL_APACHESRV)"
+            nsExec::ExecToStack /OEM 'taskkill /F /IM httpd.exe'
+            Pop $0
+            Pop $1
+        ${EndIf}
+
+		DetailPrint "$(i18n_INSTALL_STOP_MARIADBSRV)"
+		nsExec::ExecToStack /TIMEOUT=30000 /OEM 'net stop MariaDB'
+		Pop $0
+
+		${If} $0 == "timeout"
+            DetailPrint "$(i18n_INSTALL_KILL_MARIADBSRV)"
+            nsExec::ExecToStack /OEM 'taskkill /F /IM mariadbd.exe'
+            Pop $0
+            Pop $1
+        ${EndIf}
+	${EndIf}
+SectionEnd
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Desinstalador
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section -sectionUninstaller
 	; Se registra el desinstalador.
 	DetailPrint "$(i18n_CREATE_UNINSTALL)"
@@ -460,10 +482,14 @@ Section -sectionUninstaller
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${DISTRO_PUB}"
 SectionEnd
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; AMPc API
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section -sectionAmpc
 	DetailPrint "$(i18n_CREATE_SHORTLINK)"
 	WriteIniStr "$INSTDIR\${DISTRO_NAME}.url" "InternetShortcut" "URL" "${URL_DISTRO}"
 
+	WriteRegDWORD ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionAPI" "${VERSION_API}"
 	WriteRegDWORD ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "LangInstall" "$LANGUAGE"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${VERSION_DISTRO}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VERSION_BUILD}"
@@ -484,10 +510,11 @@ Section -sectionVCRedist
 	; $statusVCRuntime almacena el valor de la decision del usuario o existencia
 	; del componente, para consulta posterior.
 	ClearErrors
-	EnumRegKey $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" 0
+	ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
 
 	; No se ha detectado el componente.
 	${If} ${Errors}
+    ${OrIf} $0 != 1
 		; Se ofrece al usuario la descarga e instalacion automatica de 
 		; Visual C++ Redistributable. Puede rechazar esta accion.
 		DetailPrint "$(i18n_VCR_NOTFOUND)"
@@ -542,8 +569,10 @@ Section -sectionVCRedist
 		continue:
 	; Se ha detectado el componente, se omite todo lo anterior.
 	${Else}
+		ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Version"
 		StrCpy $ampcVCRedist "done"
-		DetailPrint "$(i18n_VCR_EXIST)"
+		DetailPrint "$(i18n_VCR_EXIST) $1"
+		Pop $1
 	${EndIf}
 SectionEnd
 
@@ -557,7 +586,7 @@ Section "Apache HTTP Server (${COMPONENT_A_VERSION})" section_Apache
 
 	DetailPrint "$(i18n_INSTALL_APACHE)"
 	SetOverwrite on
-		!include "${DIR_COMPONENTS}\apache\files.nsh" ; Incluye archivos del paquete.
+		!include "${DIR_COMPONENTS}\apache\files_install.nsh" ; Incluye archivos del paquete.
 
 	${If} $ampcPrevInstall == "none"
 
@@ -594,7 +623,7 @@ Section "MariaDB Community Server (${COMPONENT_M_VERSION})" section_Mariadb
 
 	DetailPrint "$(i18n_INSTALL_MARIADB)"
 	SetOverwrite on
-		!include "${DIR_COMPONENTS}\mariadb\files.nsh" ; Incluye archivos del paquete.
+		!include "${DIR_COMPONENTS}\mariadb\files_install.nsh" ; Incluye archivos del paquete.
 
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${COMPONENT_M_VERSION}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$mariadbPath"
@@ -610,7 +639,7 @@ Section "PHP (${COMPONENT_P_VERSION})" section_Php
 
 	DetailPrint "$(i18n_INSTALL_PHP)"
 	SetOverwrite on
-		!include "${DIR_COMPONENTS}\php\files.nsh" ; Incluye archivos del paquete.
+		!include "${DIR_COMPONENTS}\php\files_install.nsh" ; Incluye archivos del paquete.
 
 	${If} $ampcPrevInstall == "none"
 
@@ -643,7 +672,7 @@ Section "ca-cert (${COMPONENT_C_VERSION})" section_CACERT
 	DetailPrint "$(i18n_INSTALL_CACERT)"
 	SetOverwrite on
 	SetOutPath "$cacertPath"
-		File "${DIR_COMPONENTS}\cacert\cacert.pem"
+		!include "${DIR_COMPONENTS}\cacert\files_install.nsh" ; Incluye archivos del paquete.
 
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${COMPONENT_C_VERSION}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$cacertPath"
@@ -711,24 +740,23 @@ Section Uninstall
 	DetailPrint $1
 
 	DetailPrint "Eliminando archivos"
-	Delete "$INSTDIR\${PACKAGE}.url"
+	Delete "$INSTDIR\${DISTRO_NAME}.url"
 	Delete "$INSTDIR\uninstall-ampc.exe"
-	Delete "$INSTDIR\updater-ampc.exe"
 
 	DetailPrint "Eliminando archivos de Apache HTTP"
-	RMDir /r /REBOOTOK "$INSTDIR\Apache"
+	!include "${DIR_COMPONENTS}\apache\uninstall_files.nsh"
 
 	DetailPrint "Eliminando archivos de MariaDB"
 	RMDir /r /REBOOTOK "$INSTDIR\MariaDB"
+	!include "${DIR_COMPONENTS}\mariadb\uninstall_files.nsh"
+
+	DetailPrint "Eliminando cacert"
+	RMDir /r /REBOOTOK "$INSTDIR\PHP"
+	!include "${DIR_COMPONENTS}\cacert\uninstall_files.nsh"
 
 	DetailPrint "Eliminando archivos de PHP"
 	RMDir /r /REBOOTOK "$INSTDIR\PHP"
-
-	DetailPrint "Eliminando archivos de phpMyAdmin"
-	RMDir /r /REBOOTOK "$INSTDIR\htdocs\phpmyadmin"
-
-	DetailPrint "Eliminando archivos de Adminer"
-	RMDir /r /REBOOTOK "$INSTDIR\htdocs\adminer"
+	!include "${DIR_COMPONENTS}\php\uninstall_files.nsh"
 
 	DetailPrint "Eliminando LOG de instalación"
 	Delete "$INSTDIR\install.log"
