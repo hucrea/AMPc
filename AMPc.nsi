@@ -44,7 +44,6 @@ SetCompressor /SOLID /FINAL lzma
 !define REGKEY_ROOT "HKLM"
 !define REGKEY_PACKAGE "Software\${DISTRO_PUB}\${DISTRO_GUID}"
 !define REGKEY_UNINST "Software\Microsoft\Windows\CurrentVersion\Uninstall\${DISTRO_GUID}"
-!define REGKEY_DIST "Software\${DISTRO_PUB}\${DISTRO_GUID}"
 
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 !define URL_DISTRO "https://github.com/hucrea/AMPc"
@@ -87,21 +86,38 @@ VIAddVersionKey /LANG=0 "FileDescription" "Installer ${DISTRO_NAME}"
 ###############################
 Var ampcPrevInstall ; Instalacion previa.
 Var ampcBackSlash ; Usada por func_ReplaceSlash.
+
+Var ampcComponents
+Var ampcComponents_Label6
+Var ampcComponents_Label5
+Var ampcComponents_Label4
+Var ampcComponents_Label3
+Var ampcComponents_Label2
+Var ampcComponents_Label1
+Var ampcFontBold
+
 Var ampcVCRedist ; Estado de Visual C++ Redistributable.
+Var ampcVCRedistDialog
+Var ampcVCRLabel1
+Var ampcVCRCheckbox
+Var ampcVCRLabel2
 
 Var apachePath ; Ruta local de instalacion de Apache.
 Var apacheVersion ; Version local de Apache.
 Var apacheCustomServerName ; Nombre del servidor (Apache).
 Var apacheCustomPort ; Puerto (Apache).
 Var apacheCustomServiceName ; Nombre del servicio (Apache).
+
 Var mariadbPath ; Ruta local de instalacion de MariaDB.
 Var mariadbVersion ; Version local de MariaDB.
 Var mariadbCustomPass ; Contrasenna root (MariaDB).
 Var mariadbCustomPassCheck ; Repeticion de contrasenna root (MariaDB).
 Var mariadbCustomPort ; Puerto (MariaDB).
 Var mariadbCustomServiceName ; Nombre del servicio (MariaDB).
+
 Var phpVersion ; Version local de PHP.
 Var phpPath ; Ruta local de instalacion de PHP.
+
 Var cacertPath ; Ruta local de instalacion de ca-cert.
 Var cacertVersion ; Version local de cacert.
 
@@ -143,7 +159,8 @@ Var cacertVersion ; Version local de cacert.
 !define MUI_LICENSEPAGE_BUTTON "$(i18n_LICENSE_THIRD_BUTTON)"
 !insertmacro MUI_PAGE_LICENSE "media-src\license-components.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_COMPONENTS
+Page Custom custom_PageVCRedist leave_PageVCRedist
+Page Custom custom_PageComponents leave_PageComponents
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !insertmacro MUI_PAGE_INSTFILES
 Page Custom custom_PageApache leave_PageApache
@@ -251,6 +268,93 @@ FunctionEnd
 ###############################
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Pre-requisitos.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Function custom_PageVCRedist
+	ClearErrors
+	; Para mas informacion, leer el siguiente enlace:
+	; https://learn.microsoft.com/es-mx/cpp/windows/redistributing-visual-cpp-files?view=msvc-170
+	ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
+
+	; No se ha detectado el componente.
+	${If} ${Errors}
+    ${OrIf} $0 != 1
+		nsDialogs::Create 1018
+		Pop $ampcVCRedistDialog
+		${If} $ampcVCRedistDialog == error
+			Abort
+		${EndIf}
+
+		!insertmacro MUI_HEADER_TEXT "Descargar e Instalar dependencia" "Dependencia necesaria no encontrada"
+
+		${NSD_CreateLabel} 0 10u 100% 20u "No se ha detectado Visual C++ Redistributable y es necesario para ejecutar los binarios de Apache HTTP Server y PHP en Windows."
+		Pop $ampcVCRLabel1
+
+		${NSD_CreateCheckbox} 0 40u 100% 15u "Descargar e Instalar Visual C++ Redistributable durante la instalación."
+		Pop $ampcVCRCheckbox
+		${NSD_Check} $ampcVCRCheckbox
+
+		${NSD_CreateLabel} 0 72u 100% 36u "La descarga se realiza desde el servidor oficial de Microsoft. Si no aceptas la descarga e instalación automática deberás realizarla por tu cuenta para poder ejecutar Apache y PHP, además de instalar el servicio de Apache manualmente. La descarga requiere conexión a internet."
+		Pop $ampcVCRLabel2
+		nsDialogs::Show
+	${EndIf}
+FunctionEnd
+
+Function leave_PageVCRedist ; Funcion de salida para custom_PageVCRedist.
+	Push $0
+
+    ${NSD_GetState} $ampcVCRCheckbox $0
+
+    ${If} $0 == ${BST_CHECKED}
+        StrCpy $ampcVCRedist "install"
+    ${Else}
+        StrCpy $ampcVCRedist "skip"
+    ${EndIf}
+
+    Pop $0
+FunctionEnd
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Componentes.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Function custom_PageComponents
+	CreateFont $ampcFontBold "Microsoft Sans Serif" "8.25" "700"
+  
+	nsDialogs::Create 1018
+	Pop $ampcComponents
+	${If} $ampcComponents == error
+		Abort
+	${EndIf}
+	!insertmacro MUI_HEADER_TEXT "Componentes a instalar" "Los siguientes componentes se instalarán"
+
+	${NSD_CreateLabel} 0 0 100% 17u "Los siguientes componentes se instalarán:"
+	Pop $ampcComponentsLabel1
+
+	${NSD_CreateLabel} 16u 33u 100% 17u "Apache HTTP Server ${apacheVersion}"
+	Pop $ampcComponentsLabel2
+	SendMessage $ampcComponentsLabel2 ${WM_SETFONT} $ampcFontBold 0
+
+	${NSD_CreateLabel} 16u 50u 100% 17u "MariaDB Community Server ${mariadbVersion}"
+	Pop $ampcComponentsLabel3
+	SendMessage $ampcComponentsLabel3 ${WM_SETFONT} $ampcFontBold 0
+
+	${NSD_CreateLabel} 16u 67u 100% 17u "PHP: Hypertext Preprocessor ${phpVersion}"
+	Pop $ampcComponentsLabel4
+	SendMessage $ampcComponentsLabel4 ${WM_SETFONT} $ampcFontBold 0
+
+	${NSD_CreateLabel} 16u 84u 100% 17u "cacert ${cacertVersion}"
+	Pop $ampcComponentsLabel5
+	SendMessage $ampcComponentsLabel5 ${WM_SETFONT} $ampcFontBold 0
+
+	${NSD_CreateLabel} 0 110u 100% 25u "Una vez finalizada la instalación, se iniciará el asistente que le guiará para la configuración inicial de Apache y MariaDB."
+	Pop $ampcComponentsLabel6
+	nsDialogs::Show
+FunctionEnd
+
+Function leave_PageComponents ; Funcion de salida para custom_PageComponents.
+FunctionEnd
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Apache HTTP Server.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function custom_PageApache
@@ -268,6 +372,10 @@ Function custom_PageApache
 			${NSD_CreateLabel} 0 30u 100% 8u "$(i18n_APACHE_PORT)"
 			${NSD_CreateNumber} 0 42u 20% 12u "80"
 			Pop $apacheCustomPort
+
+			${NSD_CreateLabel} 0 72u 100% 8u "$(i18n_APACHE_SRVNAME)"
+			${NSD_CreateText} 0 84u 20% 12u "Apache2.4"
+			Pop $apacheCustomServiceName
 
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
 			Pop $R1
@@ -357,6 +465,10 @@ Function custom_PageMariadb
 			${NSD_CreateNumber} 0 84u 20% 12u "3306"
 			Pop $mariadbCustomPort
 
+			${NSD_CreateLabel} 0 96u 100% 8u "$(i18n_MARIADB_SRVNAME)"
+			${NSD_CreateText} 0 108u 20% 12u "MariaDB"
+			Pop $mariadbCustomServiceName
+
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
 			Pop $R1
 
@@ -436,7 +548,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Instalacion Previa
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section -sectionPrevInstall
+Section -sectionPrevInstallOne
 	${If} $ampcPrevInstall == "yes"
 		DetailPrint "$(i18n_INSTALL_PREVINSTALL)"
 
@@ -500,73 +612,47 @@ SectionEnd
 ; Visual C++ Redistributable.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section -sectionVCRedist
-	; Visual C++ Redistributable es requerido por Apache HTTP y PHP.
-	; Para verificar si existe dicho componente, se consulta una clave del registro
-	; tal como se indica en la web de Microsoft (revise el link de abajo)
-	; https://learn.microsoft.com/es-mx/cpp/windows/redistributing-visual-cpp-files?view=msvc-170
-	; Si EnumRegKey devuelve error, se asume que el componente no esta instalado
-	; y se procede a ofrecer la descarga e instalacion al usuario, quien puede
-	; aceptar o rechazar la descarga e instalacion del componente. La variable
-	; $statusVCRuntime almacena el valor de la decision del usuario o existencia
-	; del componente, para consulta posterior.
-	ClearErrors
-	ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
+	
+	${If} $ampcVCRedist == "install"
+		DetailPrint "$(i18n_VCR_DOWNLOADING)"
+		NScurl::http get "${URL_VCREDIST}" "$PLUGINSDIR\vcredist_x64.exe" /INSIST /CANCEL /RESUME /END
+		Pop $1
 
-	; No se ha detectado el componente.
-	${If} ${Errors}
-    ${OrIf} $0 != 1
-		; Se ofrece al usuario la descarga e instalacion automatica de 
-		; Visual C++ Redistributable. Puede rechazar esta accion.
-		DetailPrint "$(i18n_VCR_NOTFOUND)"
-		MessageBox MB_YESNO "$(i18n_VCR_NOTFOUND) \
-		$(i18n_VCR_MBOX_DETAILS1)$\n$\n$(i18n_VCR_MBOX_DETAILS2)" IDYES install IDNO skip
+		; El componente se pudo descargar y se procede a instalar.
+		${If} $1 == "OK"
+			StrCpy $ampcVCRedist "install"
+			DetailPrint "$(i18n_VCR_INSTALLING)"
+			nsExec::ExecToStack /OEM '"$PLUGINSDIR\vcredist_x64.exe" /q /norestart'
+			Pop $R0
+			Pop $R1
 
-		; El usuario acepta la descarga e instalacion.
-		install:
-			DetailPrint "$(i18n_VCR_DOWNLOADING)"
-			NScurl::http get "${URL_VCREDIST}" "$PLUGINSDIR\vcredist_x64.exe" /INSIST /CANCEL /RESUME /END
-			Pop $1
-
-			; El componente se pudo descargar y se procede a instalar.
-			${If} $1 == "OK"
-				StrCpy $ampcVCRedist "install"
-				DetailPrint "$(i18n_VCR_INSTALLING)"
-				nsExec::ExecToStack /OEM '"$PLUGINSDIR\vcredist_x64.exe" /q /norestart'
-				Pop $R0
-				Pop $R1
-
-				; Si ocurre un error al instalar, se notifica al usuario.
-				${If} $R0 == "error"
-					StrCpy $ampcVCRedist "none"
-					MessageBox MB_OK "$(i18n_ERROR_VCREDIST) $R1" 
-					Goto skip
-				${EndIf}
-
-				; Si se agota el tiempo de ejecucion al instalar, se notifica al usuario.
-				${If} $R0 == "timeout"
-					StrCpy $ampcVCRedist "none"
-					MessageBox MB_OK "$(i18n_TIMEOUT_VCREDIST) $R1"
-					Goto skip
-				${EndIf}
-
-				DetailPrint "$(i18n_VCR_SUCCESS)"
-				Goto continue
-
-			; El componente no se pudo descargar.
-			${Else}
+			; Si ocurre un error al instalar, se notifica al usuario.
+			${If} $R0 == "error"
 				StrCpy $ampcVCRedist "none"
-				DetailPrint "$(i18n_VCR_ERROR) $1"
+				MessageBox MB_OK "$(i18n_ERROR_VCREDIST) $R1" 
+				Goto skip
 			${EndIf}
 
-		; Si el usuario rechaza la instalacion u ocurre un error que impide que el
-		; componente sea instalado, se notifica al usuario que debe instalar el
-		; componente por sus propios medios.
-		skip:
-			StrCpy $ampcVCRedist "none"
-			MessageBox MB_OK "$(i18n_VCR_SKIP_REMINDER)"
-			DetailPrint "$(i18n_VCR_SKIP_REMINDER)"
+			; Si se agota el tiempo de ejecucion al instalar, se notifica al usuario.
+			${If} $R0 == "timeout"
+				StrCpy $ampcVCRedist "none"
+				MessageBox MB_OK "$(i18n_TIMEOUT_VCREDIST) $R1"
+				Goto skip
+			${EndIf}
 
-		continue:
+			DetailPrint "$(i18n_VCR_SUCCESS)"
+
+		; El componente no se pudo descargar.
+		${Else}
+			StrCpy $ampcVCRedist "none"
+			DetailPrint "$(i18n_VCR_ERROR) $1"
+		${EndIf}
+
+	${ElseIf} $ampcVCRedist == "skip"
+		StrCpy $ampcVCRedist "none"
+		MessageBox MB_OK "$(i18n_VCR_SKIP_REMINDER)"
+		DetailPrint "$(i18n_VCR_SKIP_REMINDER)"
+
 	; Se ha detectado el componente, se omite todo lo anterior.
 	${Else}
 		ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Version"
@@ -747,16 +833,18 @@ Section Uninstall
 	!include "${DIR_COMPONENTS}\apache\uninstall_files.nsh"
 
 	DetailPrint "Eliminando archivos de MariaDB"
-	RMDir /r /REBOOTOK "$INSTDIR\MariaDB"
 	!include "${DIR_COMPONENTS}\mariadb\uninstall_files.nsh"
 
 	DetailPrint "Eliminando cacert"
-	RMDir /r /REBOOTOK "$INSTDIR\PHP"
 	!include "${DIR_COMPONENTS}\cacert\uninstall_files.nsh"
 
 	DetailPrint "Eliminando archivos de PHP"
 	RMDir /r /REBOOTOK "$INSTDIR\PHP"
 	!include "${DIR_COMPONENTS}\php\uninstall_files.nsh"
+
+	RMDir /r /REBOOTOK "$INSTDIR\Apache"
+	RMDir /r /REBOOTOK "$INSTDIR\MariaDB"
+	RMDir /r /REBOOTOK "$INSTDIR\PHP"
 
 	DetailPrint "Eliminando LOG de instalación"
 	Delete "$INSTDIR\install.log"

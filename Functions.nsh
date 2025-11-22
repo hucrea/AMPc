@@ -209,7 +209,7 @@ func_StartServices
  Inicia los servicios Apache HTTP y MariaDB
 
  La funcion realiza una pequeña comprobacion previa para asegurar que existe
- una instalacion de Visual C++ Redistributable. La variable $statusVCRuntime se
+ una instalacion de Visual C++ Redistributable. La variable $ampcVCRedist se
  define al iniciar la instalacion del paquete y puede tomar los valores 
  "skipped", "install" o "installed", siendo los ultimos valores un fallback: 
  el que importa es "skipped", valor que toma si el usuario no acepta la 
@@ -217,7 +217,7 @@ func_StartServices
 
 */
 Function func_StartServices
-	StrCmp $statusVCRuntime "skipped" warning execute
+	StrCmp $ampcVCRedist "skip" warning execute
 
 	warning:
 		MessageBox MB_OK "No has instalado Visual C++ Redistributable, el servicio de Apache HTTP no se puede iniciar."
