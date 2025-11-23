@@ -25,7 +25,6 @@ SetCompressor /SOLID /FINAL lzma
 !define /date BUILD_TIMESTAMP   "%Y%m%d_%H%M%S"
 !define BUILD_TIMESTAMP_BRAND   "Build at ${__TIME__} on ${__DATE__}"
 
-!define VERSION_DISTRO "0.20.0"
 !define VERSION_API "2"
 !define VERSION_BUILD "${VERSION_DISTRO}+${BUILD_TIMESTAMP}"
 !define VERSION_VIPV "${VERSION_DISTRO}.${VERSION_API}"
@@ -35,11 +34,6 @@ SetCompressor /SOLID /FINAL lzma
 !define DISTRO_GUID "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
 !define DISTRO_PUB "Hu SpA"
 !define DISTRO_PUB_COUNTRY "Chile"
-
-!define COMPONENT_A_VERSION "2.4.65"
-!define COMPONENT_M_VERSION "11.4.8"
-!define COMPONENT_P_VERSION "8.3.25"
-!define COMPONENT_C_VERSION "25.08.12"
 
 !define REGKEY_ROOT "HKLM"
 !define REGKEY_PACKAGE "Software\${DISTRO_PUB}\${DISTRO_GUID}"
@@ -87,13 +81,13 @@ VIAddVersionKey /LANG=0 "FileDescription" "Installer ${DISTRO_NAME}"
 Var ampcPrevInstall ; Instalacion previa.
 Var ampcBackSlash ; Usada por func_ReplaceSlash.
 
-Var ampcComponents
-Var ampcComponents_Label6
-Var ampcComponents_Label5
-Var ampcComponents_Label4
-Var ampcComponents_Label3
-Var ampcComponents_Label2
-Var ampcComponents_Label1
+Var ampcComponents ; Pantalla de componentes.
+Var ampcComponentsLabel6
+Var ampcComponentsLabel5
+Var ampcComponentsLabel4
+Var ampcComponentsLabel3
+Var ampcComponentsLabel2
+Var ampcComponentsLabel1
 Var ampcFontBold
 
 Var ampcVCRedist ; Estado de Visual C++ Redistributable.
@@ -130,6 +124,7 @@ Var cacertVersion ; Version local de cacert.
 !include "nsDialogs.nsh"
 !include "LogicLib.nsh"
 !include "Functions.nsh"
+!include "Versions.nsh"
 
 ; Configuracion de la instalacion.
 !define MUI_ABORTWARNING
@@ -191,8 +186,8 @@ Page Custom custom_PageMariadb leave_PageMariadb
 Function .onInit
 	InitPluginsDir
 
-	; Verifica que arquitectura del sistema anfitrion sea x64.
 	${IfNot} ${RunningX64}
+		# No se puede continuar: sistema de 32 bits detectado.
 		MessageBox MB_OK|MB_ICONSTOP "$(i18n_32BITS_NOTSUPPORT).$\n$\n$(i18n_INSTALL_CANNOT)"
 		Abort
 	${EndIf}
@@ -201,10 +196,8 @@ Function .onInit
 	${DisableX64FSRedirection}
 	SetRegView 64
 
-	; Inicializa instalador.
 	!insertmacro MUI_LANGDLL_DISPLAY
 
-	# INSTALACION PREVIA
 	; Inicializa variables.
 	StrCpy $apachePath "unknow"
 	StrCpy $apacheVersion "unknow"
@@ -330,19 +323,19 @@ Function custom_PageComponents
 	${NSD_CreateLabel} 0 0 100% 17u "Los siguientes componentes se instalarán:"
 	Pop $ampcComponentsLabel1
 
-	${NSD_CreateLabel} 16u 33u 100% 17u "Apache HTTP Server ${apacheVersion}"
+	${NSD_CreateLabel} 16u 33u 100% 17u "Apache HTTP Server - ${COMPONENT_A_VERSION}"
 	Pop $ampcComponentsLabel2
 	SendMessage $ampcComponentsLabel2 ${WM_SETFONT} $ampcFontBold 0
 
-	${NSD_CreateLabel} 16u 50u 100% 17u "MariaDB Community Server ${mariadbVersion}"
+	${NSD_CreateLabel} 16u 50u 100% 17u "MariaDB Community Server - ${COMPONENT_M_VERSION}"
 	Pop $ampcComponentsLabel3
 	SendMessage $ampcComponentsLabel3 ${WM_SETFONT} $ampcFontBold 0
 
-	${NSD_CreateLabel} 16u 67u 100% 17u "PHP: Hypertext Preprocessor ${phpVersion}"
+	${NSD_CreateLabel} 16u 67u 100% 17u "PHP: Hypertext Preprocessor - ${COMPONENT_P_VERSION}"
 	Pop $ampcComponentsLabel4
 	SendMessage $ampcComponentsLabel4 ${WM_SETFONT} $ampcFontBold 0
 
-	${NSD_CreateLabel} 16u 84u 100% 17u "cacert ${cacertVersion}"
+	${NSD_CreateLabel} 16u 84u 100% 17u "cacert - ${COMPONENT_C_VERSION}"
 	Pop $ampcComponentsLabel5
 	SendMessage $ampcComponentsLabel5 ${WM_SETFONT} $ampcFontBold 0
 
@@ -630,14 +623,12 @@ Section -sectionVCRedist
 			${If} $R0 == "error"
 				StrCpy $ampcVCRedist "none"
 				MessageBox MB_OK "$(i18n_ERROR_VCREDIST) $R1" 
-				Goto skip
 			${EndIf}
 
 			; Si se agota el tiempo de ejecucion al instalar, se notifica al usuario.
 			${If} $R0 == "timeout"
 				StrCpy $ampcVCRedist "none"
 				MessageBox MB_OK "$(i18n_TIMEOUT_VCREDIST) $R1"
-				Goto skip
 			${EndIf}
 
 			DetailPrint "$(i18n_VCR_SUCCESS)"
