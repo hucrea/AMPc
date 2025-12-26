@@ -20,35 +20,52 @@
 SetCompressor /SOLID /FINAL lzma
 
 ###############################
-; CONSTANTES DEL PAQUETE.
+; CONSTANTES
 ###############################
+; Marcas de tiempo.
 !define /date BUILD_TIMESTAMP   "%Y%m%d_%H%M%S"
 !define BUILD_TIMESTAMP_BRAND   "Build at ${__TIME__} on ${__DATE__}"
 
+; Versionado.
+!include "Versions.nsh"
 !define VERSION_API "2"
 !define VERSION_BUILD "${VERSION_DISTRO}+${BUILD_TIMESTAMP}"
 !define VERSION_VIPV "${VERSION_DISTRO}.${VERSION_API}"
 
+; Identificadores de la distribucion.
 !define SHORTNAME "ampc"
 !define DISTRO_NAME "AMPc"
 !define DISTRO_GUID "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
 !define DISTRO_PUB "Hu SpA"
 !define DISTRO_PUB_COUNTRY "Chile"
 
+; Claves del registro.
 !define REGKEY_ROOT "HKLM"
 !define REGKEY_PACKAGE "Software\${DISTRO_PUB}\${DISTRO_GUID}"
 !define REGKEY_UNINST "Software\Microsoft\Windows\CurrentVersion\Uninstall\${DISTRO_GUID}"
 
+; Direcciones web.
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 !define URL_DISTRO "https://github.com/hucrea/AMPc"
 !define URL_DISTRO_PUB "https://hucreativa.cl"
 !define URL_DISTRO_UPDATE "${URL_DISTRO}/releases"
 !define URL_DISTRO_HELP "${URL_DISTRO}/wiki"
 
-!define DIR_MEDIA "media-src"
-!define DIR_COMPONENTS "components"
-!define DIR_WWW "www-src"
-!define DIR_CONFIG "config-src"
+; Carpetas de trabajo.
+!define DIR_MEDIA "media-files"
+!define DIR_COMPONENTS "components-files"
+!define DIR_WWW "htdocs-files"
+!define DIR_CONFIG "config-files"
+
+; Timeouts.
+!define TIMEOUT_STOP_SERVICE 60000
+!define TIMEOUT_KILL_PROCESS 10000
+
+; Validacion.
+!define MIN_PASSWORD_LENGTH 8
+!define RECOMMENDED_PASSWORD_LENGTH 12
+!define MIN_PORT 1
+!define MAX_PORT 65535
 
 ###############################
 ; DETALLES DE LA COMPILACION.
@@ -62,26 +79,27 @@ OutFile "${SHORTNAME}-${VERSION_BUILD}.exe"
 InstallDir "$PROGRAMFILES\${DISTRO_NAME}"
 ManifestSupportedOS Win10
 RequestExecutionLevel admin
-ShowInstDetails hide
-ShowUnInstDetails hide
+ShowInstDetails show
+ShowUnInstDetails show
 
-; Version Information
+; Version Information.
 VIProductVersion "${VERSION_VIPV}"
 VIAddVersionKey /LANG=0 "FileVersion" "${VERSION_VIPV}"
 VIAddVersionKey /LANG=0 "ProductVersion" "${VERSION_VIPV}"
 VIAddVersionKey /LANG=0 "ProductName" "${DISTRO_NAME}"
 VIAddVersionKey /LANG=0 "CompanyName" "${DISTRO_PUB} (${DISTRO_PUB_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalCopyright" "© 2025 ${DISTRO_PUB} (${DISTRO_PUB_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalCopyright" "© 2025 - 2026 ${DISTRO_PUB} (${DISTRO_PUB_COUNTRY})"
 VIAddVersionKey /LANG=0 "LegalTrademarks" "${DISTRO_NAME} is a trademark of ${DISTRO_PUB}"
 VIAddVersionKey /LANG=0 "FileDescription" "Installer ${DISTRO_NAME}"
 
 ###############################
-; VARIABLES DEL PAQUETE.
+; VARIABLES.
 ###############################
 Var ampcPrevInstall ; Instalacion previa.
 Var ampcBackSlash ; Usada por func_ReplaceSlash.
 
-Var ampcComponents ; Pantalla de componentes.
+; Ventana de componentes.
+Var ampcComponentsDialog
 Var ampcComponentsLabel6
 Var ampcComponentsLabel5
 Var ampcComponentsLabel4
@@ -90,30 +108,41 @@ Var ampcComponentsLabel2
 Var ampcComponentsLabel1
 Var ampcFontBold
 
-Var ampcVCRedist ; Estado de Visual C++ Redistributable.
+; Ventana y Estado de de VC++ Redis.
+Var ampcVCRedist
 Var ampcVCRedistDialog
 Var ampcVCRLabel1
 Var ampcVCRCheckbox
 Var ampcVCRLabel2
 
-Var apachePath ; Ruta local de instalacion de Apache.
-Var apacheVersion ; Version local de Apache.
-Var apacheCustomServerName ; Nombre del servidor (Apache).
-Var apacheCustomPort ; Puerto (Apache).
-Var apacheCustomServiceName ; Nombre del servicio (Apache).
+; Ventana y valores de Apache.
+Var apachePath
+Var apacheVersion
+Var apacheCustomServerName
+Var apacheCustomPort
+Var apacheCustomServiceName
 
-Var mariadbPath ; Ruta local de instalacion de MariaDB.
-Var mariadbVersion ; Version local de MariaDB.
-Var mariadbCustomPass ; Contrasenna root (MariaDB).
-Var mariadbCustomPassCheck ; Repeticion de contrasenna root (MariaDB).
-Var mariadbCustomPort ; Puerto (MariaDB).
-Var mariadbCustomServiceName ; Nombre del servicio (MariaDB).
+; Ventana y valores de MariaDB.
+Var mariadbPath
+Var mariadbVersion
+Var mariadbCustomPass
+Var mariadbCustomPassCheck
+Var mariadbCustomPort
+Var mariadbCustomServiceName
 
-Var phpVersion ; Version local de PHP.
-Var phpPath ; Ruta local de instalacion de PHP.
+; Valores de PHP.
+Var phpVersion
+Var phpPath
 
-Var cacertPath ; Ruta local de instalacion de ca-cert.
-Var cacertVersion ; Version local de cacert.
+; Valores de cacert.
+Var cacertPath
+Var cacertVersion
+
+; Variables temporales para validaciones.
+Var tempResult
+Var tempString
+Var tempLength
+Var tempPort
 
 ###############################
 ; PROCESO DE INSTALACION.
@@ -124,7 +153,6 @@ Var cacertVersion ; Version local de cacert.
 !include "nsDialogs.nsh"
 !include "LogicLib.nsh"
 !include "Functions.nsh"
-!include "Versions.nsh"
 
 ; Configuracion de la instalacion.
 !define MUI_ABORTWARNING
@@ -145,7 +173,7 @@ Var cacertVersion ; Version local de cacert.
 
 ; Proceso de instalacion.
 !define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_TITLE)"
-!define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_SUBTITLE)"
+!define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_SUBTITLE)"; 
 !insertmacro MUI_PAGE_LICENSE "media-src\license.rtf"
 !define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_THIRD_TITLE)"
 !define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_THIRD_SUBTITLE)"
@@ -181,7 +209,7 @@ Page Custom custom_PageMariadb leave_PageMariadb
 !include "LangStrings.nsh"
 
 ###############################
-# Al iniciar el instalador.
+; Al iniciar el instalador.
 ###############################
 Function .onInit
 	InitPluginsDir
@@ -199,29 +227,35 @@ Function .onInit
 	!insertmacro MUI_LANGDLL_DISPLAY
 
 	; Inicializa variables.
-	StrCpy $apachePath "unknow"
-	StrCpy $apacheVersion "unknow"
-	StrCpy $mariadbPath "unknow"
-	StrCpy $mariadbVersion "unknow"
-	StrCpy $phpPath "unknow"
-	StrCpy $phpVersion "unknow"
-	StrCpy $cacertPath "unknow"
-	StrCpy $cacertVersion "unknow"
+	StrCpy $apachePath "unknown"
+	StrCpy $apacheVersion "unknown"
+	StrCpy $mariadbPath "unknown"
+	StrCpy $mariadbVersion "unknown"
+	StrCpy $phpPath "unknown"
+	StrCpy $phpVersion "unknown"
+	StrCpy $cacertPath "unknown"
+	StrCpy $cacertVersion "unknown"
+	StrCpy $tempResult ""
+	StrCpy $tempString ""
+	StrCpy $tempLength ""
+	StrCpy $tempPort ""
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
-	EnumRegKey $R0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" 0
+	EnumRegKey $tempResult ${REGKEY_ROOT} "${REGKEY_PACKAGE}" 0
 
 	; No existe instalacion previa.
 	${If} ${Errors}
 		StrCpy $ampcPrevInstall "none"
+		StrCpy $tempResult ""
 
 		; Splash al iniciar el instalador.
 		SetOutPath $PLUGINSDIR
 		File "media-src\splash-install.bmp"
 		splash::show 1750 "$PLUGINSDIR\splash-install"
-		Pop $0
+		Pop $tempResult
 		Delete "$PLUGINSDIR\splash-install.bmp"
+		StrCpy $tempResult ""
 
 		SetOutPath $INSTDIR
 
@@ -232,24 +266,27 @@ Function .onInit
 	; Existe instalacion previa.
 	${Else}
 		StrCpy $ampcPrevInstall "yes"
+		StrCpy $tempResult ""
 
 		; Splash al iniciar el actualizador.
 		SetOutPath $PLUGINSDIR
 		File "media-src\splash-update.bmp"
 		splash::show 1750 "$PLUGINSDIR\splash-update"
-		Pop $0
+		Pop $tempResult
 		Delete "$PLUGINSDIR\splash-update.bmp"
+		StrCpy $tempResult ""
 
 		SetOutPath $INSTDIR
 		
 		; Lee la ruta de la instalacion actual.
 		ClearErrors
-		ReadRegStr $R1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
+		ReadRegStr $tempString ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
 
 		${IfNot} ${Errors}
-			StrCpy "$INSTDIR" "$R1"
-
+			StrCpy "$INSTDIR" "$tempString"
+			StrCpy $tempString ""
 		${Else}
+			; No se puede leer la ruta de insralacion.
 			MessageBox MB_OK|MB_ICONSTOP "$(i18n_NOT_PATH_FOUND)"
 			Abort
 		${EndIf}
@@ -267,44 +304,49 @@ Function custom_PageVCRedist
 	ClearErrors
 	; Para mas informacion, leer el siguiente enlace:
 	; https://learn.microsoft.com/es-mx/cpp/windows/redistributing-visual-cpp-files?view=msvc-170
-	ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
+	ReadRegDWORD $tempResult HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
 
 	; No se ha detectado el componente.
 	${If} ${Errors}
-    ${OrIf} $0 != 1
+    ${OrIf} $tempResult != 1
+		StrCpy $tempResult ""
 		nsDialogs::Create 1018
 		Pop $ampcVCRedistDialog
 		${If} $ampcVCRedistDialog == error
 			Abort
 		${EndIf}
 
-		!insertmacro MUI_HEADER_TEXT "Descargar e Instalar dependencia" "Dependencia necesaria no encontrada"
+		; Titulo y subtitulo para VCREDIST.
+		!insertmacro MUI_HEADER_TEXT "$(i18n_VCR_HEADER)" "$(i18n_VCR_SUBTITLE)"
 
-		${NSD_CreateLabel} 0 10u 100% 20u "No se ha detectado Visual C++ Redistributable y es necesario para ejecutar los binarios de Apache HTTP Server y PHP en Windows."
+		; Descripcion de funcion de descarga e instalacion de VCREDIST.
+		${NSD_CreateLabel} 0 10u 100% 20u "$(i18n_VCR_DESCRIPTION)"
 		Pop $ampcVCRLabel1
 
-		${NSD_CreateCheckbox} 0 40u 100% 15u "Descargar e Instalar Visual C++ Redistributable durante la instalación."
+		; Checkbox para aceptar descarga e instalacion.
+		${NSD_CreateCheckbox} 0 40u 100% 15u "$(i18n_VCR_CHECKBOX)"
 		Pop $ampcVCRCheckbox
 		${NSD_Check} $ampcVCRCheckbox
 
-		${NSD_CreateLabel} 0 72u 100% 36u "La descarga se realiza desde el servidor oficial de Microsoft. Si no aceptas la descarga e instalación automática deberás realizarla por tu cuenta para poder ejecutar Apache y PHP, además de instalar el servicio de Apache manualmente. La descarga requiere conexión a internet."
+		; Avisos en caso de no marcar el checkbox.
+		${NSD_CreateLabel} 0 72u 100% 36u "$(i18n_VCR_NOTICE)"
 		Pop $ampcVCRLabel2
 		nsDialogs::Show
+	${Else}
+		StrCpy $tempResult ""
 	${EndIf}
 FunctionEnd
 
-Function leave_PageVCRedist ; Funcion de salida para custom_PageVCRedist.
-	Push $0
+Function leave_PageVCRedist
+	${NSD_GetState} $ampcVCRCheckbox $tempResult
 
-    ${NSD_GetState} $ampcVCRCheckbox $0
-
-    ${If} $0 == ${BST_CHECKED}
+    ${If} $tempResult == ${BST_CHECKED}
         StrCpy $ampcVCRedist "install"
     ${Else}
         StrCpy $ampcVCRedist "skip"
     ${EndIf}
 
-    Pop $0
+	StrCpy $tempResult ""
 FunctionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -314,13 +356,13 @@ Function custom_PageComponents
 	CreateFont $ampcFontBold "Microsoft Sans Serif" "8.25" "700"
   
 	nsDialogs::Create 1018
-	Pop $ampcComponents
-	${If} $ampcComponents == error
+	Pop $ampcComponentsDialog
+	${If} $ampcComponentsDialog == error
 		Abort
 	${EndIf}
-	!insertmacro MUI_HEADER_TEXT "Componentes a instalar" "Los siguientes componentes se instalarán"
+	!insertmacro MUI_HEADER_TEXT "$(i18n_COMPONENTS_HEADER)" "$(i18n_COMPONENTS_SUBTITLE)"
 
-	${NSD_CreateLabel} 0 0 100% 17u "Los siguientes componentes se instalarán:"
+	${NSD_CreateLabel} 0 0 100% 17u "$(i18n_COMPONENTS_DESCRIPTION)"
 	Pop $ampcComponentsLabel1
 
 	${NSD_CreateLabel} 16u 33u 100% 17u "Apache HTTP Server - ${COMPONENT_A_VERSION}"
@@ -339,12 +381,12 @@ Function custom_PageComponents
 	Pop $ampcComponentsLabel5
 	SendMessage $ampcComponentsLabel5 ${WM_SETFONT} $ampcFontBold 0
 
-	${NSD_CreateLabel} 0 110u 100% 25u "Una vez finalizada la instalación, se iniciará el asistente que le guiará para la configuración inicial de Apache y MariaDB."
+	${NSD_CreateLabel} 0 110u 100% 25u "$(i18n_COMPONENTS_WIZARD_NOTICE)"
 	Pop $ampcComponentsLabel6
 	nsDialogs::Show
 FunctionEnd
 
-Function leave_PageComponents ; Funcion de salida para custom_PageComponents.
+Function leave_PageComponents
 FunctionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -354,7 +396,7 @@ Function custom_PageApache
 	; Mostrar solo si NO EXISTE instalacion previa.
 	${If} $ampcPrevInstall == "none"
 		nsDialogs::Create 1018
-			Pop $0
+			Pop $tempResult
 
 			!insertmacro MUI_HEADER_TEXT "$(i18n_APACHE_HEADER)" "$(i18n_APACHE_DESCR)"
 
@@ -371,67 +413,110 @@ Function custom_PageApache
 			Pop $apacheCustomServiceName
 
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
-			Pop $R1
+			Pop $tempResult
 
 			Call func_DisableBackButton
+		StrCpy $tempResult ""
 		nsDialogs::Show
 	${EndIf}
 FunctionEnd
 
-Function leave_PageApache ; Funcion de salida para custom_PageApache.
+Function leave_PageApache
 	; Ejecutar solo si NO EXISTE instalacion previa.
 	${If} $ampcPrevInstall == "none"
 
-		${NSD_GetText} $apacheCustomServerName $R7
-		${NSD_GetText} $apacheCustomPort $R8
+		${NSD_GetText} $apacheCustomServerName $tempString
+		${NSD_GetText} $apacheCustomPort $tempPort
 
-		StrCmp $R7 "" failEmptyServer stepCheckPort
-
-		stepCheckPort:
-			StrCmp $R8 "" failEmptyPort leaveActions
-
-		failEmptyServer:
+		; Validar nombre de servidor vacio
+		StrCmp $tempString "" 0 +3
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_APACHE_EMPTY_SERVNAME)"
 			Abort
-			
-		failEmptyPort:
+
+		; Validar puerto vacio
+		StrCmp $tempPort "" 0 +3
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_APACHE_EMPTY_PORT)"
 			Abort
 
-		leaveActions:
-			Push '___AMPC_SERVERNAME___'
-			Push $R7
-			Push all
-			Push all
-			Push '$INSTDIR\Apache\conf\httpd.conf'
-			Call func_ReplaceInFile
-			Pop $0
-			LogText $0
+		; Validar rango de puerto
+		IntCmp $tempPort ${MIN_PORT} port_min_ok 0 port_min_ok
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_PORT_INVALID_RANGE)"
+			Abort
+		port_min_ok:
 
-			Push '___AMPC_HTTP_PORT___'
-			Push $R8 
-			Push all 
-			Push all 
-			Push '$INSTDIR\Apache\conf\httpd.conf' 
-			Call func_ReplaceInFile
-			Pop $0
-			LogText $0
+		IntCmp $tempPort ${MAX_PORT} port_max_ok port_max_ok 0
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_PORT_INVALID_RANGE)"
+			Abort
+		port_max_ok:
 
-			StrCmp $ampcVCRedist "none" vcrNotInstall vcrInstalled
+		; Verificar si el puerto esta en uso
+		nsExec::ExecToStack 'netstat -an | findstr ":$tempPort "'
+		Pop $tempResult
+		${If} $tempResult == 0
+			MessageBox MB_YESNO|MB_ICONQUESTION "$(i18n_PORT_IN_USE) $tempPort. $(i18n_CONTINUE_QUESTION)" IDYES port_continue
+			Abort
+		${EndIf}
+		port_continue:
+		StrCpy $tempResult ""
 
-			vcrNotInstall:
-				MessageBox MB_OK "$(i18n_VCR_APACHE_LEAVE)$\n$\n$(i18n_VCR_DOWNLOAD_REMINDER)"
-				Goto vcrLeave
+		; Verificar que el nombre del servicio no exista
+		${NSD_GetText} $apacheCustomServiceName $tempString
+		nsExec::ExecToStack 'sc query "$tempString"'
+		Pop $tempResult
+		${If} $tempResult == 0
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_SERVICE_ALREADY_EXISTS) $tempString"
+			Abort
+		${EndIf}
+		StrCpy $tempResult ""
 
-			vcrInstalled:
-				nsExec::ExecToStack /OEM '"$INSTDIR\Apache\bin\httpd.exe" -k install'
-				Pop $0
-				Pop $1
-				LogText $0
-				LogText $1
-				Goto vcrLeave
-				
-			vcrLeave:
+		; Aplicar configuracion
+		${NSD_GetText} $apacheCustomServerName $tempString
+		Push '___AMPC_SERVERNAME___'
+		Push $tempString
+		Push all
+		Push all
+		Push '$INSTDIR\Apache\conf\httpd.conf'
+		Call func_ReplaceInFile
+		Pop $tempResult
+		LogText $tempResult
+		StrCpy $tempResult ""
+		StrCpy $tempString ""
+
+		${NSD_GetText} $apacheCustomPort $tempPort
+		Push '___AMPC_HTTP_PORT___'
+		Push $tempPort 
+		Push all 
+		Push all 
+		Push '$INSTDIR\Apache\conf\httpd.conf' 
+		Call func_ReplaceInFile
+		Pop $tempResult
+		LogText $tempResult
+		StrCpy $tempResult ""
+		StrCpy $tempPort ""
+
+		StrCmp $ampcVCRedist "none" vcr_not_install vcr_installed
+
+		vcr_not_install:
+			MessageBox MB_OK "$(i18n_VCR_APACHE_LEAVE)$\n$\n$(i18n_VCR_DOWNLOAD_REMINDER)"
+			Goto vcr_leave
+
+		vcr_installed:
+			nsExec::ExecToStack /OEM '"$INSTDIR\Apache\bin\httpd.exe" -k install'
+			Pop $tempResult
+			Pop $tempString
+			
+			${If} $tempResult != 0
+				MessageBox MB_OK|MB_ICONSTOP "$(i18n_APACHE_INSTALL_SERVICE_ERROR): $tempString"
+				LogText "Error installing Apache service: $tempResult - $tempString"
+			${Else}
+				LogText "Apache service installed successfully"
+			${EndIf}
+			
+			StrCpy $tempResult ""
+			StrCpy $tempString ""
+			Goto vcr_leave
+			
+		vcr_leave:
 	${EndIf}
 FunctionEnd
 
@@ -443,7 +528,7 @@ Function custom_PageMariadb
 	${If} $ampcPrevInstall == "none"
 
 		nsDialogs::Create 1018
-			Pop $R0
+			Pop $tempResult
 			!insertmacro MUI_HEADER_TEXT "$(i18n_MARIADB_HEADER)" "$(i18n_MARIADB_DESCR)"
 
 			${NSD_CreateLabel} 0 0 100% 8u "$(i18n_MARIADB_PASS)"
@@ -463,45 +548,104 @@ Function custom_PageMariadb
 			Pop $mariadbCustomServiceName
 
 			${NSD_CreateLabel} 0 120u 100% 12u "$(i18n_CONFIG_NOTBACK)"
-			Pop $R1
+			Pop $tempResult
 
 			Call func_DisableBackButton
+		StrCpy $tempResult ""
 		nsDialogs::Show
 	${EndIf}
 FunctionEnd
 
-Function leave_PageMariadb ; Funcion de salida para custom_PageMariadb.
+Function leave_PageMariadb
 	; Ejecutar solo si NO EXISTE instalacion previa.
 	${If} $ampcPrevInstall == "none"
 		
-		${NSD_GetText} $mariadbCustomPass $R0
-		${NSD_GetText} $mariadbCustomPassCheck $R1
-		${NSD_GetText} $mariadbCustomPort $R2
+		${NSD_GetText} $mariadbCustomPass $tempString
+		${NSD_GetText} $mariadbCustomPassCheck $tempResult
+		${NSD_GetText} $mariadbCustomPort $tempPort
 
-		StrCmp $R0 "" failEmptyPass stepPassMatch
-
-		stepPassMatch:
-			StrCmp $R0 $R1 stepCheckPort failPassMatch
-
-		stepCheckPort:
-			StrCmp $R2 "" failEmptyPort leaveActions
-
-		failPassMatch:
-			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_NOTCHECK)"
-			Abort
-
-		failEmptyPass:
+		; Validar contraseña vacia
+		StrCmp $tempString "" 0 +3
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_PASSEMPTY)"
 			Abort
 
-		failEmptyPort:
+		; Validar que las contraseñas coincidan
+		StrCmp $tempString $tempResult pass_match_ok 0
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_NOTCHECK)"
+			Abort
+		pass_match_ok:
+
+		; Validar longitud minima de contraseña
+		StrLen $tempLength $tempString
+		IntCmp $tempLength ${MIN_PASSWORD_LENGTH} pass_min_ok pass_too_short pass_min_ok
+		pass_too_short:
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_PASS_TOO_SHORT)"
+			Abort
+		pass_min_ok:
+
+		; Recomendar contraseña mas fuerte
+		IntCmp $tempLength ${RECOMMENDED_PASSWORD_LENGTH} pass_strength_ok pass_strength_ok pass_weak
+		pass_weak:
+			MessageBox MB_YESNO|MB_ICONQUESTION "$(i18n_MARIADB_PASS_WEAK)" IDYES pass_strength_ok
+			Abort
+		pass_strength_ok:
+
+		; Validar puerto vacio
+		StrCmp $tempPort "" 0 +3
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_EMPTY_PORT)"
 			Abort
 
-		leaveActions:
-			nsExec::ExecToStack /OEM '"$INSTDIR\MariaDB\bin\mariadb-install-db.exe" --service=MariaDB --password="$R0" --port=$R2'
-			Pop $0
-			Pop $1
+		; Validar rango de puerto
+		IntCmp $tempPort ${MIN_PORT} mariadb_port_min_ok 0 mariadb_port_min_ok
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_PORT_INVALID_RANGE)"
+			Abort
+		mariadb_port_min_ok:
+
+		IntCmp $tempPort ${MAX_PORT} mariadb_port_max_ok mariadb_port_max_ok 0
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_PORT_INVALID_RANGE)"
+			Abort
+		mariadb_port_max_ok:
+
+		; Verificar si el puerto esta en uso
+		nsExec::ExecToStack 'netstat -an | findstr ":$tempPort "'
+		Pop $tempLength
+		${If} $tempLength == 0
+			MessageBox MB_YESNO|MB_ICONQUESTION "$(i18n_PORT_IN_USE) $tempPort. $(i18n_CONTINUE_QUESTION)" IDYES mariadb_port_continue
+			Abort
+		${EndIf}
+		mariadb_port_continue:
+		StrCpy $tempLength ""
+
+		; Verificar que el nombre del servicio no exista
+		${NSD_GetText} $mariadbCustomServiceName $tempResult
+		nsExec::ExecToStack 'sc query "$tempResult"'
+		Pop $tempLength
+		${If} $tempLength == 0
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_SERVICE_ALREADY_EXISTS) $tempResult"
+			Abort
+		${EndIf}
+		StrCpy $tempLength ""
+		StrCpy $tempResult ""
+
+		; Instalar MariaDB (sin loguear la contraseña)
+		DetailPrint "$(i18n_MARIADB_INSTALLING_SERVICE)"
+		nsExec::ExecToStack /OEM '"$INSTDIR\MariaDB\bin\mariadb-install-db.exe" --service=MariaDB --password="$tempString" --port=$tempPort'
+		Pop $tempResult
+		Pop $tempLength
+		
+		${If} $tempResult != 0
+			MessageBox MB_OK|MB_ICONSTOP "$(i18n_MARIADB_INSTALL_SERVICE_ERROR): $tempLength"
+			LogText "Error installing MariaDB service: $tempResult"
+			Abort
+		${Else}
+			LogText "MariaDB service installed successfully on port $tempPort"
+		${EndIf}
+		
+		; Limpiar variables temporales
+		StrCpy $tempResult ""
+		StrCpy $tempString ""
+		StrCpy $tempLength ""
+		StrCpy $tempPort ""
 	${EndIf}
 FunctionEnd
 

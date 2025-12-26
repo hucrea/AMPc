@@ -1,6 +1,6 @@
 ; ============================================
 ; mariadb - Uninstallation Files
-; Generated automatically on 2025-11-23 15:31:43
+; Generated automatically on 2025-12-26 16:50:20
 ; DO NOT EDIT MANUALLY - Changes will be lost
 ; ============================================
 
@@ -266,9 +266,11 @@ Delete "$mariadbPath\include\mysql\server\private\log_cache.h"
 Delete "$mariadbPath\include\mysql\server\private\log.h"
 Delete "$mariadbPath\include\mysql\server\private\lock.h"
 Delete "$mariadbPath\include\mysql\server\private\lf.h"
+Delete "$mariadbPath\include\mysql\server\private\lex_token.h"
 Delete "$mariadbPath\include\mysql\server\private\lex_symbol.h"
 Delete "$mariadbPath\include\mysql\server\private\lex_string.h"
 Delete "$mariadbPath\include\mysql\server\private\lex_ident.h"
+Delete "$mariadbPath\include\mysql\server\private\lex_hash.h"
 Delete "$mariadbPath\include\mysql\server\private\lex_charset.h"
 Delete "$mariadbPath\include\mysql\server\private\lex.h"
 Delete "$mariadbPath\include\mysql\server\private\keycaches.h"

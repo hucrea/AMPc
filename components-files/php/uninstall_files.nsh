@@ -1,6 +1,6 @@
 ; ============================================
 ; php - Uninstallation Files
-; Generated automatically on 2025-11-23 15:31:43
+; Generated automatically on 2025-12-26 16:50:20
 ; DO NOT EDIT MANUALLY - Changes will be lost
 ; ============================================
 
@@ -23,18 +23,15 @@ Delete "$phpPath\ext\php_pgsql.dll"
 Delete "$phpPath\ext\php_pdo_sqlite.dll"
 Delete "$phpPath\ext\php_pdo_pgsql.dll"
 Delete "$phpPath\ext\php_pdo_odbc.dll"
-Delete "$phpPath\ext\php_pdo_oci.dll"
 Delete "$phpPath\ext\php_pdo_mysql.dll"
 Delete "$phpPath\ext\php_pdo_firebird.dll"
 Delete "$phpPath\ext\php_openssl.dll"
 Delete "$phpPath\ext\php_opcache.dll"
 Delete "$phpPath\ext\php_odbc.dll"
-Delete "$phpPath\ext\php_oci8_19.dll"
 Delete "$phpPath\ext\php_mysqli.dll"
 Delete "$phpPath\ext\php_mbstring.dll"
 Delete "$phpPath\ext\php_ldap.dll"
 Delete "$phpPath\ext\php_intl.dll"
-Delete "$phpPath\ext\php_imap.dll"
 Delete "$phpPath\ext\php_gmp.dll"
 Delete "$phpPath\ext\php_gettext.dll"
 Delete "$phpPath\ext\php_gd.dll"
@@ -72,10 +69,10 @@ Delete "$phpPath\libsasl.dll"
 Delete "$phpPath\libpq.dll"
 Delete "$phpPath\libenchant2.dll"
 Delete "$phpPath\libcrypto-3-x64.dll"
-Delete "$phpPath\icuuc72.dll"
-Delete "$phpPath\icuio72.dll"
-Delete "$phpPath\icuin72.dll"
-Delete "$phpPath\icudt72.dll"
+Delete "$phpPath\icuuc75.dll"
+Delete "$phpPath\icuio75.dll"
+Delete "$phpPath\icuin75.dll"
+Delete "$phpPath\icudt75.dll"
 Delete "$phpPath\gmodule-2.dll"
 Delete "$phpPath\glib-2.dll"
 Delete "$phpPath\deplister.exe"

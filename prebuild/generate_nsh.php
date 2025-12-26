@@ -71,7 +71,7 @@ $PRESERVE_EMPTY_DIRS = [
 // PROGRAMA PRINCIPAL
 // ====================================
 
-$dirbase = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components';
+$dirbase = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components-files';
 $components_ini = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components.ini';
 
 echo "===========================================\n";
@@ -107,13 +107,6 @@ foreach ($components as $componente => $datos) {
     echo "Procesando: $componente\n";
     echo "-------------------------------------------\n";
     
-    // Validar configuración
-    if (empty($datos['work_folder'])) {
-        echo "[!] ADVERTENCIA: No hay work_folder configurado\n";
-        echo "Saltando $componente\n\n";
-        continue;
-    }
-    
     // Verificar si el componente tiene variable NSIS
     if (!isset($NSIS_VARS[$componente])) {
         echo "[!] ADVERTENCIA: No hay variable NSIS definida\n";
@@ -122,11 +115,11 @@ foreach ($components as $componente => $datos) {
     }
     
     // Construir ruta del directorio fuente
-    $componentPath = $dirbase . DIRECTORY_SEPARATOR . $datos['work_folder'];
+    $componentPath = $dirbase . DIRECTORY_SEPARATOR . $componente;
     
-    // Reemplazar %version% en nsis_path si existe
-    if (!empty($datos['nsis_path'])) {
-        $nsisPath = str_replace('%version%', $datos['version'] ?? '', $datos['nsis_path']);
+    // Reemplazar %version% en from_folder si existe
+    if (!empty($datos['from_folder'])) {
+        $nsisPath = str_replace('%version%', $datos['version'] ?? '', $datos['from_folder']);
         $sourceDir = $componentPath . DIRECTORY_SEPARATOR . $nsisPath;
     } else {
         $sourceDir = $componentPath;
@@ -177,14 +170,14 @@ foreach ($components as $componente => $datos) {
     $outputUninstall = $componentPath . DIRECTORY_SEPARATOR . 'uninstall_files.nsh';
     
     // Construir ruta relativa para NSIS
-    $relativePath = 'components\\' . $datos['work_folder'];
-    if (!empty($datos['nsis_path'])) {
-        $nsisPath = str_replace('%version%', $datos['version'] ?? '', $datos['nsis_path']);
+    $relativePath = 'components-files\\' . $componente;
+    if (!empty($datos['from_folder'])) {
+        $nsisPath = str_replace('%version%', $datos['version'] ?? '', $datos['from_folder']);
         $relativePath .= '\\' . $nsisPath;
     }
     
     // Generar files.nsh
-    echo "Generando files.nsh...\n";
+    echo "Generando files_install.nsh...\n";
     $emptyDirs = $PRESERVE_EMPTY_DIRS[$componente] ?? [];
     
     if (generate_install_file(
@@ -195,13 +188,13 @@ foreach ($components as $componente => $datos) {
         $emptyDirs,
         $outputInstall
     )) {
-        echo "[OK] Generado: files.nsh\n";
+        echo "[OK] Generado: files_install.nsh\n";
     } else {
-        echo "[X] ERROR: No se pudo generar files.nsh\n";
+        echo "[X] ERROR: No se pudo generar files_install.nsh\n";
     }
     
     // Generar uninstall.nsh
-    echo "Generando uninstall.nsh...\n";
+    echo "Generando uninstall_files.nsh...\n";
     
     if (generate_uninstall_file(
         $componente,
@@ -209,9 +202,9 @@ foreach ($components as $componente => $datos) {
         $files,
         $outputUninstall
     )) {
-        echo "[OK] Generado: uninstall.nsh\n";
+        echo "[OK] Generado: uninstall_files.nsh\n";
     } else {
-        echo "[X] ERROR: No se pudo generar uninstall.nsh\n";
+        echo "[X] ERROR: No se pudo generar uninstall_files.nsh\n";
     }
     
     echo "\n";

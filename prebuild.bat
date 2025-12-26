@@ -3,14 +3,15 @@ chcp 65001 >nul
 set LOG_FILE=%~dp0prebuild.log
 set PHP_EXE=C:\AMPc\PHP\php.exe
 
-set SCRIPT1_PATH=%~dp0scripts\update_components.php
-set SCRIPT2_PATH=%~dp0scripts\generate_nsh.php
-set SCRIPT3_PATH=%~dp0scripts\create_versions_file.php
+set SCRIPT1_PATH=%~dp0prebuild\update_components.php
+set SCRIPT2_PATH=%~dp0prebuild\generate_nsh.php
+set SCRIPT3_PATH=%~dp0prebuild\create_versions_file.php
+set SCRIPT4_PATH=%~dp0prebuild\extract_i18n_nsh.php
 
 if exist "%LOG_FILE%" del "%LOG_FILE%"
 
 title Pre-build AMPc
-color 0A
+color 06
 
 if not exist "%PHP_EXE%" (
     echo [X] ERROR: No se encontro php.exe en la carpeta %PHP_EXE%
@@ -40,31 +41,45 @@ if not exist "%SCRIPT3_PATH%" (
     exit /b 1
 )
 
+if not exist "%SCRIPT4_PATH%" (
+    echo [X] ERROR: No se encontro %SCRIPT4_PATH%
+    echo [X] ERROR: No se encontro %SCRIPT4_PATH% >> "%LOG_FILE%"
+    pause
+    exit /b 1
+)
+
 :menu
 cls
-echo ========================================
-echo Pre-build AMPc v1.0
-echo ========================================
+echo ######################################
 echo.
-echo [1] Actualizar componentes
-echo     %SCRIPT1_PATH%
+echo           Pre-build AMPc
+echo                v1.1
 echo.
-echo [2] Generar NSH para componentes
-echo     %SCRIPT2_PATH%
+echo ######################################
 echo.
-echo [3] Generar Versions.nsh
-echo     %SCRIPT3_PATH%
 echo.
-echo [0] Salir
+echo    [1] Extraer desde ZIP
+echo    Ruta script: %SCRIPT1_PATH%
 echo.
-echo ========================================
+echo    [2] Generar files_install.nsh y uninstall_files.nsh para cada componente
+echo    Ruta script: %SCRIPT2_PATH%
+echo.
+echo    [3] Generar Versions.nsh
+echo    Ruta script: %SCRIPT3_PATH%
+echo.
+echo    [4] Generar LangStrings_missing.nsh
+echo    Ruta script: %SCRIPT4_PATH%
+echo.
+echo    [0] Salir
+echo.
 echo.
 
-set /p opcion="Selecciona una opción: "
+set /p opcion="Ingresa una opcion: "
 
 if "%opcion%"=="1" goto script1
 if "%opcion%"=="2" goto script2
 if "%opcion%"=="3" goto script3
+if "%opcion%"=="4" goto script4
 if "%opcion%"=="0" goto salir
 
 echo.
@@ -109,6 +124,20 @@ echo.
 echo. >> "%LOG_FILE%"
 
 "%PHP_EXE%" "%SCRIPT3_PATH%" 2>&1 | "%SystemRoot%\System32\findstr.exe" /V "^$" >> "%LOG_FILE%"
+
+echo Script finalizado. Presiona cualquier tecla para volver al menú...
+pause >nul
+goto menu
+
+:script4
+cls
+echo. >> "%LOG_FILE%"
+echo Ejecutando %SCRIPT4_PATH%...
+echo Ejecutando %SCRIPT4_PATH%... >> "%LOG_FILE%"
+echo.
+echo. >> "%LOG_FILE%"
+
+"%PHP_EXE%" "%SCRIPT4_PATH%" 2>&1 | "%SystemRoot%\System32\findstr.exe" /V "^$" >> "%LOG_FILE%"
 
 echo Script finalizado. Presiona cualquier tecla para volver al menú...
 pause >nul

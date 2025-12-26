@@ -48,12 +48,13 @@ function delete_all( string $dir ) {
 
 /**
  * Inicializacion del script.
- * El script requiere que exista el archivo components.ini en el mismo
- * directorio de trabajo, ademas de tener la extension ZIP habilitada.
+ * El script requiere que exista el archivo components.ini en el directorio
+ * superior, ademas de tener la extension ZIP habilitada.
  * 
  * @since 0.20.0
  */
-$dirbase = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components';
+$components_source = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components';
+$components_files = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components-files';
 $components_ini = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'components.ini';
 
 echo "===========================================\n";
@@ -96,7 +97,7 @@ foreach( $components as $componente => $datos ) {
 	/** 
 	 * Claves: verificacion y normalizacion.
 	 * 
-	 * Las claves version, hash_version, zip_name, y work_folder son
+	 * Las claves version, hash_file, zip_name, y work_folder son
 	 * obligatorias. Se puede utilizar %version% en la clave zip_name,
 	 * y esta sera reemplazada por el valor de la clave version.
 	 */
@@ -106,20 +107,14 @@ foreach( $components as $componente => $datos ) {
 		continue;
 	}
 
-	if( empty($datos['hash_version']) ) {
-		echo "[!] ADVERTENCIA: No hay hash_version configurado para $componente\n";
+	if( empty($datos['hash_file']) ) {
+		echo "[!] ADVERTENCIA: No hay hash_file configurado para $componente\n";
 		echo "Saltando $componente\n\n";
 		continue;
 	}
 
-	if( empty($datos['zip_name']) ) {
+	if( empty($datos['file']) ) {
 		echo "[!] ADVERTENCIA: No hay zip_name configurado para $componente\n";
-		echo "Saltando $componente\n\n";
-		continue;
-	}
-
-	if( empty($datos['work_folder']) ) {
-		echo "[!] ADVERTENCIA: No hay work_folder configurado para $componente\n";
 		echo "Saltando $componente\n\n";
 		continue;
 	}
@@ -128,8 +123,8 @@ foreach( $components as $componente => $datos ) {
 	 * Verificacion de archivos y directorios.
 	 */
 
-	$zip_name = str_replace( '%version%', $datos['version'], $datos['zip_name'] );
-	$zip_file = $dirbase . DIRECTORY_SEPARATOR . $datos['work_folder'] . DIRECTORY_SEPARATOR . $zip_name;
+	$zip_name = str_replace( '%version%', $datos['version'], $datos['file'] );
+	$zip_file = $components_source . DIRECTORY_SEPARATOR . $zip_name;
 
 	if( !file_exists($zip_file) ) {
 		echo "[!] ADVERTENCIA: No se encontro el archivo ZIP\n";
@@ -139,17 +134,17 @@ foreach( $components as $componente => $datos ) {
 
 	$hash_file = hash_file('sha256', $zip_file);
 
-	if( $hash_file != strtolower($datos['hash_version']) ) {
-		echo "[x] ERROR: hash_file y hash_version no coinciden\n";
-		echo "HASH esperado: " . $datos['hash_version'] . "\n";
+	if( $hash_file != strtolower($datos['hash_file']) ) {
+		echo "[x] ERROR: hash_file y hash_file no coinciden\n";
+		echo "HASH esperado: " . $datos['hash_file'] . "\n";
 		echo "HASH devuelto: $hash_file\n\n";
 		continue;
 	}
 	
-	$component_path = $dirbase . DIRECTORY_SEPARATOR . $datos['work_folder'];
+	$component_path = $components_files . DIRECTORY_SEPARATOR . $componente;
 
 	if( !is_dir($component_path) ) {
-		echo "[!] La carpeta '{$datos['work_folder']}' no existe\n";
+		echo "[!] La carpeta '{$componente}' no existe\n";
 		echo "Creando carpeta...\n";
 
 		if (!mkdir($component_path, 0755, true)) {
@@ -163,17 +158,17 @@ foreach( $components as $componente => $datos ) {
 	echo "Version: " . $datos['version'] . "\n";
 	echo "SHA-256 del ZIP: " . $hash_file . "\n";
 	echo "Archivo ZIP: $zip_name\n";
-	echo "Carpeta de trabajo: {$datos['work_folder']}\n";
+	echo "Carpeta de trabajo: {$componente}\n";
 
 	/**
 	 * Antes de descomprimir, elimina todos los archivos existentes en la
 	 * carpeta de trabajo, excepto el archivo ZIP y el archivo files.nsh.
 	 */
-	echo "> Limpiando carpeta {$datos['work_folder']}...\n";
+	echo "> Limpiando carpeta {$componente}...\n";
 
     $not_delete = array(
-        strtolower(trim($zip_name)),
-        'files.nsh'
+        'files_install.nsh',
+        'uninstall_files.nsh'
 	);
     
     echo "[DEBUG] Archivos protegidos:\n";
