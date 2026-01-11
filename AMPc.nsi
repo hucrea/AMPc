@@ -926,54 +926,54 @@ Function un.onInit
 
 	SetRegView 64
 	!insertmacro MUI_UNGETLANGUAGE
-	MessageBox MB_ICONINFORMATION|MB_OK "Vas a desinstalar ${DISTRO_NAME}.$\n$\n \
-	La carpeta $INSTDIR\htdocs NO SE ELIMINARÁ"
+	MessageBox MB_ICONINFORMATION|MB_OK "$(i18n_UNINSTALL_DISTRO).$\n$\n \
+	$(i18n_UNINSTALL_DISTRO_HTDOCS)"
 FunctionEnd
 
 ; Desinstalacion.
 Section Uninstall
-	DetailPrint "Deteniendo servicio Apache HTTP"
+	DetailPrint "$(i18n_STOP_SERVICE_APACHE)"
 	nsExec::ExecToStack /OEM '"$INSTDIR\Apache\bin\httpd.exe" -k stop'
 	Pop $0
 	Pop $1
 	DetailPrint $0
 	DetailPrint $1
 
-	DetailPrint "Eliminando servicio Apache HTTP"
+	DetailPrint "$(i18n_DELETE_SERVICE_APACHE)"
 	nsExec::ExecToStack /OEM '"$INSTDIR\Apache\bin\httpd.exe" -k uninstall'
 	Pop $0
 	Pop $1
 	DetailPrint $0
 	DetailPrint $1
 
-	DetailPrint "Deteniendo servicio MariaDB"
+	DetailPrint "$(i18n_STOP_SERVICE_MARIADB)"
 	nsExec::ExecToStack /OEM 'net stop MariaDB'
 	Pop $0
 	Pop $1
 	DetailPrint $0
 	DetailPrint $1
 
-	DetailPrint "Eliminando servicio MariaDB"
+	DetailPrint "$(i18n_DELETE_SERVICE_MARIADB)"
 	nsExec::ExecToStack /OEM 'sc delete MariaDB'
 	Pop $0
 	Pop $1
 	DetailPrint $0
 	DetailPrint $1
 
-	DetailPrint "Eliminando archivos"
+	DetailPrint "$(i18n_UNINSTALL_FILES)"
 	Delete "$INSTDIR\${DISTRO_NAME}.url"
 	Delete "$INSTDIR\uninstall-ampc.exe"
 
-	DetailPrint "Eliminando archivos de Apache HTTP"
+	DetailPrint "$(i18n_UNINSTALL_FILES_APACHE)"
 	!include "${DIR_COMPONENTS}\apache\uninstall_files.nsh"
 
-	DetailPrint "Eliminando archivos de MariaDB"
+	DetailPrint "$(i18n_UNINSTALL_FILES_MARIADB)"
 	!include "${DIR_COMPONENTS}\mariadb\uninstall_files.nsh"
 
-	DetailPrint "Eliminando cacert"
+	DetailPrint "$(i18n_UNINSTALL_FILES_CACERT)"
 	!include "${DIR_COMPONENTS}\cacert\uninstall_files.nsh"
 
-	DetailPrint "Eliminando archivos de PHP"
+	DetailPrint "$(i18n_UNINSTALL_FILES_PHP)"
 	RMDir /r /REBOOTOK "$INSTDIR\PHP"
 	!include "${DIR_COMPONENTS}\php\uninstall_files.nsh"
 
@@ -981,10 +981,10 @@ Section Uninstall
 	RMDir /r /REBOOTOK "$INSTDIR\MariaDB"
 	RMDir /r /REBOOTOK "$INSTDIR\PHP"
 
-	DetailPrint "Eliminando LOG de instalación"
+	DetailPrint "$(i18n_UNINSTALL_LOG_FILE)"
 	Delete "$INSTDIR\install.log"
 
-	DetailPrint "Eliminando claves del registro"
+	DetailPrint "$(i18n_DELETE_REGKEY)"
 	DeleteRegKey ${REGKEY_ROOT} "${REGKEY_PACKAGE}"
 	DeleteRegKey ${REGKEY_ROOT} "${REGKEY_UNINST}"
 SectionEnd
@@ -992,6 +992,6 @@ SectionEnd
 ; Al finalizar desinstalacion.
 Function un.onUninstSuccess
 	HideWindow
-	MessageBox MB_ICONINFORMATION|MB_OK "La desinstalación de ${DISTRO_NAME} finalizó correctamente.$\n$\n \
-	La carpeta $INSTDIR\htdocs no se ha eliminado."
+	MessageBox MB_ICONINFORMATION|MB_OK "$(i18n_UNINSTALL_FILES_SUCCESS)$\n$\n \
+	$(i18n_UNINSTALL_DISTRO_HTDOCS)"
 FunctionEnd
