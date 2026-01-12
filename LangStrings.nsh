@@ -251,3 +251,35 @@ LangString i18n_INSTALL_PHP ${LANG_PORTUGUESEBR} "Instalando PHP Hypertext Prepr
 LangString i18n_INSTALL_CACERT ${LANG_SPANISH} "Instalando ca-cert..."
 LangString i18n_INSTALL_CACERT ${LANG_ENGLISH} "Installing ca-cert..."
 LangString i18n_INSTALL_CACERT ${LANG_PORTUGUESEBR} "Instalando ca-cert..."
+
+LangString i18n_APACHE_INSTALL_SERVICE_ERROR ${LANG_SPANISH} "Ha ocurrido un error al instalar el servicio de Apache:"
+LangString i18n_APACHE_INSTALL_SERVICE_ERROR ${LANG_ENGLISH} "An error occurred while installing the Apache service:"
+LangString i18n_APACHE_INSTALL_SERVICE_ERROR ${LANG_PORTUGUESEBR} "Ocorreu um erro ao instalar o serviço Apache"
+
+LangString i18n_APACHE_SRVNAME ${LANG_SPANISH} "Nombre del servicio:"
+LangString i18n_APACHE_SRVNAME ${LANG_ENGLISH} "Service name:"
+LangString i18n_APACHE_SRVNAME ${LANG_PORTUGUESEBR} "Nome do serviço:"
+
+LangString i18n_COMPONENTS_HEADER ${LANG_SPANISH} "Componentes"
+LangString i18n_COMPONENTS_HEADER ${LANG_ENGLISH} "Components"
+LangString i18n_COMPONENTS_HEADER ${LANG_PORTUGUESEBR} "Componentes"
+
+LangString i18n_COMPONENTS_SUBTITLE ${LANG_SPANISH} "Componentes a instalar/actualizar"
+LangString i18n_COMPONENTS_SUBTITLE ${LANG_ENGLISH} "Components to install/update"
+LangString i18n_COMPONENTS_SUBTITLE ${LANG_PORTUGUESEBR} "Componentes a instalar/atualizar"
+
+LangString i18n_COMPONENTS_DESCRIPTION ${LANG_SPANISH} "Los siguientes componentes serán instalados. Si ya lo están, se actualizarán a la versión más reciente."
+LangString i18n_COMPONENTS_DESCRIPTION ${LANG_ENGLISH} "The following components will be installed. If they are already installed, they will be updated to the latest version."
+LangString i18n_COMPONENTS_DESCRIPTION ${LANG_PORTUGUESEBR} "Os seguintes componentes serão instalados. Se já estiverem instalados, serão atualizados para a versão mais recente."
+
+LangString i18n_COMPONENTS_WIZARD_NOTICE ${LANG_SPANISH} "Una vez finalizado el proceso de instalación, y sólo si es una instalación nueva, se iniciará el asistente para configurar Apache HTTP y MariaDB Server."
+LangString i18n_COMPONENTS_WIZARD_NOTICE ${LANG_ENGLISH} "Once the installation process is complete, and only if it is a new installation, the wizard for configuring Apache HTTP and MariaDB Server will start."
+LangString i18n_COMPONENTS_WIZARD_NOTICE ${LANG_PORTUGUESEBR} "Após a conclusão do processo de instalação, e somente se for uma nova instalação, será iniciado o assistente para configurar o Apache HTTP e o MariaDB Server."
+
+LangString i18n_CONTINUE_QUESTION ${LANG_SPANISH} "¿Deseas continuar de todos modos?"
+LangString i18n_CONTINUE_QUESTION ${LANG_ENGLISH} "Do you want to continue anyway?"
+LangString i18n_CONTINUE_QUESTION ${LANG_PORTUGUESEBR} "Deseja continuar mesmo assim?"
+
+LangString i18n_PORT_IN_USE ${LANG_SPANISH} "El puerto ingresado está en uso:"
+LangString i18n_PORT_IN_USE ${LANG_ENGLISH} "The port entered is in use"
+LangString i18n_PORT_IN_USE ${LANG_PORTUGUESEBR} "A porta inserida está em uso:"

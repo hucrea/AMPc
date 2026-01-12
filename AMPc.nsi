@@ -174,13 +174,13 @@ Var tempPort
 ; Proceso de instalacion.
 !define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_TITLE)"
 !define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_SUBTITLE)"; 
-!insertmacro MUI_PAGE_LICENSE "media-src\license.rtf"
+!insertmacro MUI_PAGE_LICENSE "${DIR_MEDIA}\license.rtf"
 !define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_THIRD_TITLE)"
 !define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_THIRD_SUBTITLE)"
 !define MUI_LICENSEPAGE_TEXT_TOP "$(i18n_LICENSE_THIRD_TEXTTOP)"
 !define MUI_LICENSEPAGE_TEXT_BOTTOM "$(i18n_LICENSE_THIRD_TEXTTBOTTOM)"
 !define MUI_LICENSEPAGE_BUTTON "$(i18n_LICENSE_THIRD_BUTTON)"
-!insertmacro MUI_PAGE_LICENSE "media-src\license-components.rtf"
+!insertmacro MUI_PAGE_LICENSE "${DIR_MEDIA}\license-components.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
 Page Custom custom_PageVCRedist leave_PageVCRedist
 Page Custom custom_PageComponents leave_PageComponents
@@ -251,7 +251,7 @@ Function .onInit
 
 		; Splash al iniciar el instalador.
 		SetOutPath $PLUGINSDIR
-		File "media-src\splash-install.bmp"
+		File "${DIR_MEDIA}\splash-install.bmp"
 		splash::show 1750 "$PLUGINSDIR\splash-install"
 		Pop $tempResult
 		Delete "$PLUGINSDIR\splash-install.bmp"
@@ -270,7 +270,7 @@ Function .onInit
 
 		; Splash al iniciar el actualizador.
 		SetOutPath $PLUGINSDIR
-		File "media-src\splash-update.bmp"
+		File "${DIR_MEDIA}\splash-update.bmp"
 		splash::show 1750 "$PLUGINSDIR\splash-update"
 		Pop $tempResult
 		Delete "$PLUGINSDIR\splash-update.bmp"
@@ -449,7 +449,7 @@ Function leave_PageApache
 			Abort
 		port_max_ok:
 
-		; Verificar si el puerto esta en uso
+		; Verificar si el puerto esta en uso.
 		nsExec::ExecToStack 'netstat -an | findstr ":$tempPort "'
 		Pop $tempResult
 		${If} $tempResult == 0
@@ -459,7 +459,7 @@ Function leave_PageApache
 		port_continue:
 		StrCpy $tempResult ""
 
-		; Verificar que el nombre del servicio no exista
+		; Verificar que el nombre del servicio no exista.
 		${NSD_GetText} $apacheCustomServiceName $tempString
 		nsExec::ExecToStack 'sc query "$tempString"'
 		Pop $tempResult
@@ -501,7 +501,7 @@ Function leave_PageApache
 			Goto vcr_leave
 
 		vcr_installed:
-			nsExec::ExecToStack /OEM '"$INSTDIR\Apache\bin\httpd.exe" -k install'
+			nsExec::ExecToStack /OEM '"$INSTDIR\Apache\bin\httpd.exe" -k install -n {$apacheCustomServiceName}'
 			Pop $tempResult
 			Pop $tempString
 			
@@ -564,18 +564,18 @@ Function leave_PageMariadb
 		${NSD_GetText} $mariadbCustomPassCheck $tempResult
 		${NSD_GetText} $mariadbCustomPort $tempPort
 
-		; Validar contraseña vacia
+		; Validar contrasenna vacia.
 		StrCmp $tempString "" 0 +3
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_PASSEMPTY)"
 			Abort
 
-		; Validar que las contraseñas coincidan
+		; Validar que las contrasennas coincidan.
 		StrCmp $tempString $tempResult pass_match_ok 0
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_NOTCHECK)"
 			Abort
 		pass_match_ok:
 
-		; Validar longitud minima de contraseña
+		; Validar longitud minima de contrasenna.
 		StrLen $tempLength $tempString
 		IntCmp $tempLength ${MIN_PASSWORD_LENGTH} pass_min_ok pass_too_short pass_min_ok
 		pass_too_short:
@@ -583,19 +583,19 @@ Function leave_PageMariadb
 			Abort
 		pass_min_ok:
 
-		; Recomendar contraseña mas fuerte
+		; Recomendar contrasenna mas fuerte.
 		IntCmp $tempLength ${RECOMMENDED_PASSWORD_LENGTH} pass_strength_ok pass_strength_ok pass_weak
 		pass_weak:
 			MessageBox MB_YESNO|MB_ICONQUESTION "$(i18n_MARIADB_PASS_WEAK)" IDYES pass_strength_ok
 			Abort
 		pass_strength_ok:
 
-		; Validar puerto vacio
+		; Validar puerto vacio.
 		StrCmp $tempPort "" 0 +3
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_EMPTY_PORT)"
 			Abort
 
-		; Validar rango de puerto
+		; Validar rango de puerto.
 		IntCmp $tempPort ${MIN_PORT} mariadb_port_min_ok 0 mariadb_port_min_ok
 			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_PORT_INVALID_RANGE)"
 			Abort
@@ -606,7 +606,7 @@ Function leave_PageMariadb
 			Abort
 		mariadb_port_max_ok:
 
-		; Verificar si el puerto esta en uso
+		; Verificar si el puerto esta en uso.
 		nsExec::ExecToStack 'netstat -an | findstr ":$tempPort "'
 		Pop $tempLength
 		${If} $tempLength == 0
@@ -616,7 +616,7 @@ Function leave_PageMariadb
 		mariadb_port_continue:
 		StrCpy $tempLength ""
 
-		; Verificar que el nombre del servicio no exista
+		; Verificar que el nombre del servicio no exista.
 		${NSD_GetText} $mariadbCustomServiceName $tempResult
 		nsExec::ExecToStack 'sc query "$tempResult"'
 		Pop $tempLength
@@ -627,7 +627,7 @@ Function leave_PageMariadb
 		StrCpy $tempLength ""
 		StrCpy $tempResult ""
 
-		; Instalar MariaDB (sin loguear la contraseña)
+		; Instalar MariaDB.
 		DetailPrint "$(i18n_MARIADB_INSTALLING_SERVICE)"
 		nsExec::ExecToStack /OEM '"$INSTDIR\MariaDB\bin\mariadb-install-db.exe" --service=MariaDB --password="$tempString" --port=$tempPort'
 		Pop $tempResult
@@ -813,7 +813,7 @@ Section "Apache HTTP Server (${COMPONENT_A_VERSION})" section_Apache
 
 		SetOutPath "$INSTDIR\htdocs"
 			File "${DIR_WWW}\index.html"
-			File /oname=favicon.ico media-src\ampc.ico
+			File /oname=favicon.ico ${DIR_MEDIA}\ampc.ico
 
 		SetOutPath "$apachePath\conf"
 			File "${DIR_CONFIG}\httpd.conf"
