@@ -256,9 +256,9 @@ LangString i18n_APACHE_INSTALL_SERVICE_ERROR ${LANG_SPANISH} "Ha ocurrido un err
 LangString i18n_APACHE_INSTALL_SERVICE_ERROR ${LANG_ENGLISH} "An error occurred while installing the Apache service:"
 LangString i18n_APACHE_INSTALL_SERVICE_ERROR ${LANG_PORTUGUESEBR} "Ocorreu um erro ao instalar o serviço Apache"
 
-LangString i18n_APACHE_SRVNAME ${LANG_SPANISH} "Nombre del servicio:"
-LangString i18n_APACHE_SRVNAME ${LANG_ENGLISH} "Service name:"
-LangString i18n_APACHE_SRVNAME ${LANG_PORTUGUESEBR} "Nome do serviço:"
+LangString i18n_CUSTOM_SRVNAME ${LANG_SPANISH} "Nombre del servicio:"
+LangString i18n_CUSTOM_SRVNAME ${LANG_ENGLISH} "Service name:"
+LangString i18n_CUSTOM_SRVNAME ${LANG_PORTUGUESEBR} "Nome do serviço:"
 
 LangString i18n_COMPONENTS_HEADER ${LANG_SPANISH} "Componentes"
 LangString i18n_COMPONENTS_HEADER ${LANG_ENGLISH} "Components"
@@ -283,3 +283,107 @@ LangString i18n_CONTINUE_QUESTION ${LANG_PORTUGUESEBR} "Deseja continuar mesmo a
 LangString i18n_PORT_IN_USE ${LANG_SPANISH} "El puerto ingresado está en uso:"
 LangString i18n_PORT_IN_USE ${LANG_ENGLISH} "The port entered is in use"
 LangString i18n_PORT_IN_USE ${LANG_PORTUGUESEBR} "A porta inserida está em uso:"
+
+LangString i18n_DELETE_REGKEY ${LANG_SPANISH} "Eliminando claves del registro"
+LangString i18n_DELETE_REGKEY ${LANG_ENGLISH} "Deleting registry keys"
+LangString i18n_DELETE_REGKEY ${LANG_PORTUGUESEBR} "Eliminando chaves do registro"
+
+LangString i18n_DELETE_SERVICE_APACHE ${LANG_SPANISH} "Eliminando servicio de Apache HTTP"
+LangString i18n_DELETE_SERVICE_APACHE ${LANG_ENGLISH} "Removing Apache HTTP service"
+LangString i18n_DELETE_SERVICE_APACHE ${LANG_PORTUGUESEBR} "Removendo o serviço Apache HTTP"
+
+LangString i18n_DELETE_SERVICE_MARIADB ${LANG_SPANISH} "Eliminando servicio de MariaDB"
+LangString i18n_DELETE_SERVICE_MARIADB ${LANG_ENGLISH} "Removing MariaDB service"
+LangString i18n_DELETE_SERVICE_MARIADB ${LANG_PORTUGUESEBR} "Removendo o serviço MariaDB"
+
+LangString i18n_INSTALL_KILL_APACHESRV ${LANG_SPANISH} "Matando proceso httpd.exe"
+LangString i18n_INSTALL_KILL_APACHESRV ${LANG_ENGLISH} "Killing the httpd.exe process"
+LangString i18n_INSTALL_KILL_APACHESRV ${LANG_PORTUGUESEBR} "Encerrando o processo httpd.exe"
+
+LangString i18n_INSTALL_KILL_MARIADBSRV ${LANG_SPANISH} "Matando proceso mariadbd.exe"
+LangString i18n_INSTALL_KILL_MARIADBSRV ${LANG_ENGLISH} "Killing the mariadbd.exe process"
+LangString i18n_INSTALL_KILL_MARIADBSRV ${LANG_PORTUGUESEBR} "Encerrando o processo mariadbd.exe"
+
+LangString i18n_MARIADB_INSTALL_SERVICE_ERROR ${LANG_SPANISH} "No se pudo instalar el servicio de MariaDB"
+LangString i18n_MARIADB_INSTALL_SERVICE_ERROR ${LANG_ENGLISH} "The MariaDB service could not be installed."
+LangString i18n_MARIADB_INSTALL_SERVICE_ERROR ${LANG_PORTUGUESEBR} "Não foi possível instalar o serviço MariaDB."
+
+LangString i18n_MARIADB_PASS_TOO_SHORT ${LANG_SPANISH} "La contraseña ingresada es demasiado corta. Longitud mínima:"
+LangString i18n_MARIADB_PASS_TOO_SHORT ${LANG_ENGLISH} "The password entered is too short. Minimum length:"
+LangString i18n_MARIADB_PASS_TOO_SHORT ${LANG_PORTUGUESEBR} "A senha inserida é muito curta. Comprimento mínimo:"
+
+LangString i18n_MARIADB_PASS_WEAK ${LANG_SPANISH} "La contraseña ingresada es débil."
+LangString i18n_MARIADB_PASS_WEAK ${LANG_ENGLISH} "The password entered is weak."
+LangString i18n_MARIADB_PASS_WEAK ${LANG_PORTUGUESEBR} "A senha inserida é fraca."
+
+LangString i18n_PORT_INVALID_RANGE ${LANG_SPANISH} "Rango de puerto inválido."
+LangString i18n_PORT_INVALID_RANGE ${LANG_ENGLISH} "Invalid port range."
+LangString i18n_PORT_INVALID_RANGE ${LANG_PORTUGUESEBR} "Intervalo de porta inválido."
+
+LangString i18n_SERVICE_ALREADY_EXISTS ${LANG_SPANISH} "Ya existe un servicio con este nombre."
+LangString i18n_SERVICE_ALREADY_EXISTS ${LANG_ENGLISH} "There is already a service with this name."
+LangString i18n_SERVICE_ALREADY_EXISTS ${LANG_PORTUGUESEBR} "Já existe um serviço com esse nome."
+
+LangString i18n_STOP_SERVICE_APACHE ${LANG_SPANISH} "Deteniendo el servicio de Apache"
+LangString i18n_STOP_SERVICE_APACHE ${LANG_ENGLISH} "Stopping the Apache service"
+LangString i18n_STOP_SERVICE_APACHE ${LANG_PORTUGUESEBR} "Parando o serviço Apache"
+
+LangString i18n_STOP_SERVICE_MARIADB ${LANG_SPANISH} "Deteniendo el servicio de MariaDB"
+LangString i18n_STOP_SERVICE_MARIADB ${LANG_ENGLISH} "Stopping the MariaDB service"
+LangString i18n_STOP_SERVICE_MARIADB ${LANG_PORTUGUESEBR} "Parando o serviço MariaDB"
+
+LangString i18n_UNINSTALL_DISTRO ${LANG_SPANISH} "Vas a desinstalar la distribución."
+LangString i18n_UNINSTALL_DISTRO ${LANG_ENGLISH} "You are going to uninstall the distribution."
+LangString i18n_UNINSTALL_DISTRO ${LANG_PORTUGUESEBR} "Você vai desinstalar a distribuição."
+
+LangString i18n_UNINSTALL_DISTRO_HTDOCS ${LANG_SPANISH} "La carpeta htdocs NO se eliminará."
+LangString i18n_UNINSTALL_DISTRO_HTDOCS ${LANG_ENGLISH} "The htdocs folder will NOT be deleted."
+LangString i18n_UNINSTALL_DISTRO_HTDOCS ${LANG_PORTUGUESEBR} "A pasta htdocs NÃO será eliminada."
+
+LangString i18n_UNINSTALL_FILES ${LANG_SPANISH} "Desinstalando archivos de AMPc"
+LangString i18n_UNINSTALL_FILES ${LANG_ENGLISH} "Uninstalling AMPc files"
+LangString i18n_UNINSTALL_FILES ${LANG_PORTUGUESEBR} "Desinstalando arquivos do AMPc"
+
+LangString i18n_UNINSTALL_FILES_APACHE ${LANG_SPANISH} "Desinstalando archivos de Apache HTTP"
+LangString i18n_UNINSTALL_FILES_APACHE ${LANG_ENGLISH} "Uninstalling Apache HTTP files"
+LangString i18n_UNINSTALL_FILES_APACHE ${LANG_PORTUGUESEBR} "Desinstalando arquivos do Apache HTTP"
+
+LangString i18n_UNINSTALL_FILES_CACERT ${LANG_SPANISH} "Desinstalando archivos de ca-cert"
+LangString i18n_UNINSTALL_FILES_CACERT ${LANG_ENGLISH} "Uninstalling ca-cert files"
+LangString i18n_UNINSTALL_FILES_CACERT ${LANG_PORTUGUESEBR} "Desinstalando arquivos do ca-cert"
+
+LangString i18n_UNINSTALL_FILES_MARIADB ${LANG_SPANISH} "Desinstalando archivos de MariaDB"
+LangString i18n_UNINSTALL_FILES_MARIADB ${LANG_ENGLISH} "Uninstalling MariaDB files"
+LangString i18n_UNINSTALL_FILES_MARIADB ${LANG_PORTUGUESEBR} "Desinstalando arquivos do MariaDB"
+
+LangString i18n_UNINSTALL_FILES_PHP ${LANG_SPANISH} "Desinstalando archivos de PHP"
+LangString i18n_UNINSTALL_FILES_PHP ${LANG_ENGLISH} "Uninstalling PHP files"
+LangString i18n_UNINSTALL_FILES_PHP ${LANG_PORTUGUESEBR} "Desinstalando arquivos do PHP"
+
+LangString i18n_UNINSTALL_FILES_SUCCESS ${LANG_SPANISH} "La desinstalación ha finalizado."
+LangString i18n_UNINSTALL_FILES_SUCCESS ${LANG_ENGLISH} "The uninstallation is complete."
+LangString i18n_UNINSTALL_FILES_SUCCESS ${LANG_PORTUGUESEBR} "A desinstalação foi concluída."
+
+LangString i18n_UNINSTALL_LOG_FILE ${LANG_SPANISH} "Eliminando LOG de instalación"
+LangString i18n_UNINSTALL_LOG_FILE ${LANG_ENGLISH} "Removing installation logs"
+LangString i18n_UNINSTALL_LOG_FILE ${LANG_PORTUGUESEBR} "Eliminando o LOG de instalação"
+
+LangString i18n_VCR_CHECKBOX ${LANG_SPANISH} "Descargar e Instalar Visual C++ Redistribuitable"
+LangString i18n_VCR_CHECKBOX ${LANG_ENGLISH} "Download and Install Visual C++ Redistributable"
+LangString i18n_VCR_CHECKBOX ${LANG_PORTUGUESEBR} "Baixar e instalar o Visual C++ Redistribuível"
+
+LangString i18n_VCR_DESCRIPTION ${LANG_SPANISH} "No se ha detectado Visual C++ Redistribuitable en este equipo. Este componente es necesario para ejecutar los binarios de Apache y PHP."
+LangString i18n_VCR_DESCRIPTION ${LANG_ENGLISH} "Visual C++ Redistributable has not been detected on this computer. This component is required to run Apache and PHP binaries."
+LangString i18n_VCR_DESCRIPTION ${LANG_PORTUGUESEBR} "Não foi detectado o Visual C++ Redistributable neste computador. Este componente é necessário para executar os binários do Apache e do PHP."
+
+LangString i18n_VCR_HEADER ${LANG_SPANISH} "Dependencia no detectada"
+LangString i18n_VCR_HEADER ${LANG_ENGLISH} "Dependency not detected"
+LangString i18n_VCR_HEADER ${LANG_PORTUGUESEBR} "Dependência não detectada"
+
+LangString i18n_VCR_NOTICE ${LANG_SPANISH} "Si rechaza la descarga e instalación de Visual C++ Redistribuitable, el asistente post-instalación de Apache no instalará el servicio."
+LangString i18n_VCR_NOTICE ${LANG_ENGLISH} "If you decline to download and install Visual C++ Redistributable, the Apache post-installation wizard will not install the service."
+LangString i18n_VCR_NOTICE ${LANG_PORTUGUESEBR} "Se você recusar o download e a instalação do Visual C++ Redistributable, o assistente pós-instalação do Apache não instalará o serviço."
+
+LangString i18n_VCR_SUBTITLE ${LANG_SPANISH} "Descargar e Instalar dependencia"
+LangString i18n_VCR_SUBTITLE ${LANG_ENGLISH} "Download and install dependency"
+LangString i18n_VCR_SUBTITLE ${LANG_PORTUGUESEBR} "Baixar e instalar dependência"

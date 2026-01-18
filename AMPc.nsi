@@ -408,7 +408,7 @@ Function custom_PageApache
 			${NSD_CreateNumber} 0 42u 20% 12u "80"
 			Pop $apacheCustomPort
 
-			${NSD_CreateLabel} 0 72u 100% 8u "$(i18n_APACHE_SRVNAME)"
+			${NSD_CreateLabel} 0 72u 100% 8u "$(i18n_CUSTOM_SRVNAME)"
 			${NSD_CreateText} 0 84u 20% 12u "Apache2.4"
 			Pop $apacheCustomServiceName
 
@@ -543,7 +543,7 @@ Function custom_PageMariadb
 			${NSD_CreateNumber} 0 84u 20% 12u "3306"
 			Pop $mariadbCustomPort
 
-			${NSD_CreateLabel} 0 96u 100% 8u "$(i18n_MARIADB_SRVNAME)"
+			${NSD_CreateLabel} 0 96u 100% 8u "$(i18n_CUSTOM_SRVNAME)"
 			${NSD_CreateText} 0 108u 20% 12u "MariaDB"
 			Pop $mariadbCustomServiceName
 
@@ -579,7 +579,7 @@ Function leave_PageMariadb
 		StrLen $tempLength $tempString
 		IntCmp $tempLength ${MIN_PASSWORD_LENGTH} pass_min_ok pass_too_short pass_min_ok
 		pass_too_short:
-			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_PASS_TOO_SHORT)"
+			MessageBox MB_OK|MB_ICONEXCLAMATION "$(i18n_MARIADB_PASS_TOO_SHORT) ${MIN_PASSWORD_LENGTH}"
 			Abort
 		pass_min_ok:
 
@@ -628,7 +628,6 @@ Function leave_PageMariadb
 		StrCpy $tempResult ""
 
 		; Instalar MariaDB.
-		DetailPrint "$(i18n_MARIADB_INSTALLING_SERVICE)"
 		nsExec::ExecToStack /OEM '"$INSTDIR\MariaDB\bin\mariadb-install-db.exe" --service=MariaDB --password="$tempString" --port=$tempPort'
 		Pop $tempResult
 		Pop $tempLength
