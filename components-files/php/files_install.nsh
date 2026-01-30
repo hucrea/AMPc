@@ -1,6 +1,6 @@
 ; ============================================
 ; php - Installation Files
-; Generated automatically on 2025-12-26 16:50:20
+; Generated automatically on 2026-01-30 23:10:45
 ; DO NOT EDIT MANUALLY - Changes will be lost
 ; ============================================
 
@@ -9,10 +9,10 @@ SetOutPath "$phpPath"
 	File "components-files\php\deplister.exe"
 	File "components-files\php\glib-2.dll"
 	File "components-files\php\gmodule-2.dll"
-	File "components-files\php\icudt75.dll"
-	File "components-files\php\icuin75.dll"
-	File "components-files\php\icuio75.dll"
-	File "components-files\php\icuuc75.dll"
+	File "components-files\php\icudt77.dll"
+	File "components-files\php\icuin77.dll"
+	File "components-files\php\icuio77.dll"
+	File "components-files\php\icuuc77.dll"
 	File "components-files\php\libcrypto-3-x64.dll"
 	File "components-files\php\libenchant2.dll"
 	File "components-files\php\libpq.dll"

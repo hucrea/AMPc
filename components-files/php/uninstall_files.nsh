@@ -1,6 +1,6 @@
 ; ============================================
 ; php - Uninstallation Files
-; Generated automatically on 2025-12-26 16:50:20
+; Generated automatically on 2026-01-30 23:10:45
 ; DO NOT EDIT MANUALLY - Changes will be lost
 ; ============================================
 
@@ -69,10 +69,10 @@ Delete "$phpPath\libsasl.dll"
 Delete "$phpPath\libpq.dll"
 Delete "$phpPath\libenchant2.dll"
 Delete "$phpPath\libcrypto-3-x64.dll"
-Delete "$phpPath\icuuc75.dll"
-Delete "$phpPath\icuio75.dll"
-Delete "$phpPath\icuin75.dll"
-Delete "$phpPath\icudt75.dll"
+Delete "$phpPath\icuuc77.dll"
+Delete "$phpPath\icuio77.dll"
+Delete "$phpPath\icuin77.dll"
+Delete "$phpPath\icudt77.dll"
 Delete "$phpPath\gmodule-2.dll"
 Delete "$phpPath\glib-2.dll"
 Delete "$phpPath\deplister.exe"
