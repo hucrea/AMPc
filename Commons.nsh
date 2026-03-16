@@ -39,7 +39,7 @@ SetCompressor /SOLID /FINAL lzma
 ;
 !define VER_MAJOR "0"
 !define VER_MENOR "19"
-!define VER_PATCH "5"
+!define VER_PATCH "6"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 ;
 ; VERSION_*
@@ -50,7 +50,6 @@ SetCompressor /SOLID /FINAL lzma
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
 ;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-;       VERSION_LIBCURL => cURL. No implementado.
 ;
 !define VERSION_APACHE  "2.4.65"
 !define VERSION_MARIADB "11.4.8"
@@ -58,7 +57,6 @@ SetCompressor /SOLID /FINAL lzma
 !define VERSION_PMA     "5.2.2"
 !define VERSION_ADMINER "5.3.0"
 !define VERSION_CACERT  "25.08.12"
-;!define VERSION_LIBCURL "8.6.0"
 ;
 ; AMPC_*
 ;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
@@ -123,4 +121,4 @@ VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
 VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
 VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
 VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025-2026 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
