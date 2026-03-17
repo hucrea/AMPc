@@ -20,43 +20,86 @@ NOTAS:
 
 */
 
+; Algoritmo de compresion.
+SetCompressor /SOLID /FINAL lzma
+
 ###############################################################################
 ; CONSTANTES DEL PAQUETE.
 ###############################################################################
+!define /date TIME_STAMP    "%Y%m%d_%H%M%S"
+!define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}"
+!define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
+
 ; PACKAGE - Nombre del paquete a compilar.
 !define PACKAGE "AMPc for Windows"
-;
-; FILE_STATUS - Entorno final de este archivo compilado. Valores: dev|prod.
-!define FILE_STATUS "prod"
 ;
 ; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
 !define VER_F_VIP "${AMPC_VERSION}.0"
 ;
 ; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+
+; AMPC_*
+;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
+;	cambiadas para evitar problemas tecnicos y legales.
+;		AMPC_VERSION 	        => Version del paquete, formato SemVer.
+;		AMPC_GUID		        => GUID para el paquete.
+;		AMPC_URL			    => URL oficial del paquete.
+;		AMPC_PUBLISHER	        => Nombre del publicador (aviso marca comercial)
+;		AMPC_PUBLISHER_URL	    => Direccion web del publicador
+;		AMPC_PUBLISHER_COUNTRY  => Pais del publicador.
 ;
+!define AMPC_VERSION            "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
+!define AMPC_GUID               "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
+!define AMPC_URL                "https://github.com/hucrea/AMPc"
+!define AMPC_PUBLISHER          "Hu SpA"
+!define AMPC_PUBLISHER_URL      "https://hucreativa.cl"
+!define AMPC_PUBLISHER_COUNTRY  "Chile"
+
+; URL_*
+;	Direcciones web utilizadas por el paquete.
+;		URL_UPDATE		=> Consultar nuevas versiones del paquete.
+;		URL_HELP 		=> Ayuda sobre el paquete.
+;
+!define URL_UPDATE  "${AMPC_URL}/releases"
+!define URL_HELP    "${AMPC_URL}/wiki"
+
+; REGKEY_*
+;	Claves del registro.
+;		REGKEY_ROOT 	=> Clave raiz en regedit.
+;		REGKEY_PACKAGE 	=> Ruta regedit del instalador.
+;		REGKEY_UNINST 	=> Ruta regedit del desinstalador.
+;
+!define REGKEY_ROOT     "HKLM"
+!define REGKEY_PACKAGE  "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
+!define REGKEY_UNINST   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
+
 ; Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
 !include "Commons.nsh"
 
 ###############################################################################
 ; DETALLES DE LA COMPILACION ACTUAL.
 ###############################################################################
-; Nombre del instalador EXE compilado.
+Name "${PACKAGE}"
+Caption "${PACKAGE}"
+BrandingText "${AMPC_VERSION} - ${COMPILED_STAMP}"
+ManifestSupportedOS Win10
+Unicode True
+RequestExecutionLevel admin
 OutFile "ampc-${VER_BUILD}.exe"
 InstallDir "$PROGRAMFILES\AMPc"
-;
-; Detalles durante la instalacion.
 ShowInstDetails hide
-;
-; Detalles durante la desinstalacion.
 ShowUnInstDetails hide
-;
-; Habilita instalacion en carpeta raiz.
 AllowRootDirInstall true
-;
-; Detalles del paquete (Archivo EXE > Propiedades > Detalles).
-VIAddVersionKey /LANG=0 "LegalTrademarks" "${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
-VIAddVersionKey /LANG=0 "FileDescription" "Install ${PACKAGE}"
+
+VIProductVersion "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
+VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
+VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025-2026 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalTrademarks"	"${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
+VIAddVersionKey /LANG=0 "FileDescription" 	"${PACKAGE} Installer"
 
 ###############################################################################
 ; VARIABLES DEL PAQUETE.
