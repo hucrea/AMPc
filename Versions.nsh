@@ -11,7 +11,7 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------
 
-CommonsConstants.nsh - Constantes comunes entre archivos *.NSI del proyecto.
+Versions.nsh - Archivo de versiones del paquete.
 
 */
 ;
@@ -20,12 +20,10 @@ CommonsConstants.nsh - Constantes comunes entre archivos *.NSI del proyecto.
 ;		VER_MAJOR => Version mayor.
 ;		VER_MENOR => Version menor.
 ;		VER_PATCH => Version parche.
-;		VER_BUILD => Version de la compilacion.
-;
 !define VER_MAJOR "0"
 !define VER_MENOR "19"
 !define VER_PATCH "6"
-;
+
 ; VERSION_*
 ;	Versiones declarada de los componentes incluidos en la compilacion..
 ;		VERSION_APACHE 	=> Apache HTTP Server.
@@ -34,7 +32,6 @@ CommonsConstants.nsh - Constantes comunes entre archivos *.NSI del proyecto.
 ;		VERSION_PMA 	=> phpMyAdmin.
 ;		VERSION_ADMINER => Adminer.
 ;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-;
 !define VERSION_APACHE  "2.4.65"
 !define VERSION_MARIADB "11.4.8"
 !define VERSION_PHP     "8.3.25"

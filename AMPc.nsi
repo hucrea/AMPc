@@ -26,15 +26,16 @@ SetCompressor /SOLID /FINAL lzma
 ###############################################################################
 ; CONSTANTES DEL PAQUETE.
 ###############################################################################
-!define /date TIME_STAMP    "%Y%m%d_%H%M%S"
-!define COMPILED_STAMP      "Compiled at ${__TIME__} on ${__DATE__}"
+; Marcas de tiempo.
+!define /date TIME_STAMP "%Y%m%d_%H%M%S"
+!define COMPILED_STAMP "Compiled at ${__TIME__} on ${__DATE__}"
 !define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
 
+; Versiones incluidas.
+!include "Versions.nsh"
+
 ; PACKAGE - Nombre del paquete a compilar.
-!define PACKAGE "AMPc for Windows"
-;
-; VER_F_VIP - Version apta para VIProductVersion (no cumple SemVer).
-!define VER_F_VIP "${AMPC_VERSION}.0"
+!define PACKAGE_NAME "AMPc for Windows"
 ;
 ; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
@@ -74,9 +75,6 @@ SetCompressor /SOLID /FINAL lzma
 !define REGKEY_PACKAGE  "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
 !define REGKEY_UNINST   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
 
-; Incluye el archivo de constantes compartidas con otros *.NSI del proyecto.
-!include "Commons.nsh"
-
 ###############################################################################
 ; DETALLES DE LA COMPILACION ACTUAL.
 ###############################################################################
@@ -92,9 +90,9 @@ ShowInstDetails hide
 ShowUnInstDetails hide
 AllowRootDirInstall true
 
-VIProductVersion "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "FileVersion"       "${VER_F_VIP}"
-VIAddVersionKey /LANG=0 "ProductVersion"    "${VER_F_VIP}"
+VIProductVersion "${AMPC_VERSION}.0"
+VIAddVersionKey /LANG=0 "FileVersion"       "${AMPC_VERSION}.0"
+VIAddVersionKey /LANG=0 "ProductVersion"    "${AMPC_VERSION}.0"
 VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
 VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
 VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025-2026 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
