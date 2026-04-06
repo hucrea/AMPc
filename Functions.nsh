@@ -1,7 +1,7 @@
 /*
 
-AMPc for Windows - Entorno web local para Windows
-Copyright (C) 2025  Hu SpA ( https://hucreativa.cl )
+AMPc for Windows - Entorno web local para Windows 10 y Windows 11
+Copyright (C) 2025-2026  Hu SpA ( https://hucreativa.cl )
 
 This file is part of AMPc for Windows.
 
@@ -217,35 +217,20 @@ func_StartServices
 
 */
 Function func_StartServices
-	StrCmp $statusVCRuntime "skipped" warning execute
+	StrCmp $statusVCRuntime "skipped" warning apache
 
 	warning:
 		MessageBox MB_OK "No has instalado Visual C++ Redistributable, el servicio de Apache HTTP no se puede iniciar."
-		Goto next
-	execute:
+		Goto mariadb
+	apache:
 		nsExec::ExecToStack /OEM 'net start Apache2.4'
 		Pop $R0
 		Pop $R1
 		LogText $R1
-		Goto next
-	next:
+		Goto mariadb
+	mariadb:
 		nsExec::ExecToStack /OEM 'net start MariaDB'
 		Pop $R2
 		Pop $R3
 		LogText $R3
 FunctionEnd
-
-/*
-
-func_OnLabelClick
-https://nsis-dev.github.io/NSIS-Forums/html/t-316187.html
-
-* /
-Function func_OnLabelClick
-    ; Set label to bold
-    CreateFont $R2 "MS Shell Dlg" 10 700
-    SendMessage $LABEL ${WM_SETFONT} $R2 0
-    ; Force label redraw
-    ShowWindow $LABEL ${SW_HIDE}
-    ShowWindow $LABEL ${SW_SHOW}
-FunctionEnd*/
