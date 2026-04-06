@@ -54,9 +54,9 @@ SetCompressor /SOLID /FINAL lzma
 !define REGKEY_UNINST "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_GUID}"
 
 ; Directorios de trabajo.
-!define DIR_COMPONENTS "bin-src"
-!define DIR_MEDIA "media-src"
-!define DIR_CONFIG "config-src"
+!define DIR_COMPONENTS "src-components"
+!define DIR_EXTRAS "src-extras"
+!define DIR_CONFIG "src-configs"
 
 /* Detalles de la compilacion actual. */
 Name "${PACKAGE_NAME}"
@@ -107,13 +107,13 @@ Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 
 ; Configuracion de la instalacion.
 !define MUI_ABORTWARNING
-!define MUI_ICON "${DIR_MEDIA}\ampc_install.ico"
-!define MUI_UNICON "${DIR_MEDIA}\ampc_uninstall.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${DIR_MEDIA}\banner-install.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${DIR_MEDIA}\banner-uninstall.bmp"
+!define MUI_ICON "${DIR_EXTRAS}\ampc_install.ico"
+!define MUI_UNICON "${DIR_EXTRAS}\ampc_uninstall.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${DIR_EXTRAS}\banner-install.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${DIR_EXTRAS}\banner-uninstall.bmp"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "${DIR_MEDIA}\header-install.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP "${DIR_MEDIA}\header-uninstall.bmp"
+!define MUI_HEADERIMAGE_BITMAP "${DIR_EXTRAS}\header-install.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP "${DIR_EXTRAS}\header-uninstall.bmp"
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "$(i18n_FINISHPAGE_RUN)"
 !define MUI_FINISHPAGE_RUN_FUNCTION func_StartServices
@@ -123,13 +123,13 @@ Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 !define MUI_COMPONENTSPAGE_SMALLDESC
 
 ; Proceso de instalacion.
-!insertmacro MUI_PAGE_LICENSE "${DIR_MEDIA}\license.rtf"
+!insertmacro MUI_PAGE_LICENSE "${DIR_EXTRAS}\license.rtf"
 !define MUI_PAGE_HEADER_TEXT "Términos Adicionales"
 !define MUI_PAGE_HEADER_SUBTEXT "Información importante sobre componentes de terceros"
 !define MUI_LICENSEPAGE_TEXT_TOP "Lea los siguientes términos adicionales:"
 !define MUI_LICENSEPAGE_TEXT_BOTTOM "Presione Acepto si está de acuerdo con los términos adicionales."
 !define MUI_LICENSEPAGE_BUTTON "&Acepto"
-!insertmacro MUI_PAGE_LICENSE "${DIR_MEDIA}\license-components.rtf"
+!insertmacro MUI_PAGE_LICENSE "${DIR_EXTRAS}\license-components.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_FINISHPAGE_NOAUTOCLOSE
@@ -164,7 +164,7 @@ Function .onInit
 
 	; Splash al iniciar el instalador.
 	SetOutPath $PLUGINSDIR
-  	File "${DIR_MEDIA}\splash-install.bmp"
+  	File "${DIR_EXTRAS}\splash-install.bmp"
 	splash::show 1750 "$PLUGINSDIR\splash-install"
 	Pop $0
 	Delete "$PLUGINSDIR\splash-install.bmp"
@@ -569,7 +569,7 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 
 	SetOverwrite off
 		File "www-src\index.html"
-		File /oname=favicon.ico ${DIR_MEDIA}\ampc.ico
+		File /oname=favicon.ico ${DIR_EXTRAS}\ampc.ico
 	SetOutPath "$INSTDIR\htdocs\cgi-bin"
 		File "www-src\printenv.pl"
 	SetOutPath "$pathApache\conf"
@@ -747,7 +747,7 @@ Function un.onInit
 
 	; Splash al iniciar el desinstalador.
 	SetOutPath $PLUGINSDIR
-  	File "${DIR_MEDIA}\splash-uninstall.bmp"
+  	File "${DIR_EXTRAS}\splash-uninstall.bmp"
 	splash::show 1750 "$PLUGINSDIR\splash-uninstall"
 	Pop $0
 	Delete "$PLUGINSDIR\splash-uninstall.bmp"
