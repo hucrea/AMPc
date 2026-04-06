@@ -1,7 +1,7 @@
 ﻿/*
 
-AMPc for Windows - Entorno web local para Windows
-Copyright (C) 2025  Hu SpA ( https://hucreativa.cl )
+AMPc for Windows - Entorno web local para Windows 10 y Windows 11
+Copyright (C) 2025-2026  Hu SpA ( https://hucreativa.cl )
 
 This file is part of AMPc for Windows.
 
@@ -13,97 +13,77 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 AMPc.nsi - Archivo principal del paquete.
 
-NOTAS:
-+ Algunas constantes estan ubicadas en el archivo Commons.nsi y son
- compartidas por otros archivos *.NSI del proyecto.
-+ Todos los caracteres especiales se han omitido para mayor compatibilidad.
+NOTAS: 
+	- Todos los caracteres especiales se han omitido para mayor compatibilidad.
 
 */
 
-; Algoritmo de compresion.
+/* Algoritmo de compresion. */
 SetCompressor /SOLID /FINAL lzma
 
-###############################################################################
-; CONSTANTES DEL PAQUETE.
-###############################################################################
+/* Constantes del paquete. */
 ; Marcas de tiempo.
-!define /date TIME_STAMP "%Y%m%d_%H%M%S"
+!define /date TIMESTAMP_COMPILE "%Y%m%d_%H%M%S"
 !define COMPILED_STAMP "Compiled at ${__TIME__} on ${__DATE__}"
-!define VER_BUILD "${AMPC_VERSION}+${TIME_STAMP}"
+!define METADATA_BUILD "${PACKAGE_VERSION}+${TIMESTAMP_COMPILE}"
 
-; Versiones incluidas.
+; Versiones.
 !include "Versions.nsh"
+!define PACKAGE_VERSION "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
 
-; PACKAGE - Nombre del paquete a compilar.
+; Datos del paquete.
+# Para derivaciones del codigo, es buena idea cambiar las siguientes
+# constantes por unas personalizadas, a fin de evitar conflictos con
+# instalaciones de AMPc ya existentes.
 !define PACKAGE_NAME "AMPc for Windows"
-;
-; URL_VCREDIST - URL de descarga para Visual C++ Redistributable.
+!define PACKAGE_SHORTNAME "AMPc"
+!define PACKAGE_GUID "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
+!define PACKAGE_URL "https://github.com/hucrea/AMPc"
+!define PACKAGE_URL_UPDATE "${PACKAGE_URL}/releases"
+!define PACKAGE_URL_HELP "${PACKAGE_URL}/wiki"
+!define PACKAGE_PUBLISHER "Hu SpA"
+!define PACKAGE_PUBLISHER_URL "https://hucreativa.cl"
+!define PACKAGE_PUBLISHER_COUNTRY "Chile"
+
+; URL de descarga para Visual C++ Redistributable.
 !define URL_VCREDIST "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 
-; AMPC_*
-;	Para derivaciones del codigo, las siguientes constantes DEBEN ser
-;	cambiadas para evitar problemas tecnicos y legales.
-;		AMPC_VERSION 	        => Version del paquete, formato SemVer.
-;		AMPC_GUID		        => GUID para el paquete.
-;		AMPC_URL			    => URL oficial del paquete.
-;		AMPC_PUBLISHER	        => Nombre del publicador (aviso marca comercial)
-;		AMPC_PUBLISHER_URL	    => Direccion web del publicador
-;		AMPC_PUBLISHER_COUNTRY  => Pais del publicador.
-;
-!define AMPC_VERSION            "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
-!define AMPC_GUID               "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
-!define AMPC_URL                "https://github.com/hucrea/AMPc"
-!define AMPC_PUBLISHER          "Hu SpA"
-!define AMPC_PUBLISHER_URL      "https://hucreativa.cl"
-!define AMPC_PUBLISHER_COUNTRY  "Chile"
+; Claves del registro.
+!define REGKEY_ROOT "HKLM"
+!define REGKEY_PACKAGE "Software\${PACKAGE_PUBLISHER}\${PACKAGE_GUID}"
+!define REGKEY_UNINST "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_GUID}"
 
-; URL_*
-;	Direcciones web utilizadas por el paquete.
-;		URL_UPDATE		=> Consultar nuevas versiones del paquete.
-;		URL_HELP 		=> Ayuda sobre el paquete.
-;
-!define URL_UPDATE  "${AMPC_URL}/releases"
-!define URL_HELP    "${AMPC_URL}/wiki"
+; Directorios de trabajo.
+!define DIR_COMPONENTS "bin-src"
+!define DIR_MEDIA "media-src"
+!define DIR_CONFIG "config-src"
 
-; REGKEY_*
-;	Claves del registro.
-;		REGKEY_ROOT 	=> Clave raiz en regedit.
-;		REGKEY_PACKAGE 	=> Ruta regedit del instalador.
-;		REGKEY_UNINST 	=> Ruta regedit del desinstalador.
-;
-!define REGKEY_ROOT     "HKLM"
-!define REGKEY_PACKAGE  "Software\${AMPC_PUBLISHER}\${AMPC_GUID}"
-!define REGKEY_UNINST   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AMPC_GUID}"
-
-###############################################################################
-; DETALLES DE LA COMPILACION ACTUAL.
-###############################################################################
-Name "${PACKAGE}"
-Caption "${PACKAGE}"
-BrandingText "${AMPC_VERSION} - ${COMPILED_STAMP}"
+/* Detalles de la compilacion actual. */
+Name "${PACKAGE_NAME}"
+Caption "${PACKAGE_NAME}"
+BrandingText "${PACKAGE_VERSION} - ${COMPILED_STAMP}"
 ManifestSupportedOS Win10
 Unicode True
 RequestExecutionLevel admin
-OutFile "ampc-${VER_BUILD}.exe"
+OutFile "${PACKAGE_SHORTNAME}-${METADATA_BUILD}.exe"
 InstallDir "$PROGRAMFILES\AMPc"
 ShowInstDetails hide
 ShowUnInstDetails hide
 AllowRootDirInstall true
 
-VIProductVersion "${AMPC_VERSION}.0"
-VIAddVersionKey /LANG=0 "FileVersion"       "${AMPC_VERSION}.0"
-VIAddVersionKey /LANG=0 "ProductVersion"    "${AMPC_VERSION}.0"
-VIAddVersionKey /LANG=0 "ProductName"       "${PACKAGE}"
-VIAddVersionKey /LANG=0 "CompanyName"       "${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalCopyright"    "© 2025-2026 ${AMPC_PUBLISHER} (${AMPC_PUBLISHER_COUNTRY})"
-VIAddVersionKey /LANG=0 "LegalTrademarks"	"${PACKAGE} is a trademark of ${AMPC_PUBLISHER}"
-VIAddVersionKey /LANG=0 "FileDescription" 	"${PACKAGE} Installer"
+; Informacion de la version.
+VIProductVersion "${PACKAGE_VERSION}.${VER_BUILD}"
+VIAddVersionKey /LANG=0 "FileVersion"		"${PACKAGE_VERSION}.${VER_BUILD}"
+VIAddVersionKey /LANG=0 "ProductVersion" 	"${PACKAGE_VERSION}.${VER_BUILD}"
+VIAddVersionKey /LANG=0 "ProductName" 		"${PACKAGE_NAME}"
+VIAddVersionKey /LANG=0 "CompanyName" 		"${PACKAGE_PUBLISHER} (${PACKAGE_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalCopyright" 	"© 2025-2026 ${PACKAGE_PUBLISHER} (${PACKAGE_PUBLISHER_COUNTRY})"
+VIAddVersionKey /LANG=0 "LegalTrademarks" 	"${PACKAGE_NAME} is a trademark of ${PACKAGE_PUBLISHER}"
+VIAddVersionKey /LANG=0 "FileDescription" 	"${PACKAGE_NAME} Installer"
 
-###############################################################################
-; VARIABLES DEL PAQUETE.
-###############################################################################
-Var prevInstallAMPc ; Usada para verificar si existe instalacion previa.
-Var backSlashInstDir ; Ver Functions.nsh, funcion func_ReplaceSlash.
+/* Variables del paquete */
+Var prevInstallAMPc ; Instalacion previa.
+Var backSlashInstDir ; Funcion func_ReplaceSlash.
 Var apacheConfigServerName ; Usada por custom_PageApache y leave_PageApache.
 Var apacheConfigPort ; Usada por custom_PageApache y leave_PageApache.
 Var mariadbConfigPass ; Usada por custom_PageMariadb y leave_PageMariadb.
@@ -113,14 +93,11 @@ Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
 Var pathApache ; Almacena ruta de instalacion para Apache.
 Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
 Var pathPhp ; Almacena ruta de instalacion para PHP.
-;Var pathLIBCURL ; Almacena ruta de instalacion para libcurl.
 Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
 Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
 Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 
-###############################################################################
-; PROCESO DE INSTALACION.
-###############################################################################
+/* Proceso de instalacion. */
 !include "x64.nsh"
 !include "MUI.nsh"
 !include "MUI2.nsh"
@@ -130,29 +107,29 @@ Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 
 ; Configuracion de la instalacion.
 !define MUI_ABORTWARNING
-!define MUI_ICON "media-src\ampc_install.ico"
-!define MUI_UNICON "media-src\ampc_uninstall.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "media-src\banner-install.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "media-src\banner-uninstall.bmp"
+!define MUI_ICON "${DIR_MEDIA}\ampc_install.ico"
+!define MUI_UNICON "${DIR_MEDIA}\ampc_uninstall.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${DIR_MEDIA}\banner-install.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${DIR_MEDIA}\banner-uninstall.bmp"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "media-src\header-install.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP "media-src\header-uninstall.bmp"
+!define MUI_HEADERIMAGE_BITMAP "${DIR_MEDIA}\header-install.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP "${DIR_MEDIA}\header-uninstall.bmp"
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "$(i18n_FINISHPAGE_RUN)"
 !define MUI_FINISHPAGE_RUN_FUNCTION func_StartServices
 !define MUI_LICENSEPAGE_BUTTON
-!define MUI_FINISHPAGE_LINK "${PACKAGE}"
-!define MUI_FINISHPAGE_LINK_LOCATION "${AMPC_URL}"
+!define MUI_FINISHPAGE_LINK "${PACKAGE_NAME}"
+!define MUI_FINISHPAGE_LINK_LOCATION "${PACKAGE_URL}"
 !define MUI_COMPONENTSPAGE_SMALLDESC
 
 ; Proceso de instalacion.
-!insertmacro MUI_PAGE_LICENSE "media-src\license.rtf"
+!insertmacro MUI_PAGE_LICENSE "${DIR_MEDIA}\license.rtf"
 !define MUI_PAGE_HEADER_TEXT "Términos Adicionales"
 !define MUI_PAGE_HEADER_SUBTEXT "Información importante sobre componentes de terceros"
 !define MUI_LICENSEPAGE_TEXT_TOP "Lea los siguientes términos adicionales:"
 !define MUI_LICENSEPAGE_TEXT_BOTTOM "Presione Acepto si está de acuerdo con los términos adicionales."
 !define MUI_LICENSEPAGE_BUTTON "&Acepto"
-!insertmacro MUI_PAGE_LICENSE "media-src\license-components.rtf"
+!insertmacro MUI_PAGE_LICENSE "${DIR_MEDIA}\license-components.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_FINISHPAGE_NOAUTOCLOSE
@@ -187,7 +164,7 @@ Function .onInit
 
 	; Splash al iniciar el instalador.
 	SetOutPath $PLUGINSDIR
-  	File "media-src\splash-install.bmp"
+  	File "${DIR_MEDIA}\splash-install.bmp"
 	splash::show 1750 "$PLUGINSDIR\splash-install"
 	Pop $0
 	Delete "$PLUGINSDIR\splash-install.bmp"
@@ -213,7 +190,6 @@ Function .onInit
 	StrCpy $pathApache 	"unknow"
 	StrCpy $pathMariadb	"unknow"
 	StrCpy $pathPhp 	"unknow"
-	;StrCpy $pathLIBCURL "unknow"
 	StrCpy $pathCACERT 	"unknow"
 	StrCpy $pathPMA 	"unknow"
 	StrCpy $pathAdminer "unknow"
@@ -428,7 +404,7 @@ Section -sectionInit
 	; aqui y no antes, es porque desde este punto hay garantia absoluta de la ruta
 	; de instalacion y, por tanto, un lugar donde almacenar el archivo.
 	LogSet on
-	LogText "${PACKAGE} ${AMPC_VERSION}"
+	LogText "${PACKAGE_NAME} ${PACKAGE_VERSION}"
 	LogText "${COMPILED_STAMP}"
 
 	${If} $prevInstallAMPc == "none"
@@ -456,18 +432,18 @@ Section -sectionInit
 
 	; Se registra el desinstalador.
 	WriteUninstaller "$INSTDIR\uninstall-ampc.exe"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${PACKAGE}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayName" "${PACKAGE_NAME}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayIcon" "$INSTDIR\uninstall-ampc.exe"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "InstallLocation" "$INSTDIR"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "UninstallString" "$INSTDIR\uninstall-ampc.exe"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion" "${AMPC_VERSION}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLInfoAbout" "${AMPC_URL}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLUpdateInfo" "${URL_UPDATE}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "HelpLink" "${URL_HELP}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${AMPC_PUBLISHER}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "DisplayVersion" "${PACKAGE_VERSION}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLInfoAbout" "${PACKAGE_URL}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "URLUpdateInfo" "${PACKAGE_URL_UPDATE}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "HelpLink" "${PACKAGE_URL_HELP}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_UNINST}" "Publisher" "${PACKAGE_PUBLISHER}"
 
 	DetailPrint "Creando acceso directo a web del proyecto"
-	WriteIniStr "$INSTDIR\${PACKAGE}.url" "InternetShortcut" "URL" "${AMPC_URL}"
+	WriteIniStr "$INSTDIR\${PACKAGE_NAME}.url" "InternetShortcut" "URL" "${PACKAGE_URL}"
 
 	; Algunos archivos requieren barras invertidas tipo UNIX, mientras que $INSTDIR
 	; contiene barras tipo Windows. La variable $backSlashInstDir almacena el valor
@@ -479,26 +455,10 @@ Section -sectionInit
 	LogText $backSlashInstDir
 
 	WriteRegDWORD ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "LangInstall" "$LANGUAGE"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${AMPC_VERSION}"
+	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "VersionInstall" "${PACKAGE_VERSION}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "BuildVersion" "${VER_BUILD}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall" "$INSTDIR"
 SectionEnd
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Actualizador
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-/*Section /O "Actualizador" section_Update
-	LogText "######################"
-	LogText "#  Actualizador	  #"
-	LogText "######################"
-
-	DetailPrint "Instalando Actualizador..."
-
-	SetOutPath $INSTDIR
-	SetOverwrite ifdiff
-		File 'bin-src\ampc\update-ampc.exe'
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathUpdateEXE" "$INSTDIR\update-ampc.exe"
-SectionEnd*/
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Visual C++ Redistributable.
@@ -604,12 +564,12 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 	DetailPrint "Instalando Apache HTTP..."
 
 	SetOverwrite ifdiff
-		!include "bin-src\apache\files.nsh" ; Incluye archivos del paquete.
+		!include "${DIR_COMPONENTS}\apache\files.nsh" ; Incluye archivos del paquete.
 	SetOutPath "$INSTDIR\htdocs"
 
 	SetOverwrite off
 		File "www-src\index.html"
-		File /oname=favicon.ico media-src\ampc.ico
+		File /oname=favicon.ico ${DIR_MEDIA}\ampc.ico
 	SetOutPath "$INSTDIR\htdocs\cgi-bin"
 		File "www-src\printenv.pl"
 	SetOutPath "$pathApache\conf"
@@ -646,7 +606,7 @@ Section "MariaDB Community Server (${VERSION_MARIADB})" section_Mariadb
 
 	DetailPrint "Instalando MariaDB..."
 	SetOverwrite ifdiff
-		!include "bin-src\mariadb\files.nsh" ; Incluye archivos del paquete.
+		!include "${DIR_COMPONENTS}\mariadb\files.nsh" ; Incluye archivos del paquete.
 
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${VERSION_MARIADB}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$pathMariadb"
@@ -667,7 +627,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		DetailPrint "Instalando PHP..."
 		SetOverwrite ifdiff
-			!include "bin-src\php\files.nsh" ; Incluye archivos del paquete.
+			!include "${DIR_COMPONENTS}\php\files.nsh" ; Incluye archivos del paquete.
 
 		SetOverwrite off
 		SetOutPath "$pathPhp"
@@ -701,8 +661,8 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		SetOverwrite ifdiff
 		SetOutPath "$pathLIBCURL"
-			File "bin-src\libcurl\libcurl_a.lib"
-			File "bin-src\libcurl\libcurl_a.pdb"
+			File "${DIR_COMPONENTS}\libcurl\libcurl_a.lib"
+			File "${DIR_COMPONENTS}\libcurl\libcurl_a.pdb"
 
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionLIBCURL" "${VERSION_LIBCURL}"
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathLIBCURL" "$pathLIBCURL"
@@ -719,7 +679,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		SetOverwrite ifdiff
 		SetOutPath "$pathCACERT"
-			File "bin-src\cacert\cacert.pem"
+			File "${DIR_COMPONENTS}\cacert\cacert.pem"
 
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${VERSION_CACERT}"
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
@@ -738,7 +698,7 @@ Section /O "phpMyAdmin (${VERSION_PMA})" section_Pma
 
 	DetailPrint "Instalando phpMyAdmin..."
 	SetOverwrite ifdiff
-		!include "bin-src\phpmyadmin\files.nsh" ; Incluye archivos del paquete.
+		!include "${DIR_COMPONENTS}\phpmyadmin\files.nsh" ; Incluye archivos del paquete.
 
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA" "${VERSION_PMA}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA" "$pathPMA"
@@ -757,7 +717,7 @@ Section /O "Adminer (${VERSION_ADMINER})" section_Adminer
 	DetailPrint "Instalando Adminer..."
 	SetOverwrite ifdiff
 	SetOutPath "$pathAdminer"
-		File /oname=index.php bin-src\adminer\adminer-${VERSION_ADMINER}.php
+		File /oname=index.php ${DIR_COMPONENTS}\adminer\adminer-${VERSION_ADMINER}.php
 	
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer" "${VERSION_ADMINER}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
@@ -787,14 +747,14 @@ Function un.onInit
 
 	; Splash al iniciar el desinstalador.
 	SetOutPath $PLUGINSDIR
-  	File "media-src\splash-uninstall.bmp"
+  	File "${DIR_MEDIA}\splash-uninstall.bmp"
 	splash::show 1750 "$PLUGINSDIR\splash-uninstall"
 	Pop $0
 	Delete "$PLUGINSDIR\splash-uninstall.bmp"
 
 	SetRegView 64
 	!insertmacro MUI_UNGETLANGUAGE
-	MessageBox MB_ICONINFORMATION|MB_OK "Vas a desinstalar ${PACKAGE}.$\n$\n \
+	MessageBox MB_ICONINFORMATION|MB_OK "Vas a desinstalar ${PACKAGE_NAME}.$\n$\n \
 	La carpeta $INSTDIR\htdocs NO SE ELIMINARÁ"
 FunctionEnd
 
@@ -829,7 +789,7 @@ Section Uninstall
 	DetailPrint $1
 
 	DetailPrint "Eliminando archivos"
-	Delete "$INSTDIR\${PACKAGE}.url"
+	Delete "$INSTDIR\${PACKAGE_NAME}.url"
 	Delete "$INSTDIR\uninstall-ampc.exe"
 	Delete "$INSTDIR\updater-ampc.exe"
 
@@ -859,6 +819,6 @@ SectionEnd
 ; Al finalizar desinstalacion.
 Function un.onUninstSuccess
 	HideWindow
-	MessageBox MB_ICONINFORMATION|MB_OK "La desinstalación de ${PACKAGE} finalizó correctamente.$\n$\n \
+	MessageBox MB_ICONINFORMATION|MB_OK "La desinstalación de ${PACKAGE_NAME} finalizó correctamente.$\n$\n \
 	La carpeta $INSTDIR\htdocs no se ha eliminado."
 FunctionEnd

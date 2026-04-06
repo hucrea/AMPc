@@ -1,7 +1,7 @@
 /*
 
-AMPc for Windows - Entorno web local para Windows
-Copyright (C) 2025  Hu SpA ( https://hucreativa.cl )
+AMPc for Windows - Entorno web local para Windows 10 y Windows 11
+Copyright (C) 2025-2026  Hu SpA ( https://hucreativa.cl )
 
 This file is part of AMPc for Windows.
 
@@ -13,6 +13,9 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Versions.nsh - Archivo de versiones del paquete.
 
+NOTAS: 
+	- Todos los caracteres especiales se han omitido para mayor compatibilidad.
+
 */
 ;
 ; VER_*
@@ -23,6 +26,7 @@ Versions.nsh - Archivo de versiones del paquete.
 !define VER_MAJOR "0"
 !define VER_MENOR "19"
 !define VER_PATCH "6"
+!define /date VER_BUILD "%Y%m%d%H%M%S"
 
 ; VERSION_*
 ;	Versiones declarada de los componentes incluidos en la compilacion..
