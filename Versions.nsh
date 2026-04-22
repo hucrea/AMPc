@@ -17,28 +17,25 @@ NOTAS:
 	- Todos los caracteres especiales se han omitido para mayor compatibilidad.
 
 */
-;
+
 ; VER_*
 ;	Versionado de AMPc.
-;		VER_MAJOR => Version mayor.
+;		VER_MAJOR => Version mayor, anno.
 ;		VER_MENOR => Version menor.
 ;		VER_PATCH => Version parche.
-!define VER_MAJOR "0"
-!define VER_MENOR "19"
-!define VER_PATCH "6"
-!define /date VER_BUILD "%Y%m%d%H%M%S"
+;		VER_BUILD => Fecha de compilacion.
+!define VER_MAJOR "26"
+!define VER_MENOR "1"
+!define VER_PATCH "0"
+!define /date VER_BUILD "%y%m%d%H%M%S"
 
 ; VERSION_*
 ;	Versiones declarada de los componentes incluidos en la compilacion..
-;		VERSION_APACHE 	=> Apache HTTP Server.
-;		VERSION_MARIADB => MariaDB Community Server.
-;		VERSION_PHP 	=> PHP.
-;		VERSION_PMA 	=> phpMyAdmin.
-;		VERSION_ADMINER => Adminer.
+;		VERSION_APACHE 	=> Apache HTTP Server, build ApacheLounge.
+;		VERSION_MARIADB => MariaDB Community Server, build oficial.
+;		VERSION_PHP 	=> PHP, build oficial.
 ;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-!define VERSION_APACHE  "2.4.65"
-!define VERSION_MARIADB "11.4.8"
-!define VERSION_PHP     "8.3.25"
-!define VERSION_PMA     "5.2.2"
-!define VERSION_ADMINER "5.3.0"
-!define VERSION_CACERT  "25.08.12"
+!define VERSION_APACHE  "2.4.66"
+!define VERSION_MARIADB "11.4.10"
+!define VERSION_PHP     "8.4.19"
+!define VERSION_CACERT  "26.02.11"

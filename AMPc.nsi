@@ -18,9 +18,6 @@ NOTAS:
 
 */
 
-/* Algoritmo de compresion. */
-SetCompressor /SOLID /FINAL lzma
-
 /* Constantes del paquete. */
 ; Marcas de tiempo.
 !define /date TIMESTAMP_COMPILE "%Y%m%d_%H%M%S"
@@ -59,6 +56,7 @@ SetCompressor /SOLID /FINAL lzma
 !define DIR_CONFIG "src-configs"
 
 /* Detalles de la compilacion actual. */
+SetCompressor /SOLID /FINAL lzma
 Name "${PACKAGE_NAME}"
 Caption "${PACKAGE_NAME}"
 BrandingText "${PACKAGE_VERSION} - ${COMPILED_STAMP}"
@@ -82,6 +80,7 @@ VIAddVersionKey /LANG=0 "LegalTrademarks" 	"${PACKAGE_NAME} is a trademark of ${
 VIAddVersionKey /LANG=0 "FileDescription" 	"${PACKAGE_NAME} Installer"
 
 /* Variables del paquete */
+Var tempVar ; Variable temporal.
 Var prevInstallAMPc ; Instalacion previa.
 Var backSlashInstDir ; Funcion func_ReplaceSlash.
 Var apacheConfigServerName ; Usada por custom_PageApache y leave_PageApache.
@@ -90,12 +89,18 @@ Var mariadbConfigPass ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var mariadbConfigCheck ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var mariadbConfigPort ; Usada por custom_PageMariadb y leave_PageMariadb.
 Var statusVCRuntime ; Usada para la comprobacion de Visual C++ Redistributable.
+Var ampcVCRedistDialog
+Var ampcVCRLabel1
+Var ampcVCRCheckbox
+Var ampcVCRLabel2
 Var pathApache ; Almacena ruta de instalacion para Apache.
+Var versionApache ; Almacena version instalada de Apache.
 Var pathMariadb ; Almacena ruta de instalacion para MariaDB.
+Var versionMariadb ; Almacena version instalada de MariaDB.
 Var pathPhp ; Almacena ruta de instalacion para PHP.
+Var versionPhp ; Almacena version instalada de PHP.
 Var pathCACERT ; Almacena ruta de instalacion para ca-cert.
-Var pathPMA ; Almacena ruta de instalacion para phpMyAdmin.
-Var pathAdminer ; Almacena ruta de instalacion para Adminer.
+Var versionCACERT ; Almacena version instalada de ca-cert.
 
 /* Proceso de instalacion. */
 !include "x64.nsh"
@@ -123,15 +128,17 @@ Var pathAdminer ; Almacena ruta de instalacion para Adminer.
 !define MUI_COMPONENTSPAGE_SMALLDESC
 
 ; Proceso de instalacion.
+!define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_TITLE)"
+!define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_SUBTITLE)"; 
 !insertmacro MUI_PAGE_LICENSE "${DIR_EXTRAS}\license.rtf"
-!define MUI_PAGE_HEADER_TEXT "Términos Adicionales"
-!define MUI_PAGE_HEADER_SUBTEXT "Información importante sobre componentes de terceros"
-!define MUI_LICENSEPAGE_TEXT_TOP "Lea los siguientes términos adicionales:"
-!define MUI_LICENSEPAGE_TEXT_BOTTOM "Presione Acepto si está de acuerdo con los términos adicionales."
-!define MUI_LICENSEPAGE_BUTTON "&Acepto"
+!define MUI_PAGE_HEADER_TEXT "$(i18n_LICENSE_THIRD_TITLE)"
+!define MUI_PAGE_HEADER_SUBTEXT "$(i18n_LICENSE_THIRD_SUBTITLE)"
+!define MUI_LICENSEPAGE_TEXT_TOP "$(i18n_LICENSE_THIRD_TEXTTOP)"
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "$(i18n_LICENSE_THIRD_TEXTTBOTTOM)"
+!define MUI_LICENSEPAGE_BUTTON "$(i18n_LICENSE_THIRD_BUTTON)"
 !insertmacro MUI_PAGE_LICENSE "${DIR_EXTRAS}\license-components.rtf"
 !insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_COMPONENTS
+Page Custom custom_PageVCRedist leave_PageVCRedist
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !insertmacro MUI_PAGE_INSTFILES
 Page Custom custom_PageApache leave_PageApache
@@ -162,45 +169,46 @@ Page Custom custom_PageMariadb leave_PageMariadb
 Function .onInit
 	InitPluginsDir
 
-	; Splash al iniciar el instalador.
-	SetOutPath $PLUGINSDIR
-  	File "${DIR_EXTRAS}\splash-install.bmp"
-	splash::show 1750 "$PLUGINSDIR\splash-install"
-	Pop $0
-	Delete "$PLUGINSDIR\splash-install.bmp"
-
-	SetOutPath $INSTDIR
-
-	; Verifica que arquitectura del sistema anfitrion sea x64.
 	${IfNot} ${RunningX64}
+		# No se puede continuar: sistema de 32 bits detectado.
 		MessageBox MB_OK|MB_ICONSTOP "$(i18n_32BITS_NOTSUPPORT).$\n$\n$(i18n_INSTALL_CANNOT)"
 		Abort
-
 	${EndIf}
 
 	; Evita redirecciones de WOW64 en directorios y registros.
 	${DisableX64FSRedirection}
 	SetRegView 64
 
-	; Inicializa instalador.
 	!insertmacro MUI_LANGDLL_DISPLAY
 
-	# INSTALACION PREVIA
 	; Inicializa variables.
-	StrCpy $pathApache 	"unknow"
-	StrCpy $pathMariadb	"unknow"
-	StrCpy $pathPhp 	"unknow"
-	StrCpy $pathCACERT 	"unknow"
-	StrCpy $pathPMA 	"unknow"
-	StrCpy $pathAdminer "unknow"
+	StrCpy $pathApache "none"
+	StrCpy $versionApache "none"
+	StrCpy $pathMariadb "none"
+	StrCpy $versionMariadb "none"
+	StrCpy $pathPhp "none"
+	StrCpy $versionPhp "none"
+	StrCpy $pathCACERT "none"
+	StrCpy $versionCACERT "none"
 
 	; Verifica si existe alguna instalacion previa.
 	ClearErrors
-	EnumRegKey $R0 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" 0
+	EnumRegKey $tempVar ${REGKEY_ROOT} "${REGKEY_PACKAGE}" 0
 
 	; No existe instalacion previa.
 	${If} ${Errors}
 		StrCpy $prevInstallAMPc "none"
+		StrCpy $tempVar ""
+
+		; Splash al iniciar el instalador.
+		SetOutPath $PLUGINSDIR
+		File "${DIR_EXTRAS}\splash-install.bmp"
+		splash::show 1750 "$PLUGINSDIR\splash-install"
+		Pop $tempVar
+		Delete "$PLUGINSDIR\splash-install.bmp"
+		StrCpy $tempVar ""
+
+		SetOutPath $INSTDIR
 
 		; Establece la ruta de instalacion en la unidad raiz de Windows.
 		StrCpy "$INSTDIR" "$WINDIR" 2
@@ -209,16 +217,28 @@ Function .onInit
 	; Existe instalacion previa.
 	${Else}
 		StrCpy $prevInstallAMPc "yes"
+		StrCpy $tempVar ""
+
+		; Splash al iniciar el actualizador.
+		SetOutPath $PLUGINSDIR
+		File "${DIR_EXTRAS}\splash-update.bmp"
+		splash::show 1750 "$PLUGINSDIR\splash-update"
+		Pop $tempVar
+		Delete "$PLUGINSDIR\splash-update.bmp"
+		StrCpy $tempVar ""
+
+		SetOutPath $INSTDIR
 		
 		; Lee la ruta de la instalacion actual.
 		ClearErrors
-		ReadRegStr $R1 ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
+		ReadRegStr $tempVar ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "PathInstall"
 
 		${IfNot} ${Errors}
-			StrCpy "$INSTDIR" "$R1"
-
+			StrCpy "$INSTDIR" "$tempVar"
+			StrCpy $tempVar ""
 		${Else}
-			MessageBox MB_OK|MB_ICONSTOP "ERROR 1001."
+			; No se puede leer la ruta de insralacion.
+			MessageBox MB_OK|MB_ICONSTOP "$(i18n_NOT_PATH_FOUND)"
 			Abort
 		${EndIf}
 	${EndIf}
@@ -227,6 +247,58 @@ FunctionEnd
 ###############################################################################
 ; PAGINAS PERSONALIZADAS.
 ###############################################################################
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Pre-requisitos.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Function custom_PageVCRedist
+	ClearErrors
+	; Para mas informacion, leer el siguiente enlace:
+	; https://learn.microsoft.com/es-mx/cpp/windows/redistributing-visual-cpp-files?view=msvc-170
+	ReadRegDWORD $tempVar HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
+
+	; No se ha detectado el componente.
+	${If} ${Errors}
+    ${OrIf} $tempVar != 1
+		StrCpy $tempVar ""
+		nsDialogs::Create 1018
+		Pop $ampcVCRedistDialog
+		${If} $ampcVCRedistDialog == error
+			Abort
+		${EndIf}
+
+		; Titulo y subtitulo para VCREDIST.
+		!insertmacro MUI_HEADER_TEXT "$(i18n_VCR_HEADER)" "$(i18n_VCR_SUBTITLE)"
+
+		; Descripcion de funcion de descarga e instalacion de VCREDIST.
+		${NSD_CreateLabel} 0 10u 100% 20u "$(i18n_VCR_DESCRIPTION)"
+		Pop $ampcVCRLabel1
+
+		; Checkbox para aceptar descarga e instalacion.
+		${NSD_CreateCheckbox} 0 40u 100% 15u "$(i18n_VCR_CHECKBOX)"
+		Pop $ampcVCRCheckbox
+		${NSD_Check} $ampcVCRCheckbox
+
+		; Avisos en caso de no marcar el checkbox.
+		${NSD_CreateLabel} 0 72u 100% 36u "$(i18n_VCR_NOTICE)"
+		Pop $ampcVCRLabel2
+		nsDialogs::Show
+	${Else}
+		StrCpy $tempVar ""
+	${EndIf}
+FunctionEnd
+
+Function leave_PageVCRedist
+	${NSD_GetState} $ampcVCRCheckbox $tempVar
+
+    ${If} $tempVar == ${BST_CHECKED}
+        StrCpy $statusVCRuntime "install"
+    ${Else}
+        StrCpy $statusVCRuntime "skip"
+    ${EndIf}
+
+	StrCpy $tempVar ""
+FunctionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Apache HTTP Server.
@@ -564,16 +636,14 @@ Section "Apache HTTP Server (${VERSION_APACHE})" section_Apache
 	DetailPrint "Instalando Apache HTTP..."
 
 	SetOverwrite ifdiff
-		!include "${DIR_COMPONENTS}\apache\files.nsh" ; Incluye archivos del paquete.
+		;!include "${DIR_COMPONENTS}\apache\files.nsh" ; Incluye archivos del paquete.
 	SetOutPath "$INSTDIR\htdocs"
 
 	SetOverwrite off
-		File "www-src\index.html"
+		File "${DIR_EXTRAS}\index.html"
 		File /oname=favicon.ico ${DIR_EXTRAS}\ampc.ico
-	SetOutPath "$INSTDIR\htdocs\cgi-bin"
-		File "www-src\printenv.pl"
 	SetOutPath "$pathApache\conf"
-		File "config-src\httpd.conf"
+		File "${DIR_CONFIG}\httpd.conf"
 
 	${If} $prevInstallAMPc == "none"
 		; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
@@ -606,7 +676,7 @@ Section "MariaDB Community Server (${VERSION_MARIADB})" section_Mariadb
 
 	DetailPrint "Instalando MariaDB..."
 	SetOverwrite ifdiff
-		!include "${DIR_COMPONENTS}\mariadb\files.nsh" ; Incluye archivos del paquete.
+		;!include "${DIR_COMPONENTS}\mariadb\files.nsh" ; Incluye archivos del paquete.
 
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionMariadb" "${VERSION_MARIADB}"
 	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathMariadb" "$pathMariadb"
@@ -627,13 +697,13 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		DetailPrint "Instalando PHP..."
 		SetOverwrite ifdiff
-			!include "${DIR_COMPONENTS}\php\files.nsh" ; Incluye archivos del paquete.
+		;	!include "${DIR_COMPONENTS}\php\files.nsh" ; Incluye archivos del paquete.
 
 		SetOverwrite off
 		SetOutPath "$pathPhp"
-			File "config-src\php.ini"
+			File "${DIR_CONFIG}\php.ini"
 		SetOutPath "$INSTDIR\htdocs"
-			File "www-src\phpinfo.php"
+			File "${DIR_EXTRAS}\phpinfo.php"
 
 		${If} $prevInstallAMPc == "none"
 			; Se reemplazan las barras de Windows por barras tipo UNIX en el archivo de
@@ -652,22 +722,6 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPhp" "$pathPhp"		
 	SectionEnd
 
-/*	Section "libcurl (${VERSION_LIBCURL})" section_Libcurl
-		LogText "##############################"
-		LogText "#           libcurl          #"
-		LogText "##############################"
-
-		StrCpy $pathLIBCURL "$COMMONFILES64\AMPc"
-
-		SetOverwrite ifdiff
-		SetOutPath "$pathLIBCURL"
-			File "${DIR_COMPONENTS}\libcurl\libcurl_a.lib"
-			File "${DIR_COMPONENTS}\libcurl\libcurl_a.pdb"
-
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionLIBCURL" "${VERSION_LIBCURL}"
-		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathLIBCURL" "$pathLIBCURL"
-	SectionEnd*/
-
 	Section "cacert.pem para cURL (versión ${VERSION_CACERT})" section_CACERT
 		LogText "##############################"
 		LogText "#         cacert.pem         #"
@@ -679,7 +733,7 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 
 		SetOverwrite ifdiff
 		SetOutPath "$pathCACERT"
-			File "${DIR_COMPONENTS}\cacert\cacert.pem"
+		;	File "${DIR_COMPONENTS}\cacert\cacert.pem"
 
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionCACERT" "${VERSION_CACERT}"
 		WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathCACERT" "$pathCACERT"
@@ -687,54 +741,14 @@ SectionGroup "PHP: Hypertext Preprocessor (${VERSION_PHP})" section_Php
 SectionGroupEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; phpMyAdmin.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "phpMyAdmin (${VERSION_PMA})" section_Pma
-	LogText "######################"
-	LogText "#     phpMyAdmin     #"
-	LogText "######################"
-
-	StrCpy $pathPMA "$INSTDIR\htdocs\phpmyadmin"
-
-	DetailPrint "Instalando phpMyAdmin..."
-	SetOverwrite ifdiff
-		!include "${DIR_COMPONENTS}\phpmyadmin\files.nsh" ; Incluye archivos del paquete.
-
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionPMA" "${VERSION_PMA}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathPMA" "$pathPMA"
-SectionEnd
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Adminer.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section /O "Adminer (${VERSION_ADMINER})" section_Adminer
-	LogText "######################"
-	LogText "#      Adminer       #"
-	LogText "######################"
-
-	StrCpy $pathAdminer "$INSTDIR\htdocs\adminer"
-
-	DetailPrint "Instalando Adminer..."
-	SetOverwrite ifdiff
-	SetOutPath "$pathAdminer"
-		File /oname=index.php ${DIR_COMPONENTS}\adminer\adminer-${VERSION_ADMINER}.php
-	
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "versionAdminer" "${VERSION_ADMINER}"
-	WriteRegStr ${REGKEY_ROOT} "${REGKEY_PACKAGE}" "pathAdminer" "$pathAdminer"
-SectionEnd
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Describe las secciones declaradas.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Apache} "$(i18n_DESCR_APACHE)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_PhpCore} "$(i18n_DESCR_PHP)" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "cacert.pem" ; DEPRECATED.
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Pma} "$(i18n_DESCR_PMA)"
-	!insertmacro MUI_DESCRIPTION_TEXT ${section_Adminer} "$(i18n_DESCR_ADMINER)"
-	;!insertmacro MUI_DESCRIPTION_TEXT ${section_Libcurl} "libcurl ${VERSION_LIBCURL} binary PHP"
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Apache} "$(i18n_DESCR_APACHE)" ; Descripcion de seccion.
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Mariadb} "$(i18n_DESCR_MARIADB)" ; Descripcion de seccion..
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_Php} "$(i18n_DESCR_PHP)" ; Descripcion de seccion.
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_PhpCore} "$(i18n_DESCR_PHP)" ; Descripcion de seccion.
+	!insertmacro MUI_DESCRIPTION_TEXT ${section_CACERT} "$(i18n_DESCR_CACERT)" ; Descripcion de seccion.
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ###############################################################################

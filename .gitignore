@@ -2,3 +2,4 @@
 !/src-components/*/*.nsh
 *.exe
 *.tmp
+*.log
