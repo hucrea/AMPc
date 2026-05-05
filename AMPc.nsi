@@ -25,13 +25,17 @@ NOTAS:
 !define METADATA_BUILD "${PACKAGE_VERSION}+${TIMESTAMP_COMPILE}"
 
 ; Versiones.
+!define VER_MAJOR "26"
+!define VER_MENOR "1"
+!define VER_PATCH "0"
+!define /date VER_BUILD "%y%m%d%H%M%S"
 !include "Versions.nsh"
-!define PACKAGE_VERSION "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
 
 ; Datos del paquete.
 # Para derivaciones del codigo, es buena idea cambiar las siguientes
 # constantes por unas personalizadas, a fin de evitar conflictos con
 # instalaciones de AMPc ya existentes.
+!define PACKAGE_VERSION "${VER_MAJOR}.${VER_MENOR}.${VER_PATCH}"
 !define PACKAGE_NAME "AMPc for Windows"
 !define PACKAGE_SHORTNAME "AMPc"
 !define PACKAGE_GUID "{FB39BDE3-4D2E-4634-BBB0-19B4D0AB5E13}"
@@ -77,7 +81,7 @@ VIAddVersionKey /LANG=0 "ProductName" 		"${PACKAGE_NAME}"
 VIAddVersionKey /LANG=0 "CompanyName" 		"${PACKAGE_PUBLISHER} (${PACKAGE_PUBLISHER_COUNTRY})"
 VIAddVersionKey /LANG=0 "LegalCopyright" 	"© 2025-2026 ${PACKAGE_PUBLISHER} (${PACKAGE_PUBLISHER_COUNTRY})"
 VIAddVersionKey /LANG=0 "LegalTrademarks" 	"${PACKAGE_NAME} is a trademark of ${PACKAGE_PUBLISHER}"
-VIAddVersionKey /LANG=0 "FileDescription" 	"${PACKAGE_NAME} Installer"
+VIAddVersionKey /LANG=0 "FileDescription" 	"${PACKAGE_NAME} ${PACKAGE_VERSION}.${VER_BUILD}"
 
 /* Variables del paquete */
 Var tempVar ; Variable temporal.

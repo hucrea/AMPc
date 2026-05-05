@@ -160,10 +160,22 @@ LangString i18n_DESCR_PHP ${LANG_SPANISH} "Lenguaje de script"
 LangString i18n_DESCR_PHP ${LANG_ENGLISH} "Scripting language"
 LangString i18n_DESCR_PHP ${LANG_PORTUGUESEBR} "Linguagem de script"
 
-LangString i18n_DESCR_PMA ${LANG_SPANISH} "Administrador de base de datos, vía web"
-LangString i18n_DESCR_PMA ${LANG_ENGLISH} "Database administrator, via web"
-LangString i18n_DESCR_PMA ${LANG_PORTUGUESEBR} "Administrador de banco de dados, via web"
+LangString i18n_VCR_CHECKBOX ${LANG_SPANISH} "Descargar e Instalar Visual C++ Redistribuitable"
+LangString i18n_VCR_CHECKBOX ${LANG_ENGLISH} "Download and Install Visual C++ Redistributable"
+LangString i18n_VCR_CHECKBOX ${LANG_PORTUGUESEBR} "Baixar e instalar o Visual C++ Redistribuível"
 
-LangString i18n_DESCR_ADMINER ${LANG_SPANISH} "Alternativa ultra ligera a phpMyAdmin"
-LangString i18n_DESCR_ADMINER ${LANG_ENGLISH} "Ultra-lightweight alternative to phpMyAdmin"
-LangString i18n_DESCR_ADMINER ${LANG_PORTUGUESEBR} "Alternativa ultraleve ao phpMyAdmin"
+LangString i18n_VCR_DESCRIPTION ${LANG_SPANISH} "No se ha detectado Visual C++ Redistribuitable en este equipo. Este componente es necesario para ejecutar los binarios de Apache y PHP."
+LangString i18n_VCR_DESCRIPTION ${LANG_ENGLISH} "Visual C++ Redistributable has not been detected on this computer. This component is required to run Apache and PHP binaries."
+LangString i18n_VCR_DESCRIPTION ${LANG_PORTUGUESEBR} "Não foi detectado o Visual C++ Redistributable neste computador. Este componente é necessário para executar os binários do Apache e do PHP."
+
+LangString i18n_VCR_HEADER ${LANG_SPANISH} "Dependencia no detectada"
+LangString i18n_VCR_HEADER ${LANG_ENGLISH} "Dependency not detected"
+LangString i18n_VCR_HEADER ${LANG_PORTUGUESEBR} "Dependência não detectada"
+
+LangString i18n_VCR_NOTICE ${LANG_SPANISH} "Si rechaza la descarga e instalación de Visual C++ Redistribuitable, el asistente post-instalación de Apache no instalará el servicio."
+LangString i18n_VCR_NOTICE ${LANG_ENGLISH} "If you decline to download and install Visual C++ Redistributable, the Apache post-installation wizard will not install the service."
+LangString i18n_VCR_NOTICE ${LANG_PORTUGUESEBR} "Se você recusar o download e a instalação do Visual C++ Redistributable, o assistente pós-instalação do Apache não instalará o serviço."
+
+LangString i18n_VCR_SUBTITLE ${LANG_SPANISH} "Descargar e Instalar dependencia"
+LangString i18n_VCR_SUBTITLE ${LANG_ENGLISH} "Download and install dependency"
+LangString i18n_VCR_SUBTITLE ${LANG_PORTUGUESEBR} "Baixar e instalar dependência"

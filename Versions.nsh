@@ -11,31 +11,16 @@ You can obtain one at http://mozilla.org/MPL/2.0/.
 
 -------------------------------------------------------------------------------
 
-Versions.nsh - Archivo de versiones del paquete.
+Versions.nsh  - Versiones de los componentes.
 
-NOTAS: 
-	- Todos los caracteres especiales se han omitido para mayor compatibilidad.
+NOTAS:
+    - GENERADO AUTOMATICAMENTE con fecha 2026-05-04 02:01:41.
+    - NO EDITAR MANUALMENTE, los cambios se perderan.
+    - Todos los caracteres especiales se han omitido para mayor compatibilidad.
 
 */
 
-; VER_*
-;	Versionado de AMPc.
-;		VER_MAJOR => Version mayor, anno.
-;		VER_MENOR => Version menor.
-;		VER_PATCH => Version parche.
-;		VER_BUILD => Fecha de compilacion.
-!define VER_MAJOR "26"
-!define VER_MENOR "1"
-!define VER_PATCH "0"
-!define /date VER_BUILD "%y%m%d%H%M%S"
-
-; VERSION_*
-;	Versiones declarada de los componentes incluidos en la compilacion..
-;		VERSION_APACHE 	=> Apache HTTP Server, build ApacheLounge.
-;		VERSION_MARIADB => MariaDB Community Server, build oficial.
-;		VERSION_PHP 	=> PHP, build oficial.
-;		VERSION_CACERT 	=> Mozilla CA certificate (version AA.MM.DD).
-!define VERSION_APACHE  "2.4.66"
+!define VERSION_APACHE "2.4.66"
 !define VERSION_MARIADB "11.4.10"
-!define VERSION_PHP     "8.4.19"
-!define VERSION_CACERT  "26.02.11"
+!define VERSION_PHP "8.4.19"
+!define VERSION_CACERT "26.02.11"
